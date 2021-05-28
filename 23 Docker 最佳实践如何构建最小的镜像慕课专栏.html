@@ -1,0 +1,288 @@
+<html><head><meta charset="utf-8"><title>23 Docker 最佳实践：如何构建最小的镜像-慕课专栏</title>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+			<meta name="renderer" content="webkit">
+			<meta property="qc:admins" content="77103107776157736375">
+			<meta property="wb:webmaster" content="c4f857219bfae3cb">
+			<meta http-equiv="Access-Control-Allow-Origin" content="*">
+			<meta http-equiv="Cache-Control" content="no-transform ">
+			<meta http-equiv="Cache-Control" content="no-siteapp">
+			<link rel="apple-touch-icon" sizes="76x76" href="https://www.imooc.com/static/img/common/touch-icon-ipad.png">
+			<link rel="apple-touch-icon" sizes="120x120" href="https://www.imooc.com/static/img/common/touch-icon-iphone-retina.png">
+			<link rel="apple-touch-icon" sizes="152x152" href="https://www.imooc.com/static/img/common/touch-icon-ipad-retina.png">
+			<link href="https://moco.imooc.com/captcha/style/captcha.min.css" rel="stylesheet">
+			<link rel="stylesheet" href="https://www.imooc.com/static/moco/v1.0/dist/css/moco.min.css?t=201907021539" type="text/css">
+			<link rel="stylesheet" href="https://www.imooc.com/static/lib/swiper/swiper-3.4.2.min.css?t=201907021539">
+			<link rel="stylesheet" href="https://static.mukewang.com/static/css/??base.css,common/common-less.css?t=2.5,column/zhuanlanChapter-less.css?t=2.5,course/inc/course_tipoff-less.css?t=2.5?v=201907051055" type="text/css">
+			<link charset="utf-8" rel="stylesheet" href="https://www.imooc.com/static/lib/ueditor/themes/imooc/css/ueditor.css?v=201907021539"><link rel="stylesheet" href="https://www.imooc.com/static/lib/baiduShare/api/css/share_style0_16.css?v=6aba13f0.css"></head>
+			<body><div id="main">
+
+
+<div class="main-con hide-menu">
+    <!-- 左侧菜单 & 索引 -->
+    
+    <div class="right-content" style="padding-left: 0px;">
+        <div class="container clearfix" id="top" style="width: 1134px; display: block;">
+            
+            
+            <div class="center_con js-center_con l" style="width: 1134px;">
+                <div class="article-con">
+                                            <!-- 买过的阅读 -->
+                        
+
+                    
+                    <div class="art-title" style="margin-top: 0px;">
+                        23 Docker 最佳实践：如何构建最小的镜像
+                    </div>
+                    <div class="art-info clearfix">
+                        
+                        <span class="l">
+                            更新时间：2020-09-09 09:55:26
+                        </span>
+                    </div>
+                    <div class="art-top">
+                                                <img src="https://img2.sycdn.imooc.com/5f558f5a0001c88706400426.jpg" alt="">
+                                                                        <div class="famous-word-box">
+                            <img src="https://www.imooc.com/static/img/column/bg-l.png" alt="" class="bg1 bg">
+                            <img src="https://www.imooc.com/static/img/column/bg-r.png" alt="" class="bg2 bg">
+                            <div class="famous-word">与有肝胆人共事，从无字句处读书。——周恩来<p></p></div>
+                        </div>
+                                            </div>
+                    <div class="art-content js-lookimg">
+                        <div id="article_content">
+                            <div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">镜像作为 Docker 技术中关键的一环，我们日常开发中的一个关键工作就是将我们的应用构建成镜像，然后使用容器集群管理框架，比如 Kubernetes，将镜像部署集群中的多台容器中。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这个过程中就涉及到镜像的分发问题，如果镜像比较大的话，会导致我们的应用启动时间比较长。虽然有一些镜像分发技术来解决镜像发布的效率问题，但是我们还是希望将镜像构建的越来越小。这篇文章我们就来看一下这个具体的问题：如何构建最小的镜像？</p>
+</div><div class="cl-preview-section"><h2 id="基础镜像" style="font-size: 30px;">1. 基础镜像</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">构建镜像，或者说编写 Dockerfile 的第一步就是 <code>FROM &lt;base-image&gt;</code> ，这个 base-image 如何选择直接关系到我们最终的镜像大小。</p>
+</div><div class="cl-preview-section"><h4 id="操作系统镜像" style="font-size: 26px;">操作系统镜像</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">一个完整的操作系统一般都比较大。在使用操作系统镜像之前，首先要问自己一个问题是不是真的需要使用一个完整的操作系统镜像。操作系统镜像包含完整的操作系统文件，包括一些 lib 和 bin 文件，如果要使用完整的操作系统里面的 bin 工具可能需要其他一个完整的操作系统镜像，其他情况一些一般都不需要。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">作为完整的操作系统镜像的替代，我们可以使用定制化的操作系统镜像，比如 alpine。在我的 Linux 机器上，完整的 ubuntu 和 alpine 镜像相差达到将近 12 倍。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f558fa900012c5e21700294.png" data-original="//img1.sycdn.imooc.com/5f558fa900012c5e21700294.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><h4 id="语言开发环境镜像" style="font-size: 26px;">语言开发环境镜像</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">有些应用需要特定的开发环境来运行，比如 Java 应用需要 JVM 环境，Python 应用需要 Python 环境（作为对比，C 或者 C++ 应用编译成二进制之后则可以直接运行在操作系统中）。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">很多刚开始接触 Docker 的新手遇到这个场景，直接 FROM 一个操作系统镜像，然后在镜像中运行类似 <code>yum install</code> 的命令直接安装 Python 的开发环境，且不说这种在 Dockerfile 中直接安装软件的方式的好坏，使用操作系统镜像一定引入了很多我们不需要的文件，这无疑增加了最终的镜像大小。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">实际上，基本每种开发环境都有自己的独立镜像。比如，</p>
+</div><div class="cl-preview-section"><h5 id="node" style="font-size: 20px; line-height: 38px;">Node</h5>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f558fb10001e6ec18780382.png" data-original="//img1.sycdn.imooc.com/5f558fb10001e6ec18780382.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><h5 id="python" style="font-size: 20px; line-height: 38px;">Python</h5>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f558fb900013a7c18740424.png" data-original="//img1.sycdn.imooc.com/5f558fb900013a7c18740424.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><h5 id="jdk" style="font-size: 20px; line-height: 38px;">JDK</h5>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f558fc200018bca18780376.png" data-original="//img1.sycdn.imooc.com/5f558fc200018bca18780376.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">那么我们在使用的时候就可以按需使用这些镜像，而不是基于操作系统自己来构建了。</p>
+</div><div class="cl-preview-section"><h4 id="scratch-镜像" style="font-size: 26px;">scratch 镜像</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">写过 Go 语言程序的同学都知道 Go 应用采用的是静态编译的方式，所有的依赖都会被打包到二进制文件中。这时候我们要构建 Go 语言应用的镜像就会异常地简单，只需要将二进制文件拷贝到基础镜像中即可。那么这个时候我们的基础镜像选什么呢？当然可以选一个操作系统镜像或者定制化的操作系统镜像，但是这样会显得稍微有点浪费。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这个时候我们可以考虑使用 scratch 镜像，scratch 镜像是 Docker 保留镜像，只能用来构建其他镜像。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">下面我们用实例演示一下用 scratch 镜像构建我们的应用。我们先用 Go 语言编写一个简单的 http server，代码如下。功能很简单，启动一个 http server 监听 8091 端口。</p>
+</div><div class="cl-preview-section"><pre class=" language-go"><code class="prism  language-go"><span class="token keyword">package</span> main
+
+<span class="token keyword">import</span> <span class="token punctuation">(</span>
+    <span class="token string">"fmt"</span>
+    <span class="token string">"net/http"</span>
+<span class="token punctuation">)</span>
+
+<span class="token keyword">func</span> <span class="token function">hello</span><span class="token punctuation">(</span>w http<span class="token punctuation">.</span>ResponseWriter<span class="token punctuation">,</span> req <span class="token operator">*</span>http<span class="token punctuation">.</span>Request<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Fprintf</span><span class="token punctuation">(</span>w<span class="token punctuation">,</span> <span class="token string">"hello\n"</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    http<span class="token punctuation">.</span><span class="token function">HandleFunc</span><span class="token punctuation">(</span><span class="token string">"/hello"</span><span class="token punctuation">,</span> hello<span class="token punctuation">)</span>
+    http<span class="token punctuation">.</span><span class="token function">ListenAndServe</span><span class="token punctuation">(</span><span class="token string">":8091"</span><span class="token punctuation">,</span> <span class="token boolean">nil</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">然后通过 <code>go build</code> 命令编译出二进制文件，指定 CGO_ENABLED=0 表示是静态编译。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@xxx code<span class="token punctuation">]</span><span class="token comment"># CGO_ENABLED=0 go build -o http-server</span>
+<span class="token punctuation">[</span>root@xxx code<span class="token punctuation">]</span><span class="token comment"># ls -lh</span>
+total 7.2M
+-rw-r--r-- 1 root root   64 Jun 25 00:24 Dockerfile
+-rwxr-xr-x 1 root root 7.1M Jun 25 00:45 http-server
+-rw-r--r-- 1 root root  230 Jun 25 00:44 http-server.go
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">编写 Dockerfile 如下，是不是非常的简单。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">FROM</span> scratch
+<span class="token keyword">ADD</span> http<span class="token punctuation">-</span>server /
+<span class="token keyword">EXPOSE</span> 8091
+<span class="token keyword">CMD</span> <span class="token punctuation">[</span><span class="token string">"/http-server"</span><span class="token punctuation">]</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">然后我们通过 docker build 构建镜像，构建出来的镜像只有 7.47MB，对比上面的二进制文件 7.2M，scratch 镜像只有几百 k 。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@xxx code<span class="token punctuation">]</span><span class="token comment"># docker build -t http-server:v1 .</span>
+Sending build context to Docker daemon  7.473MB
+Step 1/4 <span class="token keyword">:</span> FROM scratch
+ ---<span class="token operator">&gt;</span>
+Step 2/4 <span class="token keyword">:</span> ADD http-server /
+ ---<span class="token operator">&gt;</span> 002016c837b3
+Step 3/4 <span class="token keyword">:</span> EXPOSE 8091
+ ---<span class="token operator">&gt;</span> Running <span class="token keyword">in</span> db4b0ac373cd
+Removing intermediate container db4b0ac373cd
+ ---<span class="token operator">&gt;</span> 2f2e6000e845
+Step 4/4 <span class="token keyword">:</span> CMD <span class="token punctuation">[</span><span class="token string">"/http-server"</span><span class="token punctuation">]</span>
+ ---<span class="token operator">&gt;</span> Running <span class="token keyword">in</span> cdce752a3f60
+Removing intermediate container cdce752a3f60
+ ---<span class="token operator">&gt;</span> 8445f4264352
+Successfully built 8445f4264352
+Successfully tagged http-server:v1
+<span class="token punctuation">[</span>root@xxx code<span class="token punctuation">]</span><span class="token comment"># docker images</span>
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+http-server         v1                  8445f4264352        12 seconds ago      7.41MB
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">下面我们验证一下应用是不是可以正常工作。通过下面的 <code>docker run</code> 命令启动。其中的 <code>-p</code> 用于将容器的端口 8091 和宿主机的端口 8091 进行映射。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@xxx code<span class="token punctuation">]</span><span class="token comment"># docker run -d -p 8091:8091 http-server:v1</span>
+827aee4de71950d3878c58c4b13b69c844514acd60e48de916a8938906c50727
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">下面我们访问一下 http server 看看是不是 work。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@xxx ~<span class="token punctuation">]</span><span class="token comment"># curl localhost:8091/hello</span>
+hello
+</code></pre>
+</div><div class="cl-preview-section"><h2 id="多阶段构建" style="font-size: 30px;">2. 多阶段构建</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">多阶段构建是 Docker 官方提出来的概念，原文是 multi-stage build，也是一种用来构建最小镜像的方案。多阶段构建是 Docker 17.05 或者更高版本之后提出来的特性，不仅可以用来减小最小生成的镜像的体积，还可以保持 Dockerfile 文件的可读性和可维护性。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们在上面的一个演示 scratch 镜像的时候，Dockerfile 中直接将 Go 应用的二进制文件 COPY 到镜像中，但是在实际的开发中，为了保证多个开发成员的开发环境一致，一般会建议用一个同一个开发或者打包环境。在 Docker 之前，这个打包环境可能是一台机器，但是有了 Docker 之后，我们就可以用 Docker 来替代了。比如 Go 语言的编译打包，我们可以统一使用一个基础镜像来构建我们的镜像就可以了。下面是一个示例，其中 app.go 是开发者开发的程序。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">FROM</span> golang<span class="token punctuation">:</span>1.13.3
+<span class="token keyword">WORKDIR</span> /go/src/github.com/alexellis/href<span class="token punctuation">-</span>counter/
+<span class="token keyword">RUN</span> go get <span class="token punctuation">-</span>d <span class="token punctuation">-</span>v golang.org/x/net/html  
+<span class="token keyword">COPY</span> app.go .
+<span class="token keyword">RUN</span> CGO_ENABLED=0 GOOS=linux go build <span class="token punctuation">-</span>a <span class="token punctuation">-</span>installsuffix cgo <span class="token punctuation">-</span>o app .
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">通过上面的 Dockerfile 我们就可以编译出来可执行文件。有了可执行文件，我们部署可以有两种方式：</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><strong>1. 直接在原 Dockerfile 中修改使用</strong></p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">FROM</span> golang<span class="token punctuation">:</span>1.13.3
+<span class="token keyword">WORKDIR</span> /go/src/github.com/alexellis/href<span class="token punctuation">-</span>counter/
+<span class="token keyword">RUN</span> go get <span class="token punctuation">-</span>d <span class="token punctuation">-</span>v golang.org/x/net/html  
+<span class="token keyword">COPY</span> app.go .
+<span class="token keyword">RUN</span> CGO_ENABLED=0 GOOS=linux go build <span class="token punctuation">-</span>a <span class="token punctuation">-</span>installsuffix cgo <span class="token punctuation">-</span>o app .
+
+<span class="token keyword">CMD</span> <span class="token punctuation">[</span><span class="token string">"./app"</span><span class="token punctuation">]</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><strong>2. 将可执行文件 COPY 出来使用</strong></p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">第一种方式应该是大部分人使用的方式，这种方式比较简单，但是对于最终的部署镜像来说，引入了太多不必要的文件，比如 Go 编译环境。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">第二种方式可能是一种更好的方式，我们部署的时候可以直接使用 scratch 镜像，这样最终的镜像会小很多。但是 COPY 的方案可能需要斟酌，比如通过 volume 的方式，将容器目录映射到宿主机目录，然后进行手动拷贝。但是这些手工操作可能会引入其他问题。这里就引入了多阶段构建的概念。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">简单来说，多阶段构建允许我们在一个 Dockerfile 中使用多个 <code>FROM</code> 指令，每个 <code>FROM</code> 可以使用不同的 base 镜像，每个 <code>FROM</code> 会对应一个阶段（stage），所谓多阶段就是多个 <code>FROM</code> 的意思。下面是一个示例。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">FROM</span> golang<span class="token punctuation">:</span>1.13.3
+<span class="token keyword">WORKDIR</span> /go/src/github.com/alexellis/href<span class="token punctuation">-</span>counter/
+<span class="token keyword">RUN</span> go get <span class="token punctuation">-</span>d <span class="token punctuation">-</span>v golang.org/x/net/html  
+<span class="token keyword">COPY</span> app.go .
+<span class="token keyword">RUN</span> CGO_ENABLED=0 GOOS=linux go build <span class="token punctuation">-</span>a <span class="token punctuation">-</span>installsuffix cgo <span class="token punctuation">-</span>o app .
+
+<span class="token keyword">FROM</span> alpine<span class="token punctuation">:</span>latest  
+<span class="token keyword">RUN</span> apk <span class="token punctuation">-</span><span class="token punctuation">-</span>no<span class="token punctuation">-</span>cache add ca<span class="token punctuation">-</span>certificates
+<span class="token keyword">WORKDIR</span> /root/
+<span class="token keyword">COPY</span> <span class="token punctuation">-</span><span class="token punctuation">-</span>from=0 /go/src/github.com/alexellis/href<span class="token punctuation">-</span>counter/app .
+<span class="token keyword">CMD</span> <span class="token punctuation">[</span><span class="token string">"./app"</span><span class="token punctuation">]</span>  
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">注意上面的 Dockerfile 中的第 10 行中的 <code>COPY --from=0</code> 就是从阶段 0 拷贝文件。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">多阶段构建的 Dockerfile 使用起来和其他 Dockerfile 没有区别，这样我们只要维护一个 Dockerfile 就可以。下面介绍一些多阶段构建的其他使用方式。</p>
+</div><div class="cl-preview-section"><h4 id="stage-命名" style="font-size: 26px;">stage 命名</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们上面的例子中是通过 <code>--from=0</code> 来指定 stage 的，我们也可以为每个 stage 指定一个更具有可读性的名字，示例如下。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">FROM</span> golang<span class="token punctuation">:</span>1.13.3 builder
+<span class="token keyword">WORKDIR</span> /go/src/github.com/alexellis/href<span class="token punctuation">-</span>counter/
+<span class="token keyword">RUN</span> go get <span class="token punctuation">-</span>d <span class="token punctuation">-</span>v golang.org/x/net/html  
+<span class="token keyword">COPY</span> app.go .
+<span class="token keyword">RUN</span> CGO_ENABLED=0 GOOS=linux go build <span class="token punctuation">-</span>a <span class="token punctuation">-</span>installsuffix cgo <span class="token punctuation">-</span>o app .
+
+<span class="token keyword">FROM</span> alpine<span class="token punctuation">:</span>latest deployment
+<span class="token keyword">RUN</span> apk <span class="token punctuation">-</span><span class="token punctuation">-</span>no<span class="token punctuation">-</span>cache add ca<span class="token punctuation">-</span>certificates
+<span class="token keyword">WORKDIR</span> /root/
+<span class="token keyword">COPY</span> <span class="token punctuation">-</span><span class="token punctuation">-</span>from=builder /go/src/github.com/alexellis/href<span class="token punctuation">-</span>counter/app .
+<span class="token keyword">CMD</span> <span class="token punctuation">[</span><span class="token string">"./app"</span><span class="token punctuation">]</span>  
+</code></pre>
+</div><div class="cl-preview-section"><h4 id="执行到指定的-stage" style="font-size: 26px;">执行到指定的 stage</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们的 Dockerfile 中定一个了一个完整的流程，有的时候没有必要执行完整个流程，那么我们可以通过下面的方式让 docker build 执行到指定的 stage 就不再进行下去。下面的例子是执行到 builder stage。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">$ docker build --target builder -t alexellis2/href-counter:latest <span class="token keyword">.</span>
+</code></pre>
+</div><div class="cl-preview-section"><h2 id="定制自己的-base-镜像" style="font-size: 30px;">3. 定制自己的 base 镜像</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">如果我们的很多镜像都有一些共同的部分，比如一些基础环境和二进制工具，那么可以考虑将这些共同的部分抽出来创建一个自己的 base 镜像，然后其他镜像基于这个 base 镜像来构建。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这么做的一个好处是，Docker 只需要加载一次这些共同的文件层就会自动缓存。这样其他基于这个 base 的镜像也会更快。</p>
+</div><div class="cl-preview-section"><h2 id="总结" style="font-size: 30px;">4. 总结</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">本文介绍如何最小化构建我们的镜像的一些策略，主要介绍了三种方式：选取合适的 base 镜像；多阶段构建；定制 base 镜像。然后重点介绍了前两种方式，这两种方式也是减小构建出来的镜像体积的最有效的方式。</p>
+</div>}
+                        </div>
+                    </div>
+                                            <!-- 买过的阅读 -->
+                        <div class="art-next-prev clearfix">
+                                                                                                <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2319">
+                                                                    <div class="prev l clearfix">
+                                        <div class="icon l">
+                                            <i class="imv2-arrow3_l"></i>
+                                        </div>
+                                        <p>
+                                            22 Dockerfile 你真的会用吗？
+                                        </p>
+                                    </div>
+                                </a>
+                                                                                                                            <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2332">
+                                                                    <div class="next r clearfix">
+                                        <p>
+                                            24 Docker 最佳实践：tag 如何使用？
+                                        </p>
+                                        <div class="icon r">
+                                            <i class="imv2-arrow3_r"></i>
+                                        </div>
+
+                                    </div>
+                                </a>
+                                                    </div>
+                                    </div>
+                <div class="comments-con js-comments-con" id="coments_con">
+                </div>
+
+                
+            </div>
+            
+            
+            
+
+        </div>
+    </div>
+</div>
+
+<div class="modal modal-jiaQun-new hide" id="modal-jiaQun">
+    <div class="inner" style="">
+        <div class="modal-close js-close-jiaQun">
+            <i class="imv2-close"></i>
+        </div>
+        <div class="content">
+            <img src="https://img2.sycdn.imooc.com/5f18f4360001392b05330597.jpg">
+            <div class="right-info">
+                <div class="title">
+                    扫码加入慕课前沿技术核心用户群
+                </div>
+                <div class="desc">
+                                            <p class="mb6">验证信息：<span id="joincode">2011031946279713</span><span class="copy js-copy-joincode">复制</span></p>
+                                        <p class="mb6">QQ讨论群号：729941811</p>
+                                            <p>QQ群URL：<a href="https://jq.qq.com/?_wv=1027&amp;k=5WJLMxV" target="_blank">点击访问</a></p>
+                                    </div>
+            </div>
+            <p class="tip">若遇到搜索不到QQ群或加群失败，请联系客服邮箱:kf@imooc.com</p>
+        </div>
+    </div>
+</div>
+ 
+<!-- 专栏介绍页专栏评价 -->
+
+<!-- 专栏介绍页底部三条评价 -->
+
+<!-- 专栏阅读页弹层目录和介绍页页面目录 -->
+
+<!-- 专栏阅读页发布回复 -->
+
+<!-- 专栏阅读页发布评论 -->
+
+<!-- 专栏阅读页底部评论 -->
+
+<!-- 专栏阅读 单个 评论 -->
+
+<!-- 新增回复和展开三条以外回复 -->
+
+<!-- 立即订阅的弹窗 -->
+
+
+
+
+
+
+
+
+
+
+
+
+</div></body></html>

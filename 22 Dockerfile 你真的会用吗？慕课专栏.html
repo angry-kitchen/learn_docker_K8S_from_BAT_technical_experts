@@ -1,0 +1,271 @@
+<html><head><meta charset="utf-8"><title>22 Dockerfile 你真的会用吗？-慕课专栏</title>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+			<meta name="renderer" content="webkit">
+			<meta property="qc:admins" content="77103107776157736375">
+			<meta property="wb:webmaster" content="c4f857219bfae3cb">
+			<meta http-equiv="Access-Control-Allow-Origin" content="*">
+			<meta http-equiv="Cache-Control" content="no-transform ">
+			<meta http-equiv="Cache-Control" content="no-siteapp">
+			<link rel="apple-touch-icon" sizes="76x76" href="https://www.imooc.com/static/img/common/touch-icon-ipad.png">
+			<link rel="apple-touch-icon" sizes="120x120" href="https://www.imooc.com/static/img/common/touch-icon-iphone-retina.png">
+			<link rel="apple-touch-icon" sizes="152x152" href="https://www.imooc.com/static/img/common/touch-icon-ipad-retina.png">
+			<link href="https://moco.imooc.com/captcha/style/captcha.min.css" rel="stylesheet">
+			<link rel="stylesheet" href="https://www.imooc.com/static/moco/v1.0/dist/css/moco.min.css?t=201907021539" type="text/css">
+			<link rel="stylesheet" href="https://www.imooc.com/static/lib/swiper/swiper-3.4.2.min.css?t=201907021539">
+			<link rel="stylesheet" href="https://static.mukewang.com/static/css/??base.css,common/common-less.css?t=2.5,column/zhuanlanChapter-less.css?t=2.5,course/inc/course_tipoff-less.css?t=2.5?v=201907051055" type="text/css">
+			<link charset="utf-8" rel="stylesheet" href="https://www.imooc.com/static/lib/ueditor/themes/imooc/css/ueditor.css?v=201907021539"><link rel="stylesheet" href="https://www.imooc.com/static/lib/baiduShare/api/css/share_style0_16.css?v=6aba13f0.css"></head>
+			<body><div id="main">
+
+
+<div class="main-con hide-menu">
+    <!-- 左侧菜单 & 索引 -->
+    
+    <div class="right-content" style="padding-left: 0px;">
+        <div class="container clearfix" id="top" style="width: 1134px; display: block;">
+            
+            
+            <div class="center_con js-center_con l" style="width: 1134px;">
+                <div class="article-con">
+                                            <!-- 买过的阅读 -->
+                        
+
+                    
+                    <div class="art-title" style="margin-top: 0px;">
+                        22 Dockerfile 你真的会用吗？
+                    </div>
+                    <div class="art-info clearfix">
+                        
+                        <span class="l">
+                            更新时间：2020-09-09 09:55:26
+                        </span>
+                    </div>
+                    <div class="art-top">
+                                                <img src="https://img1.sycdn.imooc.com/5f51a3e000013a1506400426.jpg" alt="">
+                                                                        <div class="famous-word-box">
+                            <img src="https://www.imooc.com/static/img/column/bg-l.png" alt="" class="bg1 bg">
+                            <img src="https://www.imooc.com/static/img/column/bg-r.png" alt="" class="bg2 bg">
+                            <div class="famous-word">没有引发任何行动的思想都不是思想，而是梦想。 —— 马丁<p></p></div>
+                        </div>
+                                            </div>
+                    <div class="art-content js-lookimg">
+                        <div id="article_content">
+                            <div class="cl-preview-section"><h1 id="dockerfile-最佳实践">Dockerfile 最佳实践</h1>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们前面了解到 Docker 会根据 Dockerfile 中指令构建出镜像，关于 Dockerfile 的指令规范可以参考我们之前的文章。Docker 镜像是由多个只读的文件层（layer）组成的，Dockerfile 中的每个指令会生成一个层，而且层是以 delta 增量的形式组织的。下面我们就来介绍一下在使用 Dockerfile 过程中的最佳实践。</p>
+</div><div class="cl-preview-section"><h3 id="from">FROM</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">任何时候，base 镜像尽量使用官方的镜像，比如 Alpine 镜像，作为一个完整的 Linux 发行版，大小不足 5MB。</p>
+</div><div class="cl-preview-section"><h3 id="label">LABEL</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们可以通过给镜像添加 label 来管理我们的镜像，比如记录 license 信息等。下面是集中比较好的 LABEL 编写格式。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token comment"># Set one or more individual labels</span>
+<span class="token keyword">LABEL</span> com.example.version=<span class="token string">"0.0.1-beta"</span>
+<span class="token keyword">LABEL</span> vendor1=<span class="token string">"ACME Incorporated"</span>
+<span class="token keyword">LABEL</span> vendor2=ZENITH\ Incorporated
+<span class="token keyword">LABEL</span> com.example.release<span class="token punctuation">-</span>date=<span class="token string">"2015-02-12"</span>
+<span class="token keyword">LABEL</span> com.example.version.is<span class="token punctuation">-</span>production=<span class="token string">""</span>
+</code></pre>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token comment"># Set multiple labels on one line</span>
+<span class="token keyword">LABEL</span> com.example.version=<span class="token string">"0.0.1-beta"</span> com.example.release<span class="token punctuation">-</span>date=<span class="token string">"2015-02-12"</span>
+</code></pre>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token comment"># Set multiple labels at once, using line-continuation characters to break long lines</span>
+<span class="token keyword">LABEL</span> vendor=ACME\ Incorporated \
+      com.example.is<span class="token punctuation">-</span>beta= \
+      com.example.is<span class="token punctuation">-</span>production=<span class="token string">""</span> \
+      com.example.version=<span class="token string">"0.0.1-beta"</span> \
+      com.example.release<span class="token punctuation">-</span>date=<span class="token string">"2015-02-12"</span>
+</code></pre>
+</div><div class="cl-preview-section"><h3 id="run">RUN</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><code>RUN</code> 指令后面可以接任何命令，当 <code>RUN</code> 后面接的命令太长时，我们可以将命令拆成多行，从而使我们的 dockerfile 可读性更好。</p>
+</div><div class="cl-preview-section"><h5 id="apt-get" style="font-size: 20px; line-height: 38px;">apt-get</h5>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><code>RUN</code> 指令的一个典型应用就是和 <code>apt-get</code> 结合起来使用，我们这里看一下 <code>apt-get</code> 的使用注意事项。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">不要在 dockerfile 中使用 <code>RUN apt-get upgrade</code> 或者 <code>dist-upgrade</code> ，因为 <code>upgrade</code> 会升级镜像中安装的所有包（如果包有更新的话）。取而代之的是，我们可以使用 <code>apt-get update</code> 获取更新的软件包列表，然后如果确定要升级的话再使用 <code>apt-get install -y foo</code> 去自动更新。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">将 <code>apt-get udpate</code> 和 <code>apt-get install</code> 写到一条 <code>RUN</code> 的指令中，也就是像下面这样。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">RUN</span> apt<span class="token punctuation">-</span>get update &amp;&amp; apt<span class="token punctuation">-</span>get install <span class="token punctuation">-</span>y \
+    package<span class="token punctuation">-</span>bar \
+    package<span class="token punctuation">-</span>baz \
+    package<span class="token punctuation">-</span>foo
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">如果把 <code>apt-get update</code> 和 <code>apt-get install</code> 分开编写的话可能会因为 docker build cache 的问题导致没有安装最新的包，举个例子。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">FROM</span> ubuntu<span class="token punctuation">:</span>18.04
+<span class="token keyword">RUN</span> apt<span class="token punctuation">-</span>get update
+<span class="token keyword">RUN</span> apt<span class="token punctuation">-</span>get install <span class="token punctuation">-</span>y curl
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">通过 docker build 之后，上面 dockerfile 生成的所有文件层都在 Docker cache 中。如果你之后想安装其他的软件包，比如 nginx，然后将 dockerfile 修改成如下的样子。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">FROM</span> ubuntu<span class="token punctuation">:</span>18.04
+<span class="token keyword">RUN</span> apt<span class="token punctuation">-</span>get update
+<span class="token keyword">RUN</span> apt<span class="token punctuation">-</span>get install <span class="token punctuation">-</span>y curl nginx
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">重新执行 docker build 的时候，由于 cache 的原因，<code>RUN apt-get update</code> 这一行并不会被重新执行，也就是说我们可能会 <code>apt-get install</code> 安装的不是最新版本软件包。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">将 <code>apt-get update</code> 和 <code>apt-get install</code> 写在一行就是典型的 <em><strong>cache-busting</strong></em> 技术。</p>
+</div><div class="cl-preview-section"><h4 id="使用-pipes" style="font-size: 26px;">使用 pipes</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">有些 <code>RUN</code> 指令后面的命令涉及的 Linux 的管道（pipe），比如将一个命令执行的输出作为下一个命令的输入。比如下面这个例子：先 wget 下载一个文件，然后使用 wc 统计行数。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">RUN</span> wget <span class="token punctuation">-</span>O <span class="token punctuation">-</span> https<span class="token punctuation">:</span>//some.site <span class="token punctuation">|</span> wc <span class="token punctuation">-</span>l <span class="token punctuation">&gt;</span> /number
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Docker 执行 <code>RUN</code> 后面的指令是使用 <code>/bin/sh -c</code> 来执行的，对于上面的管道情况，只会把最后一个命令的返回值来作为整个管道链接起来的这条命令的返回值。也就是说上面这条 dockerfile 的指令，只要 <code>wc -l</code> 执行成功 Docker 就认为这条指令  <code>docker build</code> 成功了。但是这个不是符合预期的，比如前面的 <code>wget</code> 执行失败，应该导致 build 失败才是预期的。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">为了解决这个问题，或者说解决此类问题：对于管道中的任何阶段的命令失败都导致 build 失败，我们可以使用 <code>set -o pipefail</code> 来解决。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">RUN</span> set <span class="token punctuation">-</span>o pipefail &amp;&amp; wget <span class="token punctuation">-</span>O <span class="token punctuation">-</span> https<span class="token punctuation">:</span>//some.site <span class="token punctuation">|</span> wc <span class="token punctuation">-</span>l <span class="token punctuation">&gt;</span> /number
+</code></pre>
+</div><div class="cl-preview-section"><h3 id="cmd">CMD</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><code>CMD</code> 指令用于执行镜像中包含的软件，可以带参数。<code>CMD</code> 大多数情况都应该以 <code>CMD ["executable", "param1", "param2"]</code> 的形式使用。比如说 Apache 服务镜像，我们可以执行类似于 <code>CMD ["apache2", "DFOREGROUND"]</code> 形式的命令。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">对于一些其他的 case，<code>CMD</code> 应该提供一个交互式的 shell，比如 Linux 的 bash，python 或者 perl。比如 <code>CMD ["perl", "-de0"]</code> ，<code>CMD ["python"]</code> 和 <code>CMD ["php", "-a"]</code> 。一旦设置这种形式的 <code>CMD</code>，当我们以类似 <code>docker run -ti &lt;image&gt;</code> 的形式启动容器时，容器启动之后会自动进入一个可用的 shell。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><code>CMD</code> 的另外一种形式 <code>CMD ["param", "param"]</code> 只有和 <code>ENTRYPOINT</code> 结合使用的情况下才会用这种形式。</p>
+</div><div class="cl-preview-section"><h3 id="expose">EXPOSE</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><code>EXPOSE</code> 指令用来指定容器暴露的端口。对于一些默认的服务镜像，我们应该尽量使用这些服务的默认端口。比如 Apache web server 使用 80 端口：<code>EXPOSE 80</code> ，MongoDB 使用 <code>EXPOSE 27017</code> 。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们在容器中暴露了端口之后，<code>docker run</code> 的时候就可以在参数中通过端口隐射的方式将端口暴露到宿主机上。</p>
+</div><div class="cl-preview-section"><h3 id="env">ENV</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><code>ENV</code> 指令用来指定镜像中的环境变量。比如对于 nginx 镜像我们可以将 nginx 的 bin 加到环境变量 PATH 中，然后 CMD 指定 nginx 就可以直接使用了。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">ENV</span> PATH /usr/local/nginx/bin<span class="token punctuation">:</span>$PATH
+<span class="token punctuation">...</span>
+<span class="token keyword">CMD</span> <span class="token punctuation">[</span><span class="token string">"nginx"</span><span class="token punctuation">]</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><code>ENV</code> 除了设置用户的自定义环境变量，有时候还可以用来设置版本号，类似于我们编程中的常量。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">ENV</span> PG_MAJOR 9.3
+<span class="token keyword">ENV</span> PG_VERSION 9.3.4
+<span class="token keyword">RUN</span> curl <span class="token punctuation">-</span>SL http<span class="token punctuation">:</span>//example.com/postgres<span class="token punctuation">-</span>$PG_VERSION.tar.xz <span class="token punctuation">|</span> tar <span class="token punctuation">-</span>xJC /usr/src/postgress &amp;&amp; …
+<span class="token keyword">ENV</span> PATH /usr/local/postgres<span class="token punctuation">-</span>$PG_MAJOR/bin<span class="token punctuation">:</span>$PATH
+</code></pre>
+</div><div class="cl-preview-section"><h3 id="add-和-copy">ADD 和 COPY</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><code>ADD</code> 和 <code>COPY</code> 的功能非常类似，但是一般优先使用 <code>COPY</code> ，因为 <code>COPY</code> 的功能更单一，只是将本地文件拷贝到容器中，而 <code>ADD</code> 还包括压缩文件解压和以 URL 指定的远程文件支持。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><code>ADD</code> 的最佳实践是将本地的 tar 文件提取到镜像中，例如 <code>ADD rootfs.tar.xz</code> ，这里所说的提取包括拷贝和解压。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">如果需要拷贝多个文件，那么在 dockerfile 文件中最好每次拷贝一个单独的文件，这样的好处是我们可以利用 Docker 的 build cache，每次一个文件变化只会影响单个层的 build cache 失效。举个例子。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">COPY</span> . /tmp/
+<span class="token keyword">RUN</span> <span class="token punctuation">...</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">上面的 dockerfile 只要当前目录的任何一个文件变化都会导致 <code>COPY . /tmp</code> 层重新构建，导致后面的指令的 build cache 缓存失效。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">为了让镜像尽量小，最好不要使用 <code>ADD</code> 指令从远程 URL 获取包，而是使用 <code>curl</code> 或者 <code>wget</code> 先下载包，使用完之后将包删除掉。</p>
+</div><div class="cl-preview-section"><h3 id="entrypoint">ENTRYPOINT</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><code>ENTRYPOINT</code> 的最佳实践是设置镜像的主命令，使用该镜像启动容器的时候将会执行 <code>ENTRYPOINT</code> 中指定的命令。<code>CMD</code> 可以作为 <code>ENTRYPOINT</code> 的补充，指定主命令的默认参数。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">ENTRYPOINT</span> <span class="token punctuation">[</span><span class="token string">"s3cmd"</span><span class="token punctuation">]</span>
+<span class="token keyword">CMD</span> <span class="token punctuation">[</span><span class="token string">"--help"</span><span class="token punctuation">]</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><code>ENTRYPOINT</code> 还可以结合一个辅助脚本使用，下面是 Postgres 官方镜像使用的脚本和 <code>ENTRYPOINT</code> 设置。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash"><span class="token shebang important">#!/bin/bash</span>
+<span class="token keyword">set</span> -e
+
+<span class="token keyword">if</span> <span class="token punctuation">[</span> <span class="token string">"<span class="token variable">$1</span>"</span> <span class="token operator">=</span> <span class="token string">'postgres'</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+    <span class="token function">chown</span> -R postgres <span class="token string">"<span class="token variable">$PGDATA</span>"</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">[</span> -z <span class="token string">"$(ls -A "</span><span class="token variable">$PGDATA</span><span class="token string">")"</span> <span class="token punctuation">]</span><span class="token punctuation">;</span> <span class="token keyword">then</span>
+        gosu postgres initdb
+    <span class="token keyword">fi</span>
+
+    <span class="token function">exec</span> gosu postgres <span class="token string">"<span class="token variable">$@</span>"</span>
+<span class="token keyword">fi</span>
+
+<span class="token function">exec</span> <span class="token string">"<span class="token variable">$@</span>"</span>
+</code></pre>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">COPY</span> ./docker<span class="token punctuation">-</span>entrypoint.sh /
+
+<span class="token keyword">ENTRYPOINT</span> <span class="token punctuation">[</span><span class="token string">"/docker-entrypoint.sh"</span><span class="token punctuation">]</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">shell 脚本的意思当启动参数中的第一个参数是 postgres 时，会做一些和 $PGDATA 相关的工作，最后再调用 Linux 的系统命令 exec 执行所有参数。借助于这个 <code>ENTRYPOINT</code> ，我们就可以以多种方式启动容器。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">$ docker run postgres
+<span class="token comment"># 或者</span>
+$ docker run postgres postgres --help
+<span class="token comment"># 或者</span>
+$ docker run --rm -it postgres <span class="token function">bash</span>
+</code></pre>
+</div><div class="cl-preview-section"><h3 id="volume">VOLUME</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><code>VOLUME</code> 使用用来存储任何数据库存储文件、配置文件和 Docker 容器创建的文件。强烈建议使用 <code>VOLUME</code> 来管理镜像中的可变数据。</p>
+</div><div class="cl-preview-section"><h3 id="user">USER</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">如果某个服务不需要使用 root 用户执行时，建议使用 <code>USER</code> 指令切换到非 root 用户。使用 <code>USER</code> 之前，要先创建用户或者用户组，类似如下命令。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">RUN</span> groupadd <span class="token punctuation">-</span>r postgres &amp;&amp; useradd <span class="token punctuation">-</span>r <span class="token punctuation">-</span>g postgres postgres
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">最后，为了减少层数和复杂度，避免频繁使用 <code>USER</code> 来回切换用户。</p>
+</div><div class="cl-preview-section"><h3 id="workdir">WORKDIR</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">为了 dockerfile 的可读性， <code>WORKDIR</code> 应该尽量使用绝对路径。对于类似 <code>RUN cd ... &amp;&amp;&amp; do-something</code> 的指令应该尽量避免，取而代之用 <code>WORKDIR</code> 来代替。</p>
+</div><div class="cl-preview-section"><h3 id="总结">总结</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">本篇文章系统地总结了在 Dockerfile 编写中的注意事项和最佳实践，希望大家在日常使用过程中可以作为参考使用。</p>
+</div>}
+                        </div>
+                    </div>
+                                            <!-- 买过的阅读 -->
+                        <div class="art-next-prev clearfix">
+                                                                                                <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2253">
+                                                                    <div class="prev l clearfix">
+                                        <div class="icon l">
+                                            <i class="imv2-arrow3_l"></i>
+                                        </div>
+                                        <p>
+                                            21 数据共享：volume 的使用指南
+                                        </p>
+                                    </div>
+                                </a>
+                                                                                                                            <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2323">
+                                                                    <div class="next r clearfix">
+                                        <p>
+                                            23 Docker 最佳实践：如何构建最小的镜像
+                                        </p>
+                                        <div class="icon r">
+                                            <i class="imv2-arrow3_r"></i>
+                                        </div>
+
+                                    </div>
+                                </a>
+                                                    </div>
+                                    </div>
+                <div class="comments-con js-comments-con" id="coments_con">
+                </div>
+
+                
+            </div>
+            
+            
+            
+
+        </div>
+    </div>
+</div>
+
+<div class="modal modal-jiaQun-new hide" id="modal-jiaQun">
+    <div class="inner" style="">
+        <div class="modal-close js-close-jiaQun">
+            <i class="imv2-close"></i>
+        </div>
+        <div class="content">
+            <img src="https://img1.sycdn.imooc.com/5f18f4360001392b05330597.jpg">
+            <div class="right-info">
+                <div class="title">
+                    扫码加入慕课前沿技术核心用户群
+                </div>
+                <div class="desc">
+                                            <p class="mb6">验证信息：<span id="joincode">2011031946279713</span><span class="copy js-copy-joincode">复制</span></p>
+                                        <p class="mb6">QQ讨论群号：729941811</p>
+                                            <p>QQ群URL：<a href="https://jq.qq.com/?_wv=1027&amp;k=5WJLMxV" target="_blank">点击访问</a></p>
+                                    </div>
+            </div>
+            <p class="tip">若遇到搜索不到QQ群或加群失败，请联系客服邮箱:kf@imooc.com</p>
+        </div>
+    </div>
+</div>
+ 
+<!-- 专栏介绍页专栏评价 -->
+
+<!-- 专栏介绍页底部三条评价 -->
+
+<!-- 专栏阅读页弹层目录和介绍页页面目录 -->
+
+<!-- 专栏阅读页发布回复 -->
+
+<!-- 专栏阅读页发布评论 -->
+
+<!-- 专栏阅读页底部评论 -->
+
+<!-- 专栏阅读 单个 评论 -->
+
+<!-- 新增回复和展开三条以外回复 -->
+
+<!-- 立即订阅的弹窗 -->
+
+
+
+
+
+
+
+
+
+
+
+
+</div></body></html>

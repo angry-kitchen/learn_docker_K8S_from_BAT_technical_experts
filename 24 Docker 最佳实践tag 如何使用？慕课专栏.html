@@ -1,0 +1,231 @@
+<html><head><meta charset="utf-8"><title>24 Docker 最佳实践：tag 如何使用？-慕课专栏</title>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+			<meta name="renderer" content="webkit">
+			<meta property="qc:admins" content="77103107776157736375">
+			<meta property="wb:webmaster" content="c4f857219bfae3cb">
+			<meta http-equiv="Access-Control-Allow-Origin" content="*">
+			<meta http-equiv="Cache-Control" content="no-transform ">
+			<meta http-equiv="Cache-Control" content="no-siteapp">
+			<link rel="apple-touch-icon" sizes="76x76" href="https://www.imooc.com/static/img/common/touch-icon-ipad.png">
+			<link rel="apple-touch-icon" sizes="120x120" href="https://www.imooc.com/static/img/common/touch-icon-iphone-retina.png">
+			<link rel="apple-touch-icon" sizes="152x152" href="https://www.imooc.com/static/img/common/touch-icon-ipad-retina.png">
+			<link href="https://moco.imooc.com/captcha/style/captcha.min.css" rel="stylesheet">
+			<link rel="stylesheet" href="https://www.imooc.com/static/moco/v1.0/dist/css/moco.min.css?t=201907021539" type="text/css">
+			<link rel="stylesheet" href="https://www.imooc.com/static/lib/swiper/swiper-3.4.2.min.css?t=201907021539">
+			<link rel="stylesheet" href="https://static.mukewang.com/static/css/??base.css,common/common-less.css?t=2.5,column/zhuanlanChapter-less.css?t=2.5,course/inc/course_tipoff-less.css?t=2.5?v=201907051055" type="text/css">
+			<link charset="utf-8" rel="stylesheet" href="https://www.imooc.com/static/lib/ueditor/themes/imooc/css/ueditor.css?v=201907021539"><link rel="stylesheet" href="https://www.imooc.com/static/lib/baiduShare/api/css/share_style0_16.css?v=6aba13f0.css"></head>
+			<body><div id="main">
+
+
+<div class="main-con hide-menu">
+    <!-- 左侧菜单 & 索引 -->
+    
+    <div class="right-content" style="padding-left: 0px;">
+        <div class="container clearfix" id="top" style="width: 1134px; display: block;">
+            
+            
+            <div class="center_con js-center_con l" style="width: 1134px;">
+                <div class="article-con">
+                                            <!-- 买过的阅读 -->
+                        
+
+                    
+                    <div class="art-title" style="margin-top: 0px;">
+                        24 Docker 最佳实践：tag 如何使用？
+                    </div>
+                    <div class="art-info clearfix">
+                        
+                        <span class="l">
+                            更新时间：2020-09-09 09:58:29
+                        </span>
+                    </div>
+                    <div class="art-top">
+                                                <img src="https://img3.sycdn.imooc.com/5f5836300001eb8d06400426.jpg" alt="">
+                                                                        <div class="famous-word-box">
+                            <img src="https://www.imooc.com/static/img/column/bg-l.png" alt="" class="bg1 bg">
+                            <img src="https://www.imooc.com/static/img/column/bg-r.png" alt="" class="bg2 bg">
+                            <div class="famous-word">每个人的生命都是一只小船，理想是小船的风帆。——张海迪<p></p></div>
+                        </div>
+                                            </div>
+                    <div class="art-content js-lookimg">
+                        <div id="article_content">
+                            <div class="cl-preview-section"><h1 id="docker-最佳实践">Docker 最佳实践</h1>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">上一篇文章介绍了如何构建最小的镜像文件，这篇文章我们看一下其他的最佳实践，包括 tag 如何使用等。</p>
+</div><div class="cl-preview-section"><h2 id="镜像-tag-的使用" style="font-size: 30px;">1. 镜像 tag 的使用</h2>
+</div><div class="cl-preview-section"><h3 id="慎用-latest-标签">慎用 latest 标签</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">准确来说除了 demo 或者测试使用，正式环境应该禁止使用 latest 标签。因为 latest 标签表示的是镜像的最新版本，也就是说是一直变化的。这是慎用 latest 标签的根本原因。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">举个例子，线上应用依赖的一个基础镜像，比如 ubuntu，使用了 latest 的标签，那么随着基础镜像的不断发布（ubuntu 系统官方是 6 个月发布一个系统，一般都是类似 19.04、19.10，表示 19 年 4 月和 10 月的版本），我们的线上应用在不同时间 build 的时候就可能依赖的是不同的环境，很有可能引入问题。</p>
+</div><div class="cl-preview-section"><h3 id="tag-尽量指定到具体的版本">tag 尽量指定到具体的版本</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">什么叫具体的版本，比如很多系统的版本都是通过三个数字来表示的，比如 x.y.z。其中 x 是主版本号，一般当软件整体重写时，或出现不向后兼容的改变等重大更新时，增加X，同时重置Y、Z为0，X为0时表示软件还在开发阶段；y 是次版本号，一般我们说的系统 release 都是保持 x 不变，增加 y，同时重置 z 为 0；z 是修订号，一般主要用于 bugfix。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们这里说的指定到具体的版本就是指定到 z，很多系统的镜像 tag 可能同时存在 x，x.y，x.y.z 这三种形式的 tag，我们使用的时候在情况允许的情况下尽量指定到 x.y.z 版本号。</p>
+</div><div class="cl-preview-section"><h2 id="应用程序数据持久化" style="font-size: 30px;">2. 应用程序数据持久化</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">尽量不要将应用程序的数据存储在镜像中。因为这样会增加镜像的大小，并且从 IO 的角度看也显得不够高效。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">怎么理解呢？比如我们应用程序依赖一些数据，我们可以把数据打到镜像里面，这种是最省事的，但是这种方式就会带来前面说的问题。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">一种推荐的方式是使用 Docker 的数据卷或者目录挂载的方式。其中目录挂载的方式是将容器内的某个目录和宿主机做映射，这种方式一般推荐在应用开发的时候使用，并不建议线上使用。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">比如我们要快速调试我们的应用程序，那么我们可以将可执行文件存储在宿主机中，通过目录挂载的方式映射到容器中，这样每次本地开发出一个新的版本就可以快速在容器中进行测试。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">另外我们根据应用程序数据的不同，我们可以再细化我们的技术方案。像数据库连接密码这种比较敏感的数据可以存储在 <a href="https://docs.docker.com/engine/swarm/secrets/">secret</a> 中，而不敏感的数据，比如配置文件，可以使用 <a href="https://docs.docker.com/engine/swarm/configs/">config</a> 。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">关于 Docker 的 secret 和 config 这里就不再展开叙述了。实际上现在很少有线上单独使用 Docker 的场景了，更多是结合 Kubernetes 来部署和管理我们的容器化应用，secret 和 config 对应到 Kubernetes 中就是 Secret 和 ConfigMap，我们在后面一章专门讨论 Kubernetes 相关技术的时候再进行详述。</p>
+</div><div class="cl-preview-section"><h2 id="通过-cicd-的方式进行开发和测试" style="font-size: 30px;">3. 通过 CI/CD 的方式进行开发和测试</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">当我们使用 Docker 技术来开发和部署我们的应用的时候，我们不仅要测试程序本身的正确性，还要测试应用在 Docker 容器化之后的正确性。而应用容器化的过程毫无疑问将整个开发测试链路拉长了，我们一般可以像下面这么几步来做：</p>
+</div><div class="cl-preview-section"><ol>
+<li style="font-size: 20px; line-height: 38px;">本地 build 应用或者拷贝代码到容器中进行 build 生成可执行文件；</li>
+<li style="font-size: 20px; line-height: 38px;">使用 docker build 编译生成我们的镜像；</li>
+<li style="font-size: 20px; line-height: 38px;">通过 docker push 将镜像 push 到私有或者公有的镜像中心；</li>
+<li style="font-size: 20px; line-height: 38px;">测试环境拉取新的镜像进行测试。</li>
+</ol>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我这里简化了操作流程和步骤，还是有 4 个步骤，在实际操作的时候很容易问题。所以更建议以一种自动化的 CI/CD 的方式来进行部署和测试，比如 Jenkins。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Jenkins 是一个广泛用于持续构建的工具，展开来说，就是各种项目的"自动化"编译、打包、分发部署等。Jenkins 可以很好的支持各种语言（比如：java, c#, php 等）的项目构建，也完全兼容 ant、maven、gradle 等多种第三方构建工具，同时跟 svn、git 能无缝集成，也支持直接与知名源代码托管网站，比如 github、bitbucket 直接集成。</p>
+</div><div class="cl-preview-section"><h2 id="安全性" style="font-size: 30px;">4. 安全性</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">下面是几条和安全性相关的最佳实践。</p>
+</div><div class="cl-preview-section"><h3 id="base-镜像最小原则">base 镜像最小原则</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Docker 安全问题一个常见的原因就是使用的 base 镜像有安全问题。就像程序员开发中的那句话，代码写的越多，bug 越多一样，base 镜像越大则越容易暴露安全问题。针对这个问题，我们可以考虑在 base 镜像中只安装必要的依赖。</p>
+</div><div class="cl-preview-section"><h3 id="最小用户权限原则">最小用户权限原则</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">如果 Dockerfile 中没有指定 USER，则默认是以 root 用户运行，但是很多情况下我们的 Docker 应用并不是真正需要 root 权限。Docker 以 root 权限启动，映射到宿主机上也具有 root 权限，而 root 权限很容易带来更多的安全问题。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">为了解决这个问题，一个比较好的解决方案是在 Dockerfile 中指定特定的用户，先添加用户，然后再使用 USER 指令显示指定，下面是一个例子：</p>
+</div><div class="cl-preview-section"><ol>
+<li style="font-size: 20px; line-height: 38px;">创建一个没有密码、没有 home 目录、没有 shell 的系统用户；</li>
+<li style="font-size: 20px; line-height: 38px;">将该系统用户加到一个已经存在的用户组里面；</li>
+<li style="font-size: 20px; line-height: 38px;">通过 <code>USER</code> 指令显示设置我们的 Docker 应用的启动用户。</li>
+</ol>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">FROM</span> ubuntu
+<span class="token keyword">RUN</span> mkdir /app
+<span class="token keyword">RUN</span> groupadd <span class="token punctuation">-</span>r lirantal &amp;&amp; useradd <span class="token punctuation">-</span>r <span class="token punctuation">-</span>s /bin/false <span class="token punctuation">-</span>g lirantal lirantal
+<span class="token keyword">WORKDIR</span> /app
+<span class="token keyword">COPY</span> . /app
+<span class="token keyword">RUN</span> chown <span class="token punctuation">-</span>R lirantal<span class="token punctuation">:</span>lirantal /app
+<span class="token keyword">USER</span> lirantal
+<span class="token keyword">CMD</span> node index.js
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">有些 Base 镜像考虑到了这个用户的问题，已经帮我们把这件事情做了，比如 node 镜像就帮我们提前创建了一个叫 node 的用户。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">FROM</span> node<span class="token punctuation">:</span>10<span class="token punctuation">-</span>alpine 
+<span class="token keyword">RUN</span> mkdir /app
+<span class="token keyword">COPY</span> . /app
+<span class="token keyword">RUN</span> chown <span class="token punctuation">-</span>R node<span class="token punctuation">:</span>node /app
+<span class="token keyword">USER</span> node
+<span class="token keyword">CMD</span> <span class="token punctuation">[</span>“node”<span class="token punctuation">,</span> “index.js”<span class="token punctuation">]</span>
+</code></pre>
+</div><div class="cl-preview-section"><h3 id="不要在-docker-镜像中泄露敏感信息">不要在 Docker 镜像中泄露敏感信息</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们有时间将应用打包成 Docker 镜像时，会需要一些 secret，比如 SSH private key 用来从私有的代码托管仓库上拉取代码、或者其他需要进行认证的情况。有些同学会直接将这些 secret 拷贝到镜像中，这是一个非常错误的做法。</p>
+</div><div class="cl-preview-section"><h4 id="使用-docker-secret-命令" style="font-size: 26px;">使用 Docker secret 命令</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">secret 是 Docker 中的比较新的功能，专门用来处理敏感数据。但是使用起来也是比较简单的，下面是一个例子。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token comment"># syntax = docker/dockerfile:1.0-experimental</span>
+<span class="token keyword">FROM</span> alpine
+
+<span class="token comment"># shows secret from default secret location</span>
+<span class="token keyword">RUN</span> <span class="token punctuation">-</span><span class="token punctuation">-</span>mount=type=secret<span class="token punctuation">,</span>id=mysecret cat /run/secrets/mysecre
+
+<span class="token comment"># shows secret from custom secret location</span>
+<span class="token keyword">RUN</span> <span class="token punctuation">-</span><span class="token punctuation">-</span>mount=type=secret<span class="token punctuation">,</span>id=mysecret<span class="token punctuation">,</span>dst=/foobar cat /foobar
+</code></pre>
+</div><div class="cl-preview-section"><h2 id="使用-linter" style="font-size: 30px;">5. 使用 linter</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">linter 是一种代码规范检测工具，比如写过 Go 语言的应该都只有有一个小工具叫 golint。同样的，对于 Dockerfile 的编写我们也可以使用 linter。这里要推荐的是 <a href="https://github.com/hadolint/hadolint">hadolint</a>，下面是 hadolint 的简介。</p>
+</div><div class="cl-preview-section"><blockquote>
+<p style="font-size: 20px; line-height: 38px;">A smarter Dockerfile linter that helps you build <a href="https://docs.docker.com/engine/userguide/eng-image/dockerfile_best-practices">best practice</a> Docker images. The linter is parsing the Dockerfile into an AST and performs rules on top of the AST. It is standing on the shoulders of <a href="https://github.com/koalaman/shellcheck">ShellCheck</a> to lint the Bash code inside <code>RUN</code> instructions.</p>
+</blockquote>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">简单翻译一下。</p>
+</div><div class="cl-preview-section"><blockquote>
+<p style="font-size: 20px; line-height: 38px;">hadolint 是一款智能的 Dockerfile 检测工具，可以帮助我们在构建 Docker 镜像的时候遵从最佳实践。工作原理是将 Dockerfile 解析成一个抽象语法树，然后对该抽象语法树应用一系列的规则。hadolint 参考自 <a href="https://github.com/koalaman/shellcheck">ShellCheck</a>。</p>
+</blockquote>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">hadolint 使用起来也比较简单，需要先安装。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">$ brew <span class="token function">install</span> hadolint
+$ docker run --rm -i hadolint/hadolint <span class="token operator">&lt;</span> Dockerfile
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">下面是 hadolint 的检测结果示例。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f5836ab0001938908000446.png" data-original="//img1.sycdn.imooc.com/5f5836ab0001938908000446.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><h2 id="总结" style="font-size: 30px;">6. 总结</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">本文总结了 Docker 最佳实践的几条规则，希望大家在 Docker 使用过程中，可以举一反三。</p>
+</div>}
+                        </div>
+                    </div>
+                                            <!-- 买过的阅读 -->
+                        <div class="art-next-prev clearfix">
+                                                                                                <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2323">
+                                                                    <div class="prev l clearfix">
+                                        <div class="icon l">
+                                            <i class="imv2-arrow3_l"></i>
+                                        </div>
+                                        <p>
+                                            23 Docker 最佳实践：如何构建最小的镜像
+                                        </p>
+                                    </div>
+                                </a>
+                                                                                                                            <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2336">
+                                                                    <div class="next r clearfix">
+                                        <p>
+                                            25 为什么说容器是个单进程模型
+                                        </p>
+                                        <div class="icon r">
+                                            <i class="imv2-arrow3_r"></i>
+                                        </div>
+
+                                    </div>
+                                </a>
+                                                    </div>
+                                    </div>
+                <div class="comments-con js-comments-con" id="coments_con">
+                </div>
+
+                
+            </div>
+            
+            
+            
+
+        </div>
+    </div>
+</div>
+
+<div class="modal modal-jiaQun-new hide" id="modal-jiaQun">
+    <div class="inner" style="">
+        <div class="modal-close js-close-jiaQun">
+            <i class="imv2-close"></i>
+        </div>
+        <div class="content">
+            <img src="https://img2.sycdn.imooc.com/5f18f4360001392b05330597.jpg">
+            <div class="right-info">
+                <div class="title">
+                    扫码加入慕课前沿技术核心用户群
+                </div>
+                <div class="desc">
+                                            <p class="mb6">验证信息：<span id="joincode">2011031946279713</span><span class="copy js-copy-joincode">复制</span></p>
+                                        <p class="mb6">QQ讨论群号：729941811</p>
+                                            <p>QQ群URL：<a href="https://jq.qq.com/?_wv=1027&amp;k=5WJLMxV" target="_blank">点击访问</a></p>
+                                    </div>
+            </div>
+            <p class="tip">若遇到搜索不到QQ群或加群失败，请联系客服邮箱:kf@imooc.com</p>
+        </div>
+    </div>
+</div>
+ 
+<!-- 专栏介绍页专栏评价 -->
+
+<!-- 专栏介绍页底部三条评价 -->
+
+<!-- 专栏阅读页弹层目录和介绍页页面目录 -->
+
+<!-- 专栏阅读页发布回复 -->
+
+<!-- 专栏阅读页发布评论 -->
+
+<!-- 专栏阅读页底部评论 -->
+
+<!-- 专栏阅读 单个 评论 -->
+
+<!-- 新增回复和展开三条以外回复 -->
+
+<!-- 立即订阅的弹窗 -->
+
+
+
+
+
+
+
+
+
+
+
+
+</div></body></html>

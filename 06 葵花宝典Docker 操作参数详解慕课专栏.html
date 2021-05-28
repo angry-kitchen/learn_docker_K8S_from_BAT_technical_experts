@@ -1,0 +1,545 @@
+<html><head><meta charset="utf-8"><title>06 葵花宝典：Docker 操作参数详解-慕课专栏</title>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+			<meta name="renderer" content="webkit">
+			<meta property="qc:admins" content="77103107776157736375">
+			<meta property="wb:webmaster" content="c4f857219bfae3cb">
+			<meta http-equiv="Access-Control-Allow-Origin" content="*">
+			<meta http-equiv="Cache-Control" content="no-transform ">
+			<meta http-equiv="Cache-Control" content="no-siteapp">
+			<link rel="apple-touch-icon" sizes="76x76" href="https://www.imooc.com/static/img/common/touch-icon-ipad.png">
+			<link rel="apple-touch-icon" sizes="120x120" href="https://www.imooc.com/static/img/common/touch-icon-iphone-retina.png">
+			<link rel="apple-touch-icon" sizes="152x152" href="https://www.imooc.com/static/img/common/touch-icon-ipad-retina.png">
+			<link href="https://moco.imooc.com/captcha/style/captcha.min.css" rel="stylesheet">
+			<link rel="stylesheet" href="https://www.imooc.com/static/moco/v1.0/dist/css/moco.min.css?t=201907021539" type="text/css">
+			<link rel="stylesheet" href="https://www.imooc.com/static/lib/swiper/swiper-3.4.2.min.css?t=201907021539">
+			<link rel="stylesheet" href="https://static.mukewang.com/static/css/??base.css,common/common-less.css?t=2.5,column/zhuanlanChapter-less.css?t=2.5,course/inc/course_tipoff-less.css?t=2.5?v=201907051055" type="text/css">
+			<link charset="utf-8" rel="stylesheet" href="https://www.imooc.com/static/lib/ueditor/themes/imooc/css/ueditor.css?v=201907021539"><link rel="stylesheet" href="https://www.imooc.com/static/lib/baiduShare/api/css/share_style0_16.css?v=6aba13f0.css"></head>
+			<body><div id="main">
+
+
+<div class="main-con hide-menu">
+    <!-- 左侧菜单 & 索引 -->
+    
+    <div class="right-content" style="padding-left: 0px;">
+        <div class="container clearfix" id="top" style="width: 1134px; display: block;">
+            
+            
+            <div class="center_con js-center_con l" style="width: 1134px;">
+                <div class="article-con">
+                                            <!-- 买过的阅读 -->
+                        
+
+                    
+                    <div class="art-title" style="margin-top: 0px;">
+                        06 葵花宝典：Docker 操作参数详解
+                    </div>
+                    <div class="art-info clearfix">
+                        
+                        <span class="l">
+                            更新时间：2020-07-29 15:17:53
+                        </span>
+                    </div>
+                    <div class="art-top">
+                                                <img src="https://img4.sycdn.imooc.com/5f16ca070001d66206400429.jpg" alt="">
+                                                                        <div class="famous-word-box">
+                            <img src="https://www.imooc.com/static/img/column/bg-l.png" alt="" class="bg1 bg">
+                            <img src="https://www.imooc.com/static/img/column/bg-r.png" alt="" class="bg2 bg">
+                            <div class="famous-word">受苦的人，没有悲观的权利。——尼采<p></p></div>
+                        </div>
+                                            </div>
+                    <div class="art-content js-lookimg">
+                        <div id="article_content">
+                            <div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">本篇文章介绍 Docker 的操作参数，包括针对容器（container）、镜像（image）和镜像仓库中心（registry）的操作命令。</p>
+</div><div class="cl-preview-section"><h2 id="容器操作" style="font-size: 30px;">1. 容器操作</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Docker 和容器相关的常用的操作命令如下：</p>
+</div><div class="cl-preview-section"><h3 id="run">run</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">docker run 用来通过镜像启动一个容器。这个可以算是操作 docker 容器的核心命令了，参数及其丰富，多达 91 个参数，使用手册如下：</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@emr-header-1 ~<span class="token punctuation">]</span><span class="token comment"># docker run --help</span>
+
+Usage:	docker run <span class="token punctuation">[</span>OPTIONS<span class="token punctuation">]</span> IMAGE <span class="token punctuation">[</span>COMMAND<span class="token punctuation">]</span> <span class="token punctuation">[</span>ARG<span class="token punctuation">..</span>.<span class="token punctuation">]</span>
+
+Run a <span class="token function">command</span> <span class="token keyword">in</span> a new container
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">比如我们启动一个 centos 的镜像</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@xxx ~<span class="token punctuation">]</span><span class="token comment"># docker run -ti centos:latest /bin/bash</span>
+<span class="token punctuation">[</span>root@b16716790a3f /<span class="token punctuation">]</span><span class="token comment">#</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">其中 centos:latest 就是 Usage 中的 IMAGE，COMMAND 就是 /bin/bash，然后 -ti 分配一个终端用于交互式输入。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们下面主要介绍几个重要的参数。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><em><strong>--interactive</strong></em>  等同于 <em><strong>-i</strong></em> ，接受 stdin 的输入；</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><em><strong>--tty</strong></em>  等同于 <em><strong>-t</strong></em>，分配一个 tty，一般和 i 一起使用；</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><em><strong>--name</strong></em> 给容器设置一个名字；</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><em><strong>--add-host</strong></em> 给容器设置 hosts 文件，格式 host:ip；</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><em><strong>--env</strong></em> 环境变量设置；</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><em><strong>--expose</strong></em> 暴露端口；</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><em><strong>--hostname</strong></em> 设置容器的主机名；</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><em><strong>--link</strong></em> 容器网络相关，和其他的 container 连接；</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><em><strong>--cpu-quota</strong></em> 设置 CPU 限制；</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><em><strong>--memory</strong></em> 设置容器可以使用的内存限制。</p>
+</div><div class="cl-preview-section"><h3 id="attach">attach</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">docker attach 让我们可以进入到一个运行着的容器的内部，这个命令的原理是给一个正在运行的容器分配一个 stdin、stdout 和 stderr。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@xxx ~<span class="token punctuation">]</span><span class="token comment"># docker attach --help</span>
+
+Usage:	docker attach <span class="token punctuation">[</span>OPTIONS<span class="token punctuation">]</span> CONTAINER
+
+Attach local standard input, output, and error streams to a running container
+
+Options:
+      --detach-keys string   Override the key sequence <span class="token keyword">for</span> detaching a container
+      --no-stdin             Do not attach STDIN
+      --sig-proxy            Proxy all received signals to the process <span class="token punctuation">(</span>default true<span class="token punctuation">)</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">需要注意的是，如果 docker attach 之后要退出的话，不能使用 exit，使用 exit 原容器也会退出。我们可以使用 Ctrl + C 的方式退出。</p>
+</div><div class="cl-preview-section"><h3 id="exec">exec</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">docker exec 命令也可以达到 attach 的目的。exec 命令的用处是在一个运行着的容器里面执行一个命令。关于这个命令的原理其实很简单，在 Linux 内核层面，相当于 fork 了一个进程，然后这个进程设置和容器相同的 NameSpace。如果我们 OPTIONS 指定 -ti ，那么我们就可以进入到一个运行着的容器里面执行命令了。因为这个是一个 fork 出来的进程，所以可以 exit。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@emr-header-1 ~<span class="token punctuation">]</span><span class="token comment"># docker exec --help</span>
+
+Usage:	docker <span class="token function">exec</span> <span class="token punctuation">[</span>OPTIONS<span class="token punctuation">]</span> CONTAINER COMMAND <span class="token punctuation">[</span>ARG<span class="token punctuation">..</span>.<span class="token punctuation">]</span>
+
+Run a <span class="token function">command</span> <span class="token keyword">in</span> a running container
+
+Options:
+  -d, --detach               Detached mode: run <span class="token function">command</span> <span class="token keyword">in</span> the background
+      --detach-keys string   Override the key sequence <span class="token keyword">for</span> detaching a container
+  -e, --env list             Set environment variables
+  -i, --interactive          Keep STDIN <span class="token function">open</span> even <span class="token keyword">if</span> not attached
+      --privileged           Give extended privileges to the <span class="token function">command</span>
+  -t, --tty                  Allocate a pseudo-TTY
+  -u, --user string          Username or UID <span class="token punctuation">(</span>format: <span class="token operator">&lt;</span>name<span class="token operator">|</span>uid<span class="token operator">&gt;</span><span class="token punctuation">[</span>:<span class="token operator">&lt;</span>group<span class="token operator">|</span>gid<span class="token operator">&gt;</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+  -w, --workdir string       Working directory inside the container
+</code></pre>
+</div><div class="cl-preview-section"><h4 id="ps" style="font-size: 26px;">ps</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">docker ps 可以用来列出所有在运行的容器的信息，同时支持一些类似 filter 的参数。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@xxx ~<span class="token punctuation">]</span><span class="token comment"># docker ps --help</span>
+
+Usage:	docker <span class="token function">ps</span> <span class="token punctuation">[</span>OPTIONS<span class="token punctuation">]</span>
+
+List containers
+
+Options:
+  -a, --all             Show all containers <span class="token punctuation">(</span>default shows just running<span class="token punctuation">)</span>
+  -f, --filter filter   Filter output based on conditions provided
+      --format string   Pretty-print containers using a Go template
+  -n, --last int        Show n last created containers <span class="token punctuation">(</span>includes all states<span class="token punctuation">)</span> <span class="token punctuation">(</span>default -1<span class="token punctuation">)</span>
+  -l, --latest          Show the latest created container <span class="token punctuation">(</span>includes all states<span class="token punctuation">)</span>
+      --no-trunc        Don't truncate output
+  -q, --quiet           Only display numeric IDs
+  -s, --size            Display total <span class="token function">file</span> sizes
+</code></pre>
+</div><div class="cl-preview-section"><h4 id="kill" style="font-size: 26px;">kill</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">docker kill 用来 kill 一个或者一组 container。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@xxx ~<span class="token punctuation">]</span><span class="token comment"># docker kill --help</span>
+
+Usage:	docker <span class="token function">kill</span> <span class="token punctuation">[</span>OPTIONS<span class="token punctuation">]</span> CONTAINER <span class="token punctuation">[</span>CONTAINER<span class="token punctuation">..</span>.<span class="token punctuation">]</span>
+
+Kill one or <span class="token function">more</span> running containers
+
+Options:
+  -s, --signal string   Signal to send to the container <span class="token punctuation">(</span>default <span class="token string">"KILL"</span><span class="token punctuation">)</span>
+</code></pre>
+</div><div class="cl-preview-section"><h4 id="logs" style="font-size: 26px;">logs</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">docker logs 用来获取 docker 的 log。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@xxx ~<span class="token punctuation">]</span><span class="token comment"># docker logs --help</span>
+
+Usage:	docker logs <span class="token punctuation">[</span>OPTIONS<span class="token punctuation">]</span> CONTAINER
+
+Fetch the logs of a container
+
+Options:
+      --details        Show extra details provided to logs
+  -f, --follow         Follow log output
+      --since string   Show logs since timestamp <span class="token punctuation">(</span>e.g. 2013-01-02T13:23:37<span class="token punctuation">)</span> or relative <span class="token punctuation">(</span>e.g. 42m <span class="token keyword">for</span> 42 minutes<span class="token punctuation">)</span>
+      --tail string    Number of lines to show from the end of the logs <span class="token punctuation">(</span>default <span class="token string">"all"</span><span class="token punctuation">)</span>
+  -t, --timestamps     Show timestamps
+      --until string   Show logs before a timestamp <span class="token punctuation">(</span>e.g. 2013-01-02T13:23:37<span class="token punctuation">)</span> or relative <span class="token punctuation">(</span>e.g. 42m <span class="token keyword">for</span> 42 minutes<span class="token punctuation">)</span>
+</code></pre>
+</div><div class="cl-preview-section"><h4 id="top" style="font-size: 26px;">top</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">docker top 这个命令有时候比较有用，我们想看一下运行这个容器在宿主机上面是那个进程就可以使用这个命令，毕竟 container 的本质就是一个进程，这个我们后面会细说。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@xxx ~<span class="token punctuation">]</span><span class="token comment"># docker top --help</span>
+
+Usage:	docker <span class="token function">top</span> CONTAINER <span class="token punctuation">[</span>ps OPTIONS<span class="token punctuation">]</span>
+
+Display the running processes of a container
+</code></pre>
+</div><div class="cl-preview-section"><h2 id="镜像操作" style="font-size: 30px;">2. 镜像操作</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">和镜像相关的常用的操作命令如下：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">images：列出本地所有的镜像；</li>
+<li style="font-size: 20px; line-height: 38px;">build：通过 Dockerfile build 出镜像；</li>
+<li style="font-size: 20px; line-height: 38px;">commit：将容器中的所有改动生成新的镜像；</li>
+<li style="font-size: 20px; line-height: 38px;">history：查看镜像的历史；</li>
+<li style="font-size: 20px; line-height: 38px;">save：将镜像保存成 tar 包；</li>
+<li style="font-size: 20px; line-height: 38px;">import：通过 tar 包导入新的镜像；</li>
+<li style="font-size: 20px; line-height: 38px;">load：通过 tar 包或者标志输入导入镜像；</li>
+<li style="font-size: 20px; line-height: 38px;">rmi：删除本地镜像；</li>
+<li style="font-size: 20px; line-height: 38px;">tag：给镜像打 tag。</li>
+</ul>
+</div><div class="cl-preview-section"><h4 id="images" style="font-size: 26px;">images</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">docker images 会显示本地所有的非隐藏镜像，默认会将中间依赖镜像进行隐藏。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@xxx ~<span class="token punctuation">]</span><span class="token comment"># docker images</span>
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+busybox             1-musl              ff04c2bddacb        3 days ago          1.44MB
+busybox             1-glibc             ad06ec8ab37b        3 days ago          5.2MB
+busybox             1-uclibc            b534869c81f0        3 days ago          1.22MB
+busybox             latest              b534869c81f0        3 days ago          1.22MB
+busybox             1.24-glibc          54df49495ae4        3 years ago         4.18MB
+busybox             1-ubuntu            d34ea343a882        3 years ago         4.35MB
+busybox             1.21-ubuntu         d34ea343a882        3 years ago         4.35MB
+busybox             1.21.0-ubuntu       d34ea343a882        3 years ago         4.35MB
+busybox             1.23                a84c36ecc374        4 years ago         1.1MB
+busybox             1.23.2              a84c36ecc374        4 years ago         1.1MB
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这是 docker images 的默认显示，但是有时候我们需要显示更多的信息比如 Digest，或者过滤掉一些镜像，那么我们可以通过添加参数来实现。我们看一下 docker images 的完整的功能。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@xxx ~<span class="token punctuation">]</span><span class="token comment"># docker images --help</span>
+
+Usage:	docker images <span class="token punctuation">[</span>OPTIONS<span class="token punctuation">]</span> <span class="token punctuation">[</span>REPOSITORY<span class="token punctuation">[</span>:TAG<span class="token punctuation">]</span><span class="token punctuation">]</span>
+
+List images
+
+Options:
+  -a, --all             Show all images <span class="token punctuation">(</span>default hides intermediate images<span class="token punctuation">)</span>
+      --digests         Show digests
+  -f, --filter filter   Filter output based on conditions provided
+      --format string   Pretty-print images using a Go template
+      --no-trunc        Don't truncate output
+  -q, --quiet           Only show numeric IDs
+</code></pre>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;"><em><strong>all</strong></em> 参数显示所有镜像，包括中间依赖镜像；</li>
+<li style="font-size: 20px; line-height: 38px;"><em><strong>digest</strong></em> 显示 digest；</li>
+<li style="font-size: 20px; line-height: 38px;"><em><strong>filter</strong></em> 对镜像进行过滤；</li>
+<li style="font-size: 20px; line-height: 38px;"><em><strong>no-trunc</strong></em> 默认会对某些输出列进行截断展示，该参数将全量展示。</li>
+<li style="font-size: 20px; line-height: 38px;"><em><strong>quiet</strong></em> 只展示镜像的数字 ID。</li>
+<li style="font-size: 20px; line-height: 38px;"><em><strong>format</strong></em> 参数使用一种 Go 模板的形式输出，简单来说就是指定输出的列。这么描述不太直观，我们可以看一个简单的例子如下，其中的 ID 和 Repository 就是指定的输出的列。</li>
+</ul>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@xxx ~<span class="token punctuation">]</span><span class="token comment"># docker images --format "{{.ID}}: {{.Repository}}"</span>
+ff04c2bddacb: busybox
+ad06ec8ab37b: busybox
+b534869c81f0: busybox
+b534869c81f0: busybox
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">除了 ID 和 Repository，Docker 支持的全部的列如下：</p>
+</div><div class="cl-preview-section"><div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>Placeholder</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.ID</code></td>
+<td>镜像 ID</td>
+</tr>
+<tr>
+<td><code>.Repository</code></td>
+<td>镜像 repo，其实就是镜像名称</td>
+</tr>
+<tr>
+<td><code>.Tag</code></td>
+<td>镜像 tag</td>
+</tr>
+<tr>
+<td><code>.Digest</code></td>
+<td>镜像 digest</td>
+</tr>
+<tr>
+<td><code>.CreatedSince</code></td>
+<td>镜像创建之后多长时间</td>
+</tr>
+<tr>
+<td><code>.CreatedAt</code></td>
+<td>镜像的创建时间</td>
+</tr>
+<tr>
+<td><code>.Size</code></td>
+<td>镜像的磁盘大小</td>
+</tr>
+</tbody>
+</table>
+</div></div><div class="cl-preview-section"><h4 id="build" style="font-size: 26px;">build</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">在 Docker 中我们可以通过一个 Dockerfile，使用 docker build 构建出镜像。这一块我们后面将会有专门的小节来展开，这里暂时先略过。</p>
+</div><div class="cl-preview-section"><h4 id="commit" style="font-size: 26px;">commit</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">上面说到我们可以通过一个 Dockerfile 构建出镜像，但是有时候我们在使用过程中对容器（container）做了一些改动，比如安装了一些依赖包。我们想把这些改动保存下来形成新的镜像，同时不想再去编写 Dockerfile，或者之前的 Dockerfile 我们没有。那么这时候我们就可以通过 docker commit 将一个 container 的环境持久成镜像。我们首先看一下 docker commit 的使用规范说明。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@xxx ~<span class="token punctuation">]</span><span class="token comment"># docker commit --help</span>
+
+Usage:	docker commit <span class="token punctuation">[</span>OPTIONS<span class="token punctuation">]</span> CONTAINER <span class="token punctuation">[</span>REPOSITORY<span class="token punctuation">[</span>:TAG<span class="token punctuation">]</span><span class="token punctuation">]</span>
+
+Create a new image from a container's changes
+
+Options:
+  -a, --author string    Author <span class="token punctuation">(</span>e.g., <span class="token string">"John Hannibal Smith &lt;hannibal@a-team.com&gt;"</span><span class="token punctuation">)</span>
+  -c, --change list      Apply Dockerfile instruction to the created image
+  -m, --message string   Commit message
+  -p, --pause            Pause container during commit <span class="token punctuation">(</span>default true<span class="token punctuation">)</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">如果要对现在的一个 container 进行 commit 操作，我们首先可以通过 docker ps 找到我们要执行 commit 操作的 container 的 id。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@xxx ~<span class="token punctuation">]</span><span class="token comment"># docker ps</span>
+CONTAINER ID        IMAGE               COMMAND             CREATED              STATUS              PORTS               NAMES
+d7bb841d9811        legendtkl:v2.1   <span class="token string">"/bin/bash"</span>         About a minute ago   Up About a minute   22/tcp              vigorous_chaplygin
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">然后执行 commit 。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@xxx ~<span class="token punctuation">]</span><span class="token comment"># docker commit d7bb841d9811 legendtkl:v2.2</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">然后再执行 docker images 就可以看到我们新 commit 出来的镜像了。</p>
+</div><div class="cl-preview-section"><h4 id="history" style="font-size: 26px;">history</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">使用 docker history 可以查看镜像的历史，举个例子。后面的命令我们在 Dockerfile 那一节在详细说。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@emr-header-1 ~<span class="token punctuation">]</span><span class="token comment"># docker history a84c36ecc374</span>
+IMAGE               CREATED             CREATED BY                                      SIZE                COMMENT
+a84c36ecc374        4 years ago         /bin/sh -c <span class="token comment">#(nop) CMD ["sh"]                    0B</span>
+<span class="token operator">&lt;</span>missing<span class="token operator">&gt;</span>           4 years ago         /bin/sh -c <span class="token comment">#(nop) ADD file:6cccb5f0a3b394711…   1.1MB</span>
+<span class="token punctuation">[</span>root@emr-header-1 ~<span class="token punctuation">]</span><span class="token comment"># docker history 243b193cdf70</span>
+IMAGE               CREATED             CREATED BY                                      SIZE                COMMENT
+243b193cdf70        3 hours ago                                                         0B
+e104690ec93c        2 weeks ago         /bin/sh -c <span class="token comment">#(nop)  CMD []                       0B</span>
+<span class="token operator">&lt;</span>missing<span class="token operator">&gt;</span>           2 weeks ago         /bin/sh -c <span class="token comment">#(nop)  ENTRYPOINT ["/legendtkl…   0B</span>
+<span class="token operator">&lt;</span>missing<span class="token operator">&gt;</span>           2 weeks ago         /bin/sh -c <span class="token comment">#(nop) WORKDIR /app                  0B</span>
+<span class="token operator">&lt;</span>missing<span class="token operator">&gt;</span>           2 weeks ago         /bin/sh -c <span class="token comment">#(nop) COPY file:cede62805de63bfa…   30kB</span>
+<span class="token operator">&lt;</span>missing<span class="token operator">&gt;</span>           2 weeks ago         /bin/sh -c <span class="token comment">#(nop) COPY file:c95d0f15f9cd8538…   18.6MB</span>
+<span class="token operator">&lt;</span>missing<span class="token operator">&gt;</span>           5 weeks ago         /bin/sh -c <span class="token function">mkdir</span> -p /app                        0B
+<span class="token operator">&lt;</span>missing<span class="token operator">&gt;</span>           4 years ago         /bin/sh -c <span class="token comment">#(nop) CMD ["/sbin/init"]            1.05MB</span>
+<span class="token operator">&lt;</span>missing<span class="token operator">&gt;</span>           4 years ago         /bin/sh -c <span class="token comment">#(nop) EXPOSE 22/tcp                 1.05MB</span>
+<span class="token operator">&lt;</span>missing<span class="token operator">&gt;</span>           4 years ago         /bin/sh -c sh /tmp/install/run.sh               260MB
+<span class="token operator">&lt;</span>missing<span class="token operator">&gt;</span>           4 years ago         /bin/sh -c <span class="token comment">#(nop) ADD dir:31ce6fc92887bd109f…   1.05MB</span>
+<span class="token operator">&lt;</span>missing<span class="token operator">&gt;</span>           4 years ago                                                         2.31GB              Imported from http://10.137.67.190/download/os/AliOS5U7-x86-64.tgz
+</code></pre>
+</div><div class="cl-preview-section"><h4 id="save" style="font-size: 26px;">save</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">有这么一种场景，有时候我们要<strong>将一台机器的本地镜像导入到另外一台机器</strong>，当然你可以将镜像先 push 到镜像仓库中心，然后另外一个机器再进行 pull。但是有的时候由于镜像的安全性或者镜像比较大，不是很适合这种先 push 再 pull 的场景，那么我们就<strong>可以将镜像先导出成压缩文件，然后再将压缩文件导入到另外一个机器</strong>。其中镜像导出成压缩文件，就是 docker save 做的事情。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@xxx ~<span class="token punctuation">]</span><span class="token comment"># docker save --help</span>
+
+Usage:	docker save <span class="token punctuation">[</span>OPTIONS<span class="token punctuation">]</span> IMAGE <span class="token punctuation">[</span>IMAGE<span class="token punctuation">..</span>.<span class="token punctuation">]</span>
+
+Save one or <span class="token function">more</span> images to a <span class="token function">tar</span> archive <span class="token punctuation">(</span>streamed to STDOUT by default<span class="token punctuation">)</span>
+
+Options:
+  -o, --output string   Write to a file, instead of STDOUT
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">默认是输出到 stdout，当然也可以通过 -o 参数指定输出的文件。那么我们可以通过如下两个方式进行导出。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">docker save busybox:latest <span class="token operator">&gt;</span> busybox-latest.tar
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">或者</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">docker save busybox:latest -o busybox-latest.tar
+</code></pre>
+</div><div class="cl-preview-section"><h4 id="import" style="font-size: 26px;">import</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">docker import 以及下面的 load 都是用来从压缩中导入镜像。使用方式也比较简单。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@emr-header-1 ~<span class="token punctuation">]</span><span class="token comment"># docker import --help</span>
+
+Usage:	docker <span class="token function">import</span> <span class="token punctuation">[</span>OPTIONS<span class="token punctuation">]</span> <span class="token function">file</span><span class="token operator">|</span>URL<span class="token operator">|</span>- <span class="token punctuation">[</span>REPOSITORY<span class="token punctuation">[</span>:TAG<span class="token punctuation">]</span><span class="token punctuation">]</span>
+
+Import the contents from a tarball to create a filesystem image
+
+Options:
+  -c, --change list      Apply Dockerfile instruction to the created image
+  -m, --message string   Set commit message <span class="token keyword">for</span> imported image
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">比如我们导入上面导出的镜像 tar 包，可以使用下面的命令。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@emr-header-1 ~<span class="token punctuation">]</span><span class="token comment"># docker import busybox-latest.tar</span>
+sha256:1278080eee0524c6ca5c1de63ea439deb0e6d62035549cca9dbd4d9129e38655
+</code></pre>
+</div><div class="cl-preview-section"><h4 id="load" style="font-size: 26px;">load</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">通过 tar 包导入镜像，使用方式。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@xxx ~<span class="token punctuation">]</span><span class="token comment"># docker load --help</span>
+
+Usage:	docker load <span class="token punctuation">[</span>OPTIONS<span class="token punctuation">]</span>
+
+Load an image from a <span class="token function">tar</span> archive or STDIN
+
+Options:
+  -i, --input string   Read from <span class="token function">tar</span> archive file, instead of STDIN
+  -q, --quiet          Suppress the load output
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">比如我要将上面导出的镜像压缩包导入，可以通过下面的命令完成。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">$ <span class="token punctuation">[</span>root@xxx ~<span class="token punctuation">]</span><span class="token comment"># docker load -i busybox-latest.tar</span>
+Loaded image: busybox:latest
+</code></pre>
+</div><div class="cl-preview-section"><h4 id="rmi" style="font-size: 26px;">rmi</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">docker rmi 可以用来删除镜像。使用方式如下：</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@xxx ~<span class="token punctuation">]</span><span class="token comment"># docker rmi --help</span>
+
+Usage:	docker rmi <span class="token punctuation">[</span>OPTIONS<span class="token punctuation">]</span> IMAGE <span class="token punctuation">[</span>IMAGE<span class="token punctuation">..</span>.<span class="token punctuation">]</span>
+
+Remove one or <span class="token function">more</span> images
+
+Options:
+  -f, --force      Force removal of the image
+      --no-prune   Do not delete untagged parents
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">其中 IMAGE 我们可以直接使用镜像名称 + tag 或者镜像 ID 的方式来知道，上面的说明文档我们看到还支持两个参数：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">force：强制删除；</li>
+<li style="font-size: 20px; line-height: 38px;">no-prune：不要删除未带标签的父镜像。</li>
+</ul>
+</div><div class="cl-preview-section"><h4 id="tag" style="font-size: 26px;">tag</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">docker tag 可以用来给镜像打 tag，目标镜像可以使用镜像名称 + tag 或者镜像 ID 的方式，如下：</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">docker tag busybox:v1 busybox:v2
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">或者</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">docker tag <span class="token operator">&lt;</span>image_id<span class="token operator">&gt;</span> busybox:v2
+</code></pre>
+</div><div class="cl-preview-section"><h2 id="镜像仓库操作" style="font-size: 30px;">3. 镜像仓库操作</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">和镜像仓库（registry）相关的操作重要有 4 个操作命令：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">login: 登录镜像仓库；</li>
+<li style="font-size: 20px; line-height: 38px;">logout: 登出镜像仓库；</li>
+<li style="font-size: 20px; line-height: 38px;">pull: 从镜像仓库拉取镜像 ；</li>
+<li style="font-size: 20px; line-height: 38px;">push: 向镜像仓库 push 镜像，需要先 login。</li>
+</ul>
+</div><div class="cl-preview-section"><h4 id="login" style="font-size: 26px;">login</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">login 的使用比较简单，我们可以直接通过 help 看一下使用说明，如下：</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">root@xxx <span class="token comment"># docker login --help</span>
+
+Usage:	docker login <span class="token punctuation">[</span>OPTIONS<span class="token punctuation">]</span> <span class="token punctuation">[</span>SERVER<span class="token punctuation">]</span>
+
+Log <span class="token keyword">in</span> to a Docker registry
+
+Options:
+  -p, --password string   Password
+      --password-stdin    Take the password from stdin
+  -u, --username string   Username
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">如上所示 <code>docker login [OPTION] [SERVER]</code> ，其中 SERVER 就是仓库地址，OPTION 是用户名密码，比如我要登入阿里云杭州的镜像仓库，可以像如下操作：</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">$ docker login -u legendtkl -p <span class="token operator">&lt;</span>password<span class="token operator">&gt;</span> registry.cn-hangzhou.aliyuncs.com
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">但是一般我们不太建议将密码直接展示在命令行中，这样别的用户可以通过 history 直接看到，所以我们一般都是省略 -p 参数，由键盘输入密码，如下：</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">$ docker login -u legendtkl registry.cn-hangzhou.aliyuncs.com
+Password: 
+</code></pre>
+</div><div class="cl-preview-section"><h4 id="logout" style="font-size: 26px;">logout</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">logout 就比较简单了，不需要任何参数，直接接仓库地址即可，如下。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">root@xxx <span class="token comment"># docker logout --help</span>
+
+Usage:	docker <span class="token function">logout</span> <span class="token punctuation">[</span>SERVER<span class="token punctuation">]</span>
+
+Log out from a Docker registry
+</code></pre>
+</div><div class="cl-preview-section"><h4 id="pull" style="font-size: 26px;">pull</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">拉取镜像也比较简单，如下</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">root@xxx <span class="token comment"># docker pull --help</span>
+
+Usage:	docker pull <span class="token punctuation">[</span>OPTIONS<span class="token punctuation">]</span> NAME<span class="token punctuation">[</span>:TAG<span class="token operator">|</span>@DIGEST<span class="token punctuation">]</span>
+
+Pull an image or a repository from a registry
+
+Options:
+  -a, --all-tags                Download all tagged images <span class="token keyword">in</span> the repository
+      --disable-content-trust   Skip image verification <span class="token punctuation">(</span>default true<span class="token punctuation">)</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们<strong>可以通过镜像名称后面加 Tag 或者 Digest 来拉取指定版本的镜像</strong>，如果不指定则拉取 latest 这个标签的。那么什么是 Tag 和 Digest 呢？</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们可以这样理解，Tag 和 Digest 都是镜像版本的一种唯一性标识。Tag 可以理解成 Git 里面的 Tag，Digest 是镜像文件的摘要，一般是 sha256 散列计算出来的值。当然我们正常 pull 的时候都是指定 Tag，很少会指定 Digest，举个例子：</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">docker pull busybox:1.23
+docker pull busybox@sha256:2824fe048727a69da66cf1be00cebd3bb9cfe1f238473693aa9358b411208527
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">有一种情况需要注意的是，<strong>尽量不要使用 latest 这个 Tag</strong>。顾名思义，latest 这个标签表示最新的镜像，换言之，也就是<strong>会进行变化的</strong>，这种情况是万万不能用于生产环境的。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们看到拉取的镜像的时候还有两个参数： all-tags 和 disable-content-trust。第一个参数会下载镜像的全部标签，一般不会这么用。第二个参数是用来跳过镜像的校验。</p>
+</div><div class="cl-preview-section"><h4 id="push" style="font-size: 26px;">push</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">向仓库 push 镜像，参数和 pull 类似。有一点需要注意的是，如果 push 的镜像在仓库中已经存在，则会覆盖已经存在的镜像。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">root@xxx <span class="token comment"># docker push --help</span>
+
+Usage:	docker push <span class="token punctuation">[</span>OPTIONS<span class="token punctuation">]</span> NAME<span class="token punctuation">[</span>:TAG<span class="token punctuation">]</span>
+
+Push an image or a repository to a registry
+
+Options:
+      --disable-content-trust   Skip image signing <span class="token punctuation">(</span>default true<span class="token punctuation">)</span>
+</code></pre>
+</div><div class="cl-preview-section"><h2 id="总结" style="font-size: 30px;">4. 总结</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">本篇文章介绍了 docker 的常用命令，涉及到容器、镜像和镜像仓库中心。掌握了上面的命令，基本使用 docker 不会有什么问题。当然由于 docker 的命令及其参数之多，这里并不能完全展示出来，关于更多信息，大家可以参考下面的参考链接。</p>
+</div><div class="cl-preview-section"><h2 id="参考" style="font-size: 30px;">5. 参考</h2>
+</div><div class="cl-preview-section"><ol>
+<li style="font-size: 20px; line-height: 38px;"><a href="https://docs.docker.com/engine/reference/commandline/cli/">docker commandline refer</a></li>
+</ol>
+</div>}
+                        </div>
+                    </div>
+                                            <!-- 买过的阅读 -->
+                        <div class="art-next-prev clearfix">
+                                                                                                <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2237">
+                                                                    <div class="prev l clearfix">
+                                        <div class="icon l">
+                                            <i class="imv2-arrow3_l"></i>
+                                        </div>
+                                        <p>
+                                            05 立足之本：Docker 镜像介绍
+                                        </p>
+                                    </div>
+                                </a>
+                                                                                                                            <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2239">
+                                                                    <div class="next r clearfix">
+                                        <p>
+                                            07 统一镜像管理：镜像仓库介绍
+                                        </p>
+                                        <div class="icon r">
+                                            <i class="imv2-arrow3_r"></i>
+                                        </div>
+
+                                    </div>
+                                </a>
+                                                    </div>
+                                    </div>
+                <div class="comments-con js-comments-con" id="coments_con">
+                </div>
+
+                
+            </div>
+            
+            
+            
+
+        </div>
+    </div>
+</div>
+
+<div class="modal modal-jiaQun-new hide" id="modal-jiaQun">
+    <div class="inner" style="">
+        <div class="modal-close js-close-jiaQun">
+            <i class="imv2-close"></i>
+        </div>
+        <div class="content">
+            <img src="https://img4.sycdn.imooc.com/5f18f4360001392b05330597.jpg">
+            <div class="right-info">
+                <div class="title">
+                    扫码加入慕课前沿技术核心用户群
+                </div>
+                <div class="desc">
+                                            <p class="mb6">验证信息：<span id="joincode">2011031946279713</span><span class="copy js-copy-joincode">复制</span></p>
+                                        <p class="mb6">QQ讨论群号：729941811</p>
+                                            <p>QQ群URL：<a href="https://jq.qq.com/?_wv=1027&amp;k=5WJLMxV" target="_blank">点击访问</a></p>
+                                    </div>
+            </div>
+            <p class="tip">若遇到搜索不到QQ群或加群失败，请联系客服邮箱:kf@imooc.com</p>
+        </div>
+    </div>
+</div>
+ 
+<!-- 专栏介绍页专栏评价 -->
+
+<!-- 专栏介绍页底部三条评价 -->
+
+<!-- 专栏阅读页弹层目录和介绍页页面目录 -->
+
+<!-- 专栏阅读页发布回复 -->
+
+<!-- 专栏阅读页发布评论 -->
+
+<!-- 专栏阅读页底部评论 -->
+
+<!-- 专栏阅读 单个 评论 -->
+
+<!-- 新增回复和展开三条以外回复 -->
+
+<!-- 立即订阅的弹窗 -->
+
+
+
+
+
+
+
+
+
+
+
+
+</div></body></html>

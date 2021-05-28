@@ -1,0 +1,198 @@
+<html><head><meta charset="utf-8"><title>14 Docker 镜像你真的理解了吗？-慕课专栏</title>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+			<meta name="renderer" content="webkit">
+			<meta property="qc:admins" content="77103107776157736375">
+			<meta property="wb:webmaster" content="c4f857219bfae3cb">
+			<meta http-equiv="Access-Control-Allow-Origin" content="*">
+			<meta http-equiv="Cache-Control" content="no-transform ">
+			<meta http-equiv="Cache-Control" content="no-siteapp">
+			<link rel="apple-touch-icon" sizes="76x76" href="https://www.imooc.com/static/img/common/touch-icon-ipad.png">
+			<link rel="apple-touch-icon" sizes="120x120" href="https://www.imooc.com/static/img/common/touch-icon-iphone-retina.png">
+			<link rel="apple-touch-icon" sizes="152x152" href="https://www.imooc.com/static/img/common/touch-icon-ipad-retina.png">
+			<link href="https://moco.imooc.com/captcha/style/captcha.min.css" rel="stylesheet">
+			<link rel="stylesheet" href="https://www.imooc.com/static/moco/v1.0/dist/css/moco.min.css?t=201907021539" type="text/css">
+			<link rel="stylesheet" href="https://www.imooc.com/static/lib/swiper/swiper-3.4.2.min.css?t=201907021539">
+			<link rel="stylesheet" href="https://static.mukewang.com/static/css/??base.css,common/common-less.css?t=2.5,column/zhuanlanChapter-less.css?t=2.5,course/inc/course_tipoff-less.css?t=2.5?v=201907051055" type="text/css">
+			<link charset="utf-8" rel="stylesheet" href="https://www.imooc.com/static/lib/ueditor/themes/imooc/css/ueditor.css?v=201907021539"><link rel="stylesheet" href="https://www.imooc.com/static/lib/baiduShare/api/css/share_style0_16.css?v=6aba13f0.css"></head>
+			<body><div id="main">
+
+
+<div class="main-con hide-menu">
+    <!-- 左侧菜单 & 索引 -->
+    
+    <div class="right-content" style="padding-left: 0px;">
+        <div class="container clearfix" id="top" style="width: 1134px; display: block;">
+            
+            
+            <div class="center_con js-center_con l" style="width: 1134px;">
+                <div class="article-con">
+                                            <!-- 买过的阅读 -->
+                        
+
+                    
+                    <div class="art-title" style="margin-top: 0px;">
+                        14 Docker 镜像你真的理解了吗？
+                    </div>
+                    <div class="art-info clearfix">
+                        
+                        <span class="l">
+                            更新时间：2020-09-08 10:02:02
+                        </span>
+                    </div>
+                    <div class="art-top">
+                                                <img src="https://img2.sycdn.imooc.com/5f39e44f00016f2006400426.jpg" alt="">
+                                                                        <div class="famous-word-box">
+                            <img src="https://www.imooc.com/static/img/column/bg-l.png" alt="" class="bg1 bg">
+                            <img src="https://www.imooc.com/static/img/column/bg-r.png" alt="" class="bg2 bg">
+                            <div class="famous-word">世上无难事,只要肯登攀。——毛泽东<p></p></div>
+                        </div>
+                                            </div>
+                    <div class="art-content js-lookimg">
+                        <div id="article_content">
+                            <div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">在前面我们介绍了 Docker 镜像的概念和基本操作，这篇文章我们来深入剖析一下 docker 镜像分层技术。</p>
+</div><div class="cl-preview-section"><h2 id="分层结构" style="font-size: 30px;">1. 分层结构</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">为什么说是镜像分层技术，因为Docker 镜像是以层来组织的，我们可以通过命令 <code>docker image inspect &lt;image&gt;</code> 或者 <code>docker inspect &lt;image&gt;</code> 来查看镜像包含哪些层。下面是一个示例。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@docker ~<span class="token punctuation">]</span><span class="token comment"># docker image inspect busybox:latest</span>
+<span class="token punctuation">..</span>.
+<span class="token string">"RootFS"</span><span class="token keyword">:</span> <span class="token punctuation">{</span>
+     <span class="token string">"Type"</span><span class="token keyword">:</span> <span class="token string">"layers"</span>,
+     <span class="token string">"Layers"</span><span class="token keyword">:</span> <span class="token punctuation">[</span>
+          <span class="token string">"sha256:195be5f8be1df6709dafbba7ce48f2eee785ab7775b88e0c115d8205407265c5"</span>
+      <span class="token punctuation">]</span>
+ <span class="token punctuation">}</span>,
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">如上图所示，其中 <code>RootFS</code> 就是镜像  <code>busybox:latest</code> 的镜像层，只有一层，那么这层数据是存储在宿主机哪里的呢？好问题。动手实践的同学会在上面的输出中看到一个叫做 <strong>GraphDriver</strong> 的字段内容如下。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token string">"GraphDriver"</span><span class="token keyword">:</span> <span class="token punctuation">{</span>
+            <span class="token string">"Data"</span><span class="token keyword">:</span> <span class="token punctuation">{</span>
+                <span class="token string">"LowerDir"</span><span class="token keyword">:</span> <span class="token string">"/var/lib/docker/overlay2/cd7a.../diff"</span>,
+                <span class="token string">"MergedDir"</span><span class="token keyword">:</span> <span class="token string">"/var/lib/docker/overlay2/da4c.../merged"</span>,
+                <span class="token string">"UpperDir"</span><span class="token keyword">:</span> <span class="token string">"/var/lib/docker/overlay2/da4c../diff"</span>,
+                <span class="token string">"WorkDir"</span><span class="token keyword">:</span> <span class="token string">"/var/lib/docker/overlay2/da4c.../work"</span>
+            <span class="token punctuation">}</span>,
+            <span class="token string">"Name"</span><span class="token keyword">:</span> <span class="token string">"overlay2"</span>
+        <span class="token punctuation">}</span>,
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><strong>GraphDriver</strong> 负责<strong>镜像本地的管理和存储以及运行中的容器生成镜像等工作</strong>，可以将 <strong>GraphDriver</strong> 理解成镜像管理引擎，我们这里的例子对应的引擎名字是 <em><strong>overlay2</strong></em>（overlay 的优化版本）。除了 <em><strong>overlay</strong></em> 之外，Docker 的 <strong>GraphDriver</strong> 还支持 <em><strong>btrfs</strong></em>、<em><strong>aufs</strong></em>、<em><strong>devicemapper</strong></em>、<em><strong>vfs</strong></em> 等。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们可以看到其中的 Data 包含了多个部分，这个对应 <strong>OverlayFS</strong> 的镜像组织形式，在下面我们再进行详细介绍。虽然我们上面的例子中的 busybox 镜像只有一层，但是<strong>正常情况下很多镜像都是由多层组成的</strong>。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这个时候很多同学应该会有这么一个疑问，镜像中的层都是只读的，那么我们运行着的容器的运行时数据是存储在哪里的呢？</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><strong>镜像和容器在存储上的主要差别就在于容器多了一个读写层</strong>。镜像由多个只读层组成，通过镜像启动的容器在镜像之上加了一个读写层。下图是官方的一个配图。我们知道可以通过 <code>docker commit</code> 命令基于运行时的容器生成新的镜像，那么 <strong>commit 做的其中一个工作就是将读写层数据写入到新的镜像中</strong>。下图是一个示例图：</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f39e47b000197c606750469.png" data-original="//img1.sycdn.imooc.com/5f39e47b000197c606750469.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">所有写入或者修改运行时容器的数据都会存储在读写层，当容器停止运行的时候，读写层的数据也会被同时删除掉。因为镜像层的数据是只读的，所有如果我们运行同一个镜像的多个容器副本，那么多个容器则可以共享同一份镜像存储层，下图是一个示例。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f39e4840001211307690475.png" data-original="//img1.sycdn.imooc.com/5f39e4840001211307690475.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><h2 id="unionfs" style="font-size: 30px;">2. UnionFS</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Docker 的存储驱动的实现是基于 Union File System，简称 UnionFS，中文可以叫做联合文件系统。UnionFS 设计将其他文件系统联合到一个联合挂载点的文件系统服务。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">所谓联合挂载技术，是指<strong>在同一个挂载点同时挂载多个文件系统，将挂载点的源目录与被挂载内容进行整合，使得最终可见的文件系统将会包含整合之后的各层的文件和目录</strong>。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">举个例子：比如我们运行一个 ubuntu 的容器。由于初始挂载时读写层为空，所以从用户的角度来看：<strong>该容器的文件系统与底层的 rootfs 没有区别</strong>；然而从内核角度来看，<strong>则是显式区分的两个层</strong>。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">当需要修改镜像中的文件时，只对处于最上方的读写层进行改动，不会覆盖只读层文件系统的内容，只读层的原始文件内容依然存在，但是<strong>在容器内部会被读写层中的新版本文件内容隐藏</strong>。当 <code>docker commit</code> 时，读写层的内容则会被保存。</p>
+</div><div class="cl-preview-section"><h3 id="写时复制（copy-on-write）">写时复制（Copy On Write）</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这里顺便介绍一下写实复制技术。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们知道 <strong>Linux 系统内核启动时首先挂载的 rootfs 是只读的</strong>，在系统正式工作之后，再将其切换为读写模式。Docker 容器启动时文件挂载类似 Linux 内核启动的方式，将 rootfs 设置为只读模式。不同之处在于：<strong>在挂载完成之后，利用上面提到的联合挂载技术在已有的只读 rootfs 上再挂载一个读写层</strong>。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">读写层位于 Docker 容器文件系统的最上层，其下可能联合挂载多个只读层，只有在 Docker 容器运行过程中文件系统发生变化时，才会把变化的文件内容写到可读写层，并隐藏只读层的老版本文件，这就叫做 <strong>写实复制</strong>，简称 <strong>CoW</strong>。</p>
+</div><div class="cl-preview-section"><h2 id="aufs" style="font-size: 30px;">3. AUFS</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><strong>AUFS</strong> 是 UnionFS 的一种实现，全称为 Advanced Multi-Layered Unification Filesystem，是早期 Docker 版本默认的存储驱动，最新的 Docker 版本默认使用 OverlayFS。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><strong>AUFS</strong> 将镜像层（只读）组织成多个目录，在 <strong>AUFS</strong> 的术语中成为 <em><strong>branch</strong></em>。运行时容器文件会作为一层容器层（container lay，读写）覆盖在镜像层之上。最后通过联合挂载技术进行呈现。下图是 <strong>AUFS</strong> 的文章组织架构的示意图。由于 <strong>AUFS</strong> 可以算是一种过时的技术，所以这里我们就不在赘述了。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f39e48f00014cd907320403.png" data-original="//img1.sycdn.imooc.com/5f39e48f00014cd907320403.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><h2 id="overlayfs" style="font-size: 30px;">4. OverlayFS</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><strong>OverlayFS</strong> 是类似 <strong>AUFS</strong> 的联合文件系统的一种实现，相比 <strong>AUFS</strong> 性能更好，实现更加简单。Docker 针对 <strong>OverlayFS</strong> 提供了两种存储驱动：<em><strong>overlay</strong></em> 和 <em><strong>overlay2</strong></em> ，我们在前面的演示部分就是 <em><strong>overlay2</strong></em>。这两种驱动相比之下，<em><strong>overlay2</strong></em> 在 inode 使用率上更加高效，所以一般也是推荐 <em><strong>overlay2</strong></em>，Linux 内核版本要求是 4.0 或者更高版本。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><strong>OverlayFS</strong> 将镜像层（只读）称为 <em><strong>lowerdir</strong></em>，将容器层（读写）称为 <em><strong>upperdir</strong></em>，最后联合挂载呈现出来的为 <em><strong>mergedir</strong></em>。文件层次结构可以用下图表示。 从图中我们也可以看出相比 <strong>AUFS</strong>，文件层更少，这也是 <strong>OverlayFS</strong> 相比 <strong>AUFS</strong> 性能更好的一个原因。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f39e499000157bd07540193.png" data-original="//img1.sycdn.imooc.com/5f39e499000157bd07540193.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">举个例子，下图是我们运行中的 busybox 容器的 <code>docker inspect</code> 的结果。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f39e4a1000180cd28480628.png" data-original="//img1.sycdn.imooc.com/5f39e4a1000180cd28480628.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们在容器中做的改动，都会在 <em><strong>upperdir</strong></em> 和 <em><strong>mergeddir</strong></em> 中体现。比如我们在容器中的 <code>/tmp</code> 目录下新建一个文件，那么在 <em><strong>upperdir</strong></em> 和 <em><strong>mergeddir</strong></em> 中就能够看到该文件。</p>
+</div><div class="cl-preview-section"><h2 id="总结" style="font-size: 30px;">5. 总结</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">本文先通过 <code>docker inspect</code> 示例入手分析了 Docker 的镜像分层技术，然后又补充了部分理论知识，包括 <strong>UnionFS</strong> 、<strong>AUFS</strong> 和 <strong>OverlayFS</strong>。当然除了 <strong>AUFS</strong> 和 <strong>OverlayFS</strong>，还有一些其他的存储驱动，比如 <strong>Btrfs</strong>、<strong>DeviceMapper</strong>、<strong>ZFS</strong>、<strong>VFS</strong>，感兴趣的同学可以自行了解。</p>
+</div>}
+                        </div>
+                    </div>
+                                            <!-- 买过的阅读 -->
+                        <div class="art-next-prev clearfix">
+                                                                                                <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2245">
+                                                                    <div class="prev l clearfix">
+                                        <div class="icon l">
+                                            <i class="imv2-arrow3_l"></i>
+                                        </div>
+                                        <p>
+                                            13 Docker 资源限制的幕后主使：cgroup
+                                        </p>
+                                    </div>
+                                </a>
+                                                                                                                            <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2247">
+                                                                    <div class="next r clearfix">
+                                        <p>
+                                            15 Docker 的本质是进程
+                                        </p>
+                                        <div class="icon r">
+                                            <i class="imv2-arrow3_r"></i>
+                                        </div>
+
+                                    </div>
+                                </a>
+                                                    </div>
+                                    </div>
+                <div class="comments-con js-comments-con" id="coments_con">
+                </div>
+
+                
+            </div>
+            
+            
+            
+
+        </div>
+    </div>
+</div>
+
+<div class="modal modal-jiaQun-new hide" id="modal-jiaQun">
+    <div class="inner" style="">
+        <div class="modal-close js-close-jiaQun">
+            <i class="imv2-close"></i>
+        </div>
+        <div class="content">
+            <img src="https://img1.sycdn.imooc.com/5f18f4360001392b05330597.jpg">
+            <div class="right-info">
+                <div class="title">
+                    扫码加入慕课前沿技术核心用户群
+                </div>
+                <div class="desc">
+                                            <p class="mb6">验证信息：<span id="joincode">2011031946279713</span><span class="copy js-copy-joincode">复制</span></p>
+                                        <p class="mb6">QQ讨论群号：729941811</p>
+                                            <p>QQ群URL：<a href="https://jq.qq.com/?_wv=1027&amp;k=5WJLMxV" target="_blank">点击访问</a></p>
+                                    </div>
+            </div>
+            <p class="tip">若遇到搜索不到QQ群或加群失败，请联系客服邮箱:kf@imooc.com</p>
+        </div>
+    </div>
+</div>
+ 
+<!-- 专栏介绍页专栏评价 -->
+
+<!-- 专栏介绍页底部三条评价 -->
+
+<!-- 专栏阅读页弹层目录和介绍页页面目录 -->
+
+<!-- 专栏阅读页发布回复 -->
+
+<!-- 专栏阅读页发布评论 -->
+
+<!-- 专栏阅读页底部评论 -->
+
+<!-- 专栏阅读 单个 评论 -->
+
+<!-- 新增回复和展开三条以外回复 -->
+
+<!-- 立即订阅的弹窗 -->
+
+
+
+
+
+
+
+
+
+
+
+
+</div></body></html>

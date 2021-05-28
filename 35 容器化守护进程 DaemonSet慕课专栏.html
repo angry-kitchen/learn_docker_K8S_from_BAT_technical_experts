@@ -1,0 +1,427 @@
+<html><head><meta charset="utf-8"><title>35 容器化守护进程 DaemonSet-慕课专栏</title>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+			<meta name="renderer" content="webkit">
+			<meta property="qc:admins" content="77103107776157736375">
+			<meta property="wb:webmaster" content="c4f857219bfae3cb">
+			<meta http-equiv="Access-Control-Allow-Origin" content="*">
+			<meta http-equiv="Cache-Control" content="no-transform ">
+			<meta http-equiv="Cache-Control" content="no-siteapp">
+			<link rel="apple-touch-icon" sizes="76x76" href="https://www.imooc.com/static/img/common/touch-icon-ipad.png">
+			<link rel="apple-touch-icon" sizes="120x120" href="https://www.imooc.com/static/img/common/touch-icon-iphone-retina.png">
+			<link rel="apple-touch-icon" sizes="152x152" href="https://www.imooc.com/static/img/common/touch-icon-ipad-retina.png">
+			<link href="https://moco.imooc.com/captcha/style/captcha.min.css" rel="stylesheet">
+			<link rel="stylesheet" href="https://www.imooc.com/static/moco/v1.0/dist/css/moco.min.css?t=201907021539" type="text/css">
+			<link rel="stylesheet" href="https://www.imooc.com/static/lib/swiper/swiper-3.4.2.min.css?t=201907021539">
+			<link rel="stylesheet" href="https://static.mukewang.com/static/css/??base.css,common/common-less.css?t=2.5,column/zhuanlanChapter-less.css?t=2.5,course/inc/course_tipoff-less.css?t=2.5?v=201907051055" type="text/css">
+			<link charset="utf-8" rel="stylesheet" href="https://www.imooc.com/static/lib/ueditor/themes/imooc/css/ueditor.css?v=201907021539"><link rel="stylesheet" href="https://www.imooc.com/static/lib/baiduShare/api/css/share_style0_16.css?v=6aba13f0.css"></head>
+			<body><div id="main">
+
+
+<div class="main-con hide-menu">
+    <!-- 左侧菜单 & 索引 -->
+    
+    <div class="right-content" style="padding-left: 0px;">
+        <div class="container clearfix" id="top" style="width: 1134px; display: block;">
+            
+            
+            <div class="center_con js-center_con l" style="width: 1134px;">
+                <div class="article-con">
+                                            <!-- 买过的阅读 -->
+                        
+
+                    
+                    <div class="art-title" style="margin-top: 0px;">
+                        35 容器化守护进程 DaemonSet
+                    </div>
+                    <div class="art-info clearfix">
+                        
+                        <span class="l">
+                            更新时间：2020-10-19 09:54:02
+                        </span>
+                    </div>
+                    <div class="art-top">
+                                                <img src="https://img1.sycdn.imooc.com/5f86578500016aa806400426.jpg" alt="">
+                                                                        <div class="famous-word-box">
+                            <img src="https://www.imooc.com/static/img/column/bg-l.png" alt="" class="bg1 bg">
+                            <img src="https://www.imooc.com/static/img/column/bg-r.png" alt="" class="bg2 bg">
+                            <div class="famous-word">能够生存下来的物种,并不是那些最强壮的,也不是那些最聪明的,而是那些对变化作出快速反应的。——达尔文<p></p></div>
+                        </div>
+                                            </div>
+                    <div class="art-content js-lookimg">
+                        <div id="article_content">
+                            <div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">在 Linux 系统中，有一种进程叫守护进程，英文是 daemon，这是一类在后台运行的特殊进程，用户执行特殊的系统任务。比如我们在 Linux 系统中，很多以 d 结尾的进程都是守护进程。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">在 Kubernetes 中的 DaemonSet 严格意义上来说和守护进程关系其实不大。DaemonSet 的主要作用是用来控制 Daemon Pod。那么什么是 Daemon Pod 呢？Daemon Pod 具有如下一些特性：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">这个 Pod 运行在 Kubernetes 集群中的每一个节点（Node）上；</li>
+<li style="font-size: 20px; line-height: 38px;">每个节点上只能运行一个 Deamon Pod 实例；</li>
+<li style="font-size: 20px; line-height: 38px;">当有新的节点（Node）加入到 Kubernetes 集群时，Daemon Pod 会被自动拉起；</li>
+<li style="font-size: 20px; line-height: 38px;">当有旧节点被删除时，其上运行的 Daemon Pod 也将被删除。</li>
+</ul>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">DaemonSet 的典型应用场景如下：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">在集群每个节点上启动一个存储守护进程，比如 <code>glusted</code> 或者 <code>ceph</code>；</li>
+<li style="font-size: 20px; line-height: 38px;">在每个节点上启动一个日志收集进程，比如 <code>fluentd</code> 或者 <code>filebeat</code>；</li>
+<li style="font-size: 20px; line-height: 38px;">在集群的每个节点上面启动监控的守护进程，比如 Prometheus 的 <code>node-exporter</code>。</li>
+</ul>
+</div><div class="cl-preview-section"><h2 id="创建-daemonset" style="font-size: 30px;">1. 创建 DaemonSet</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们可以创建一个描述 DaemonSet 的 yaml 文件，下面是一个简单的例子。</p>
+</div><div class="cl-preview-section"><pre class=" language-yaml"><code class="prism  language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apps/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> DaemonSet
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> fluentd<span class="token punctuation">-</span>app
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">k8s-app</span><span class="token punctuation">:</span> fluentd
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> fluentd<span class="token punctuation">-</span>app
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">name</span><span class="token punctuation">:</span> fluentd<span class="token punctuation">-</span>app
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> fluentd
+        <span class="token key atrule">image</span><span class="token punctuation">:</span> fluentd<span class="token punctuation">:</span>v2.5.2
+        <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+          <span class="token key atrule">limits</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> 100m
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> 200Mi
+          <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> 100m
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> 200Mi
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">简单介绍一下其中的重要部分：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;"><code>kind</code>：指定 DaemonSet；</li>
+<li style="font-size: 20px; line-height: 38px;"><code>.spec.template</code> ：是 Pod 模板，对应的 DaemonSet 启动的 Pod 的信息描述；</li>
+<li style="font-size: 20px; line-height: 38px;"><code>.spec.selector</code>：用来和 Pod 匹配的 selector，需要和 <code>.spec.template</code> 中描诉的 Pod 的 label 匹配上。从 Kubernetes 1.8 版本之后，这个字段必须指定。<code>.spec.selector</code> 支持两种：
+<ul>
+<li style="font-size: 20px; line-height: 38px;">
+<p style="font-size: 20px; line-height: 38px;"><code>matchLabels</code> ：和 Pod 的 label 进行匹配。</p>
+</li>
+<li style="font-size: 20px; line-height: 38px;">
+<p style="font-size: 20px; line-height: 38px;"><code>matchExpression</code> ：更加灵活的匹配，支持集合匹配，Operator 包括 <code>In</code> 和 <code>NotIn</code>。下面是一个简单的 matchExpression 示例，表示：</p>
+<pre class=" language-yaml"><code class="prism  language-yaml"><span class="token punctuation">-</span> <span class="token key atrule">matchExpressions</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">key</span><span class="token punctuation">:</span> kubernetes.io/e2e<span class="token punctuation">-</span>az<span class="token punctuation">-</span>name
+    <span class="token key atrule">operator</span><span class="token punctuation">:</span> In
+    <span class="token key atrule">values</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> e2e<span class="token punctuation">-</span>az1
+    <span class="token punctuation">-</span> e2e<span class="token punctuation">-</span>az2
+</code></pre>
+</li>
+</ul>
+</li>
+</ul>
+</div><div class="cl-preview-section"><h2 id="使用-daemonset" style="font-size: 30px;">2. 使用 DaemonSet</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">同样的，我们可以通过 <code>kubectl apply</code> 创建 DaemonSet。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">$ kubectl apply -f fluentd.yaml -n imooc
+daemonset.apps/fluentd-app configured
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">apply 成功之后，我们可以查看一下集群中的 Pod，如下，因为我们集群只有三个 worker 节点，所以一共有三个 Pod。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">$ kubectl get po -n imooc
+NAME                               READY   STATUS              RESTARTS   AGE
+fluentd-app-6ml24                  0/1     ContainerCreating   0          8s
+fluentd-app-6sxz9                  0/1     ContainerCreating   0          8s
+fluentd-app-fknkb                  0/1     ContainerCreating   0          8s
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们再来看一下集群中 DaemonSet 对象。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">$ kubectl get daemonset -n imooc
+NAME          DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR   AGE
+fluentd-app   3         3         3       3            3           <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>          4m26s
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">从 DaemonSet 对象的简略描述信息中可以看到该 DaemonSet 控制的 Pod 的状态：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">DESIRED：期望运行的 Pod 实例的个数；</li>
+<li style="font-size: 20px; line-height: 38px;">CURRENT：当前运行的 Pod 实例的个数；</li>
+<li style="font-size: 20px; line-height: 38px;">READY：状态 ready 的 Pod 实例的个数；</li>
+<li style="font-size: 20px; line-height: 38px;">…</li>
+</ul>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们再通过 <code>kubectl describe ds</code> 查看一下 DaemonSet 的明细信息，没错，这里的 ds 是 DaemonSet 的缩写。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">$ kubectl describe ds fluentd-app -n imooc
+Name:           fluentd-app
+Selector:       name<span class="token operator">=</span>fluentd-app
+Node-Selector:  <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>
+Labels:         k8s-app<span class="token operator">=</span>fluentd
+Annotations:    deprecated.daemonset.template.generation: 2
+                kubectl.kubernetes.io/last-applied-configuration:
+                  <span class="token punctuation">{</span><span class="token string">"apiVersion"</span><span class="token keyword">:</span><span class="token string">"apps/v1"</span>,<span class="token string">"kind"</span><span class="token keyword">:</span><span class="token string">"DaemonSet"</span>,<span class="token string">"metadata"</span>:<span class="token punctuation">{</span><span class="token string">"annotations"</span>:<span class="token punctuation">{</span><span class="token punctuation">}</span>,<span class="token string">"labels"</span>:<span class="token punctuation">{</span><span class="token string">"k8s-app"</span><span class="token keyword">:</span><span class="token string">"fluentd"</span><span class="token punctuation">}</span>,<span class="token string">"name"</span><span class="token keyword">:</span><span class="token string">"fluentd-app"</span>,<span class="token string">"namespace"</span>:"i<span class="token punctuation">..</span>.
+Desired Number of Nodes Scheduled: 3
+Current Number of Nodes Scheduled: 3
+Number of Nodes Scheduled with Up-to-date Pods: 3
+Number of Nodes Scheduled with Available Pods: 3
+Number of Nodes Misscheduled: 0
+Pods Status:  3 Running / 0 Waiting / 0 Succeeded / 0 Failed
+Pod Template:
+  Labels:  name<span class="token operator">=</span>fluentd-app
+  Containers:
+   fluentd:
+    Image:      fluentd
+    Port:       <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>
+    Host Port:  <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>
+    Limits:
+      cpu:     100m
+      memory:  200Mi
+    Requests:
+      cpu:        100m
+      memory:     200Mi
+    Environment:  <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>
+    Mounts:       <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>
+  Volumes:        <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>
+Events:
+  Type    Reason            Age    From                  Message
+  ----    ------            ----   ----                  -------
+  Normal  SuccessfulCreate  6m24s  daemonset-controller  Created pod: fluentd-app-6sxz9
+  Normal  SuccessfulCreate  6m24s  daemonset-controller  Created pod: fluentd-app-6ml24
+  Normal  SuccessfulCreate  6m24s  daemonset-controller  Created pod: fluentd-app-fknkb
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">从这个输出里面我们可以看到几点信息：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">DaemonSet 的基本信息，包括名字，label 等；</li>
+<li style="font-size: 20px; line-height: 38px;">Pod 的调度情况；</li>
+<li style="font-size: 20px; line-height: 38px;">Pod 模板，也就是 Pod Template；</li>
+<li style="font-size: 20px; line-height: 38px;">Events：主要包括创建 pod 的事件；</li>
+</ul>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">下面我们看一下 DaemonSet 的自动拉起功能的特性。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">为了展示自动拉起，很简单，我们只要删除 DaemonSet 之前拉起的 Pod，然后观察有没有新的 Pod 创建出来即可。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">$ kubectl get pods -n imooc
+NAME                               READY   STATUS    RESTARTS   AGE
+fluentd-app-6ml24                  1/1     Running   0          35m
+fluentd-app-6sxz9                  1/1     Running   0          35m
+fluentd-app-fknkb                  1/1     Running   0          35m
+nginx-deployment-57f49c59d-8dzn4   1/1     Running   0          20h
+nginx-deployment-57f49c59d-9jvrp   1/1     Running   0          20h
+nginx-deployment-57f49c59d-m57sr   1/1     Running   0          20h
+$ kubectl delete pods fluentd-app-6ml24 -n imooc
+pod <span class="token string">"fluentd-app-6ml24"</span> deleted
+$ kubectl get pods -n imooc
+NAME                               READY   STATUS    RESTARTS   AGE
+fluentd-app-2xjmg                  1/1     Running   0          12s
+fluentd-app-6sxz9                  1/1     Running   0          36m
+fluentd-app-fknkb                  1/1     Running   0          36m
+nginx-deployment-57f49c59d-8dzn4   1/1     Running   0          20h
+nginx-deployment-57f49c59d-9jvrp   1/1     Running   0          20h
+nginx-deployment-57f49c59d-m57sr   1/1     Running   0          20h
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">如上所示，在老的 Pod <code>fluentd-app-6ml24</code> 被删除之后，新的 Pod <code>fluentd-app-2xjmg</code> 立刻就被创建出来了。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">DaemonSet 在新创建的 Kubernetes 的 Node 节点上自动创建的特性，这里就不再展示了。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">虽然 DaemonSet 默认会在所有的节点上启动相同的 Pod，但是有时候我们还是希望只在某些指定的节点上面运行 Pod。对于这个问题有两种解决方案：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">指定 <code>.spec.template.spec.nodeSelector</code> ，DaemonSet 将在能够与 Node Selector 匹配的节点上创建 Pod。</li>
+<li style="font-size: 20px; line-height: 38px;">指定 <code>.spec.template.spec.affinity</code> ，然后 DaemonSet 将在能够与 nodeAffinity 匹配的节点上创建 Pod。</li>
+</ul>
+</div><div class="cl-preview-section"><h4 id="nodeselector-示例" style="font-size: 26px;">nodeSelector 示例</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们首先给某个节点打上特定的 label，使用命令 <code>kubectl labels</code> 。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">$ kubectl label nodes <span class="token operator">&lt;</span>node-name<span class="token operator">&gt;</span> <span class="token operator">&lt;</span>label_key<span class="token operator">&gt;=</span><span class="token operator">&lt;</span>value<span class="token operator">&gt;</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">然后在 DaemonSet 的 yaml 文件中指定 nodeSelector。</p>
+</div><div class="cl-preview-section"><pre class=" language-yaml"><code class="prism  language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apps/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> DaemonSet
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> fluentd<span class="token punctuation">-</span>app
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">k8s-app</span><span class="token punctuation">:</span> fluentd
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> fluentd<span class="token punctuation">-</span>app
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">name</span><span class="token punctuation">:</span> fluentd<span class="token punctuation">-</span>app
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">nodeSelector</span><span class="token punctuation">:</span>
+    		<span class="token key atrule">&lt;key&gt;</span><span class="token punctuation">:</span> &lt;value<span class="token punctuation">&gt;</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> fluentd
+        <span class="token key atrule">image</span><span class="token punctuation">:</span> fluentd<span class="token punctuation">:</span>v2.5.2
+        <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+          <span class="token key atrule">limits</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> 100m
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> 200Mi
+          <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> 100m
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> 200Mi
+</code></pre>
+</div><div class="cl-preview-section"><h4 id="nodeaffinity-示例" style="font-size: 26px;">nodeAffinity 示例</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">nodeAffinity 目前支持 4 种策略，分别是：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">
+<p style="font-size: 20px; line-height: 38px;">requiredDuringSchedulingIgnoredDuringExecution：表示 Pod 必须部署到满足条件的节点上，如果没有满足条件的节点，就不停重试。</p>
+</li>
+<li style="font-size: 20px; line-height: 38px;">
+<p style="font-size: 20px; line-height: 38px;">requiredDuringSchedulingRequiredDuringExecution：类似 <code>requiredDuringSchedulingIgnoredDuringExecution</code>，不过如果节点标签发生了变化，不再满足pod指定的条件，则重新选择符合要求的节点。</p>
+</li>
+<li style="font-size: 20px; line-height: 38px;">
+<p style="font-size: 20px; line-height: 38px;">preferredDuringSchedulingIgnoredDuringExecution：表示优先部署到满足条件的节点上，如果没有满足条件的节点，就忽略这些条件，按照正常逻辑部署。</p>
+</li>
+<li style="font-size: 20px; line-height: 38px;">
+<p style="font-size: 20px; line-height: 38px;">preferredDuringSchedulingIgnoredDuringExecution：表示优先部署到满足条件的节点上，如果没有满足条件的节点，就忽略这些条件，按照正常逻辑部署。其中RequiredDuringExecution表示如果后面节点标签发生了变化，满足了条件，则重新调度到满足条件的节点。</p>
+</li>
+</ul>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">下面我们以 requiredDuringSchedulingIgnoredDuringExecution 举例，看一下 DaemonSet 的一个示例 yaml。</p>
+</div><div class="cl-preview-section"><pre class=" language-yaml"><code class="prism  language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apps/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> DaemonSet
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> fluentd<span class="token punctuation">-</span>app
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">k8s-app</span><span class="token punctuation">:</span> fluentd
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> fluentd<span class="token punctuation">-</span>app
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">name</span><span class="token punctuation">:</span> fluentd<span class="token punctuation">-</span>app
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">affinity</span><span class="token punctuation">:</span>
+  			<span class="token key atrule">nodeAffinity</span><span class="token punctuation">:</span>
+  				<span class="token key atrule">requiredDuringSchedulingIgnoredDuringExecution</span><span class="token punctuation">:</span>
+  					<span class="token key atrule">nodeSelectorTerms</span><span class="token punctuation">:</span>
+  					<span class="token punctuation">-</span> <span class="token key atrule">matchExpressions</span><span class="token punctuation">:</span>
+  			  		<span class="token punctuation">-</span> <span class="token key atrule">key</span><span class="token punctuation">:</span> &lt;label<span class="token punctuation">-</span>name<span class="token punctuation">&gt;</span>
+  			    		<span class="token key atrule">operator</span><span class="token punctuation">:</span> In
+  			    		<span class="token key atrule">values</span><span class="token punctuation">:</span>
+  			    		<span class="token punctuation">-</span> &lt;value1<span class="token punctuation">&gt;</span>
+  			    		<span class="token punctuation">-</span> &lt;value2<span class="token punctuation">&gt;</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> fluentd
+        <span class="token key atrule">image</span><span class="token punctuation">:</span> fluentd<span class="token punctuation">:</span>v2.5.2
+        <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+          <span class="token key atrule">limits</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> 100m
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> 200Mi
+          <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> 100m
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> 200Mi
+</code></pre>
+</div><div class="cl-preview-section"><h2 id="更新-daemonset" style="font-size: 30px;">3. 更新 DaemonSet</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">如果 Node 节点的 label 发生改变，DaemonSet 会立刻根据节点的新 label 来做选择并调度 Pod，对于满足标签选择器的节点会将 Pod 调度上去，对于不满足标签选择器的节点则会删除上面的 Pod。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">删除 DaemonSet 的时候，如果选择了参数 <code>--cascade=false</code> 则会保留之前 DaemonSet 创建出来的 Pod。然后可以创建具有不同模板的新 DaemonSet。具有不同模板的新 DaemonSet 将能够通过标签匹配并识别所有已经存在的 Pod。 如果有任何 Pod 需要替换，则 DaemonSet 根据它的 <code>updateStrategy</code> 来替换。</p>
+</div><div class="cl-preview-section"><h2 id="daemonset-工作原理" style="font-size: 30px;">4. DaemonSet 工作原理</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">DaemonSet 的工作原理核心问题是要弄懂如何保证每个 Node 上有且只有一个被管理的 Pod。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这个好解决，我们只要拿到 Node 列表，然后检查每个 Node 节点上是不是运行指定的 label 的 Pod 就行了。而这正好是 DaemonSet Controller 做的事情，关于 Kubernetes 的控制器我们前面有介绍过，控制器会不断的检查状态是不是预期的，如果不是预期的就做一些处理。对于 DaemonSet Controller 这里遍历所有的 Node，然后状态会有如下几种情况：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">没有指定 label 的 Pod 在运行，则需要在这个 Node 节点上创建一个这样的 Pod；</li>
+<li style="font-size: 20px; line-height: 38px;">有指定 label 的 Pod 在运行，但是数量不是 1 个，可能是 2 个或者 3 个，则需要将多余的 Pod 删除；</li>
+<li style="font-size: 20px; line-height: 38px;">正好有一个指定 label 的 Pod 在运行，这个是预期的行为，不做处理。</li>
+</ul>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">那么如何在新创建出来的 Node 创建新的 Pod 呢？或者说怎么将 Pod 调度到指定 Node 上呢？还记得我们之前 Pod 使用那章介绍的亲和性吗？是的，没错，这里使用的就是亲和性调度。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">亲和性调度里面有一个是 nodeAffinity，就是用来将 Pod 调度到指定的 Node 节点上的。下面是一个简单的例子。</p>
+</div><div class="cl-preview-section"><pre class=" language-yaml"><code class="prism  language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Pod
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> myapp<span class="token punctuation">-</span>pod
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">affinity</span><span class="token punctuation">:</span>
+    <span class="token key atrule">nodeAffinity</span><span class="token punctuation">:</span>
+      <span class="token key atrule">requiredDuringSchedulingIgnoredDuringExecution</span><span class="token punctuation">:</span>
+        <span class="token key atrule">nodeSelectorTerms</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">matchExpressions</span><span class="token punctuation">:</span>
+          <span class="token punctuation">-</span> <span class="token key atrule">key</span><span class="token punctuation">:</span> node<span class="token punctuation">-</span>name
+            <span class="token key atrule">operator</span><span class="token punctuation">:</span> In
+            <span class="token key atrule">values</span><span class="token punctuation">:</span>
+            <span class="token punctuation">-</span> &lt;new node name<span class="token punctuation">&gt;</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">关于这个例子有几点需要说明的是：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">requiredDuringSchedulingIgnoredDuringExecution：每次调度的时候才考虑这个亲和性条件，如果之后 Node 节点的信息发生变更，并不会影响之前运行的 Pod。</li>
+<li style="font-size: 20px; line-height: 38px;">nodeSelectorTerms：具体的筛选条件，我们这里使用的 matchExpression，通过 node name 来进行比对选择。</li>
+</ul>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">看到这里，我们应该明白了，DaemonSet 的控制器在新的 Node 几点上创建 Pod 的时候，只需要加上类似这样一个 nodeAffinity 定义，然后在 select 选项里面通过新 Node 节点的名字进行匹配即可。</p>
+</div>}
+                        </div>
+                    </div>
+                                            <!-- 买过的阅读 -->
+                        <div class="art-next-prev clearfix">
+                                                                                                <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2407">
+                                                                    <div class="prev l clearfix">
+                                        <div class="icon l">
+                                            <i class="imv2-arrow3_l"></i>
+                                        </div>
+                                        <p>
+                                            34 配置管理：ConfigMap 和 Secret
+                                        </p>
+                                    </div>
+                                </a>
+                                                                                                                            <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2412">
+                                                                    <div class="next r clearfix">
+                                        <p>
+                                            36 Kubernetes ReplicationController 和 ReplicaSet 介绍
+                                        </p>
+                                        <div class="icon r">
+                                            <i class="imv2-arrow3_r"></i>
+                                        </div>
+
+                                    </div>
+                                </a>
+                                                    </div>
+                                    </div>
+                <div class="comments-con js-comments-con" id="coments_con">
+                </div>
+
+                
+            </div>
+            
+            
+            
+
+        </div>
+    </div>
+</div>
+
+<div class="modal modal-jiaQun-new hide" id="modal-jiaQun">
+    <div class="inner" style="">
+        <div class="modal-close js-close-jiaQun">
+            <i class="imv2-close"></i>
+        </div>
+        <div class="content">
+            <img src="https://img3.sycdn.imooc.com/5f18f4360001392b05330597.jpg">
+            <div class="right-info">
+                <div class="title">
+                    扫码加入慕课前沿技术核心用户群
+                </div>
+                <div class="desc">
+                                            <p class="mb6">验证信息：<span id="joincode">2011031946279713</span><span class="copy js-copy-joincode">复制</span></p>
+                                        <p class="mb6">QQ讨论群号：729941811</p>
+                                            <p>QQ群URL：<a href="https://jq.qq.com/?_wv=1027&amp;k=5WJLMxV" target="_blank">点击访问</a></p>
+                                    </div>
+            </div>
+            <p class="tip">若遇到搜索不到QQ群或加群失败，请联系客服邮箱:kf@imooc.com</p>
+        </div>
+    </div>
+</div>
+ 
+<!-- 专栏介绍页专栏评价 -->
+
+<!-- 专栏介绍页底部三条评价 -->
+
+<!-- 专栏阅读页弹层目录和介绍页页面目录 -->
+
+<!-- 专栏阅读页发布回复 -->
+
+<!-- 专栏阅读页发布评论 -->
+
+<!-- 专栏阅读页底部评论 -->
+
+<!-- 专栏阅读 单个 评论 -->
+
+<!-- 新增回复和展开三条以外回复 -->
+
+<!-- 立即订阅的弹窗 -->
+
+
+
+
+
+
+
+
+
+
+
+
+</div></body></html>

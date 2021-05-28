@@ -1,0 +1,363 @@
+<html><head><meta charset="utf-8"><title>41 使用 Service 访问一组特定的 Pod-慕课专栏</title>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+			<meta name="renderer" content="webkit">
+			<meta property="qc:admins" content="77103107776157736375">
+			<meta property="wb:webmaster" content="c4f857219bfae3cb">
+			<meta http-equiv="Access-Control-Allow-Origin" content="*">
+			<meta http-equiv="Cache-Control" content="no-transform ">
+			<meta http-equiv="Cache-Control" content="no-siteapp">
+			<link rel="apple-touch-icon" sizes="76x76" href="https://www.imooc.com/static/img/common/touch-icon-ipad.png">
+			<link rel="apple-touch-icon" sizes="120x120" href="https://www.imooc.com/static/img/common/touch-icon-iphone-retina.png">
+			<link rel="apple-touch-icon" sizes="152x152" href="https://www.imooc.com/static/img/common/touch-icon-ipad-retina.png">
+			<link href="https://moco.imooc.com/captcha/style/captcha.min.css" rel="stylesheet">
+			<link rel="stylesheet" href="https://www.imooc.com/static/moco/v1.0/dist/css/moco.min.css?t=201907021539" type="text/css">
+			<link rel="stylesheet" href="https://www.imooc.com/static/lib/swiper/swiper-3.4.2.min.css?t=201907021539">
+			<link rel="stylesheet" href="https://static.mukewang.com/static/css/??base.css,common/common-less.css?t=2.5,column/zhuanlanChapter-less.css?t=2.5,course/inc/course_tipoff-less.css?t=2.5?v=201907051055" type="text/css">
+			<link charset="utf-8" rel="stylesheet" href="https://www.imooc.com/static/lib/ueditor/themes/imooc/css/ueditor.css?v=201907021539"><link rel="stylesheet" href="https://www.imooc.com/static/lib/baiduShare/api/css/share_style0_16.css?v=6aba13f0.css"></head>
+			<body><div id="main">
+
+
+<div class="main-con hide-menu">
+    <!-- 左侧菜单 & 索引 -->
+    
+    <div class="right-content" style="padding-left: 0px;">
+        <div class="container clearfix" id="top" style="width: 1134px; display: block;">
+            
+            
+            <div class="center_con js-center_con l" style="width: 1134px;">
+                <div class="article-con">
+                                            <!-- 买过的阅读 -->
+                        
+
+                    
+                    <div class="art-title" style="margin-top: 0px;">
+                        41 使用 Service 访问一组特定的 Pod
+                    </div>
+                    <div class="art-info clearfix">
+                        
+                        <span class="l">
+                            更新时间：2020-10-30 09:52:37
+                        </span>
+                    </div>
+                    <div class="art-top">
+                                                <img src="https://img1.sycdn.imooc.com/5f9b7196000164e606400426.jpg" alt="">
+                                                                        <div class="famous-word-box">
+                            <img src="https://www.imooc.com/static/img/column/bg-l.png" alt="" class="bg1 bg">
+                            <img src="https://www.imooc.com/static/img/column/bg-r.png" alt="" class="bg2 bg">
+                            <div class="famous-word">成功的奥秘在于目标的坚定。——迪斯雷利<p></p></div>
+                        </div>
+                                            </div>
+                    <div class="art-content js-lookimg">
+                        <div id="article_content">
+                            <div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">试想这么一种场景，我们的应用程序都通过 Deployment 来管理，Deployment 后端管理了一组 Pod，每个 Pod 都有自己的 IP 地址。而且对于 Deployment 这种模式，Pod 挂掉之后 Deployment 会重新启动一个新的 Pod。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这就引入了一个问题，如果其他应用想要访问这个 Deployment 提供的服务，直接去访问 Pod 肯定是不行的，那么有没有一种类似服务发现的机制帮助我们做这件事情呢？</p>
+</div><div class="cl-preview-section"><h2 id="service-介绍" style="font-size: 30px;">1. Service 介绍</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">针对上面说的这个问题，Kubernetes 提供了一种 API 对象叫做 Service。Service 可以理解为一种访问一组特定 Pod 的策略。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">举个例子，考虑一个图片处理应用程序，通过 Pod 运行了 3 个副本，并且是无状态的。前端访问该应用程序时，不需要关心实际是调用了那个 Pod 实例。后端的 Pod 发生重启时，前端不应该也不需要感知到。对于这种解耦关系，我们就可以通过 Service 来做。Service 与后端的多个 Pod 进行关联（通过 selector），前端只需要访问 Service 即可。</p>
+</div><div class="cl-preview-section"><h2 id="创建-service" style="font-size: 30px;">2. 创建 Service</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">在 Kubernetes 中，Service 对象也可以通过一个 yaml 文件来定义，下面就是一个简单 Service 定义。</p>
+</div><div class="cl-preview-section"><pre class="  language-yaml"><code class="prism  language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> nginx<span class="token punctuation">-</span>service
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> nginx
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">protocol</span><span class="token punctuation">:</span> TCP
+      <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">80</span>
+      <span class="token key atrule">targetPort</span><span class="token punctuation">:</span> <span class="token number">80</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这个 Service 对象做的事情也比较简单，创建一个名称为 my-service 的 Service 对象，它会将对 80 端口的 TCP 请求转发到一组 Pod 上，这些 Pod 的特点是被打上标签 <code>app=nginx</code>，并且使用 TCP 端口 80。这些 Pod 我们暂时还没有创建，我们先把这个 Service 通过 <code>kubectl apply</code> 创建出来。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">$ kubectl apply -f nginx-service.yaml -n imooc
+service/nginx-service created
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">同样的，我们通过 <code>kubectl describe service</code> 来查看一下我们创建出来的 Service 对象。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">$ kubectl describe <span class="token function">service</span> nginx-service -n imooc
+Name:              nginx-service
+Namespace:         imooc
+Labels:            <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>
+Annotations:       kubectl.kubernetes.io/last-applied-configuration:
+                     <span class="token punctuation">{</span><span class="token string">"apiVersion"</span><span class="token keyword">:</span><span class="token string">"v1"</span>,<span class="token string">"kind"</span><span class="token keyword">:</span><span class="token string">"Service"</span>,<span class="token string">"metadata"</span>:<span class="token punctuation">{</span><span class="token string">"annotations"</span>:<span class="token punctuation">{</span><span class="token punctuation">}</span>,<span class="token string">"name"</span><span class="token keyword">:</span><span class="token string">"nginx-service"</span>,<span class="token string">"namespace"</span><span class="token keyword">:</span><span class="token string">"imooc"</span><span class="token punctuation">}</span>,<span class="token string">"spec"</span>:<span class="token punctuation">{</span><span class="token string">"ports"</span>:<span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token string">"port"</span>:80,"<span class="token punctuation">..</span>.
+Selector:          app<span class="token operator">=</span>nginx
+Type:              ClusterIP
+IP:                10.0.213.149
+Port:              <span class="token operator">&lt;</span>unset<span class="token operator">&gt;</span>  80/TCP
+TargetPort:        80/TCP
+Endpoints:         <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>
+Session Affinity:  None
+Events:            <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这里有几个关键的信息，包括：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">selector：Service 会根据 selector 条件去选择 label 满足条件的 Pod 进行请求转发；</li>
+<li style="font-size: 20px; line-height: 38px;">Type: Service 的类型，这里是 ClusterIP 类似，也是默认的类型。简单来说，ClusterIP 类型会分配一个固定的 IP，然后只能通过集群内部进行访问；</li>
+<li style="font-size: 20px; line-height: 38px;">IP：Service 对象分配的 IP，可以认为是一个 vip；</li>
+<li style="font-size: 20px; line-height: 38px;">Port/TargetPort：前者是 Service 对象监听的端口，后者是转发的目标 Pod 的端口；</li>
+<li style="font-size: 20px; line-height: 38px;">Endpoints：是一个列表，表示转发到后端的 Pod 的 IP 集合。</li>
+</ul>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这其中比较重要的一个点就是 endpoints，因为现在集群内没有满足条件的 Pod 可以供转发，所以 endpoints 字段目前为空。</p>
+</div><div class="cl-preview-section"><h2 id="请求转发" style="font-size: 30px;">3. 请求转发</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">下面我们创建一组满足条件的 nginx 的 Pod：具有 label <code>app=nginx</code> 和使用端口 80。下面就是我们的 Deployment 的定义。</p>
+</div><div class="cl-preview-section"><pre class="  language-yaml"><code class="prism  language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apps/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Deployment
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> nginx<span class="token punctuation">-</span>deployment
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> nginx
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">3</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
+      <span class="token key atrule">app</span><span class="token punctuation">:</span> nginx
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">app</span><span class="token punctuation">:</span> nginx
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> nginx
+        <span class="token key atrule">image</span><span class="token punctuation">:</span> nginx<span class="token punctuation">:</span>1.9.1
+        <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">80</span>
+        <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+          <span class="token key atrule">limits</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> 100m
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> 200Mi
+          <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> 100m
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> 200Mi
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">通过 <code>kubectl apply</code> 创建该 Deployment。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">$ kubectl apply -f nginx-dm.yaml -n imooc
+deployment.apps/nginx-deployment created
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们通过 <code>kubectl get pods</code> 看一下改 deployment 创建的 pod 情况，通过 <code>-o wide</code> 参数可以显示更多的字段，比如 IP，节点名称，我们这里主要是为了查看 IP，所以其他字段域暂时先隐藏掉。记住下面的几个 Pod 的 IP。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">kubectl get pods -n imooc -o wide <span class="token operator">|</span> <span class="token function">grep</span> nginx
+nginx-deployment-c464767dd-6ts4x   1/1     Running     0          85s     10.1.1.154      
+nginx-deployment-c464767dd-d9mh7   1/1     Running     0          85s     10.1.2.159   
+nginx-deployment-c464767dd-qd22h   1/1     Running     0          85s     10.1.2.31    
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们现在再回过头来查看一下之前创建的 Service 对象。如下所示，我们可以看到其中的 Endpoints 字段域不再为空了，而是上面的三个 Pod 的 IP:Port 集合。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">$ kubectl describe <span class="token function">service</span> nginx-service -n imooc
+Name:              nginx-service
+Namespace:         imooc
+Labels:            <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>
+Annotations:       kubectl.kubernetes.io/last-applied-configuration:
+                     <span class="token punctuation">{</span><span class="token string">"apiVersion"</span><span class="token keyword">:</span><span class="token string">"v1"</span>,<span class="token string">"kind"</span><span class="token keyword">:</span><span class="token string">"Service"</span>,<span class="token string">"metadata"</span>:<span class="token punctuation">{</span><span class="token string">"annotations"</span>:<span class="token punctuation">{</span><span class="token punctuation">}</span>,<span class="token string">"name"</span><span class="token keyword">:</span><span class="token string">"nginx-service"</span>,<span class="token string">"namespace"</span><span class="token keyword">:</span><span class="token string">"imooc"</span><span class="token punctuation">}</span>,<span class="token string">"spec"</span>:<span class="token punctuation">{</span><span class="token string">"ports"</span>:<span class="token punctuation">[</span><span class="token punctuation">{</span><span class="token string">"port"</span>:80,"<span class="token punctuation">..</span>.
+Selector:          app<span class="token operator">=</span>nginx
+Type:              ClusterIP
+IP:                10.0.213.149
+Port:              <span class="token operator">&lt;</span>unset<span class="token operator">&gt;</span>  80/TCP
+TargetPort:        80/TCP
+Endpoints:         10.1.1.154:80,10.1.2.159:80,10.1.2.31:80
+Session Affinity:  None
+Events:            <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">实际上，Service 对象会创建一个 endpoints 对象，我们可以通过 <code>kubectl get endpoints</code> 来查看。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">$ kubectl get endpoints -n imooc
+NAME            ENDPOINTS                                  AGE
+nginx-service   10.1.1.154:80,10.1.2.159:80,10.1.2.31:80   113m
+$ kubectl describe endpoints nginx-service -n imooc
+Name:         nginx-service
+Namespace:    imooc
+Labels:       <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>
+Annotations:  endpoints.kubernetes.io/last-change-trigger-time: 2020-04-19T12:55:17+08:00
+Subsets:
+  Addresses:          10.1.1.154,10.1.2.159,10.1.2.31
+  NotReadyAddresses:  <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>
+  Ports:
+    Name     Port  Protocol
+    ----     ----  --------
+    <span class="token operator">&lt;</span>unset<span class="token operator">&gt;</span>  80    TCP
+
+Events:  <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">现在我们已经创建出来了后端应用，我们看一下请求是如何进行转发的。所有到 Service IP 的 80 端口的请求都会被转发到后端的三个 Pod 中的一个，转发到哪个 Pod 对应到不同的负载均衡策略。还有一点需要注意的是，ClusterIP 类型的 Service 只能在集群内部进行访问。如下所示，我们直接访问 Service IP 对应的端口 80，直接返回了 Nginx 的欢迎页面，也就是转发到了运行 nginx 的 Pod 中了。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">$ curl 10.0.213.149:80
+<span class="token operator">&lt;</span><span class="token operator">!</span>DOCTYPE html<span class="token operator">&gt;</span>
+<span class="token operator">&lt;</span>html<span class="token operator">&gt;</span>
+<span class="token operator">&lt;</span>head<span class="token operator">&gt;</span>
+<span class="token operator">&lt;</span>title<span class="token operator">&gt;</span>Welcome to nginx<span class="token operator">!</span><span class="token operator">&lt;</span>/title<span class="token operator">&gt;</span>
+<span class="token operator">&lt;</span>style<span class="token operator">&gt;</span>
+    body <span class="token punctuation">{</span>
+        width: 35em<span class="token punctuation">;</span>
+        margin: 0 auto<span class="token punctuation">;</span>
+        font-family: Tahoma, Verdana, Arial, sans-serif<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token operator">&lt;</span>/style<span class="token operator">&gt;</span>
+<span class="token operator">&lt;</span>/head<span class="token operator">&gt;</span>
+<span class="token operator">&lt;</span>body<span class="token operator">&gt;</span>
+<span class="token operator">&lt;</span>h1<span class="token operator">&gt;</span>Welcome to nginx<span class="token operator">!</span><span class="token operator">&lt;</span>/h1<span class="token operator">&gt;</span>
+<span class="token operator">&lt;</span>p<span class="token operator">&gt;</span>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.<span class="token operator">&lt;</span>/p<span class="token operator">&gt;</span>
+
+<span class="token operator">&lt;</span>p<span class="token operator">&gt;</span>For online documentation and support please refer to
+<span class="token operator">&lt;</span>a href<span class="token operator">=</span><span class="token string">"http://nginx.org/"</span><span class="token operator">&gt;</span>nginx.org<span class="token operator">&lt;</span>/a<span class="token operator">&gt;</span>.<span class="token operator">&lt;</span>br/<span class="token operator">&gt;</span>
+Commercial support is available at
+<span class="token operator">&lt;</span>a href<span class="token operator">=</span><span class="token string">"http://nginx.com/"</span><span class="token operator">&gt;</span>nginx.com<span class="token operator">&lt;</span>/a<span class="token operator">&gt;</span>.<span class="token operator">&lt;</span>/p<span class="token operator">&gt;</span>
+
+<span class="token operator">&lt;</span>p<span class="token operator">&gt;</span><span class="token operator">&lt;</span>em<span class="token operator">&gt;</span>Thank you <span class="token keyword">for</span> using nginx.<span class="token operator">&lt;</span>/em<span class="token operator">&gt;</span><span class="token operator">&lt;</span>/p<span class="token operator">&gt;</span>
+<span class="token operator">&lt;</span>/body<span class="token operator">&gt;</span>
+<span class="token operator">&lt;</span>/html<span class="token operator">&gt;</span>
+</code></pre>
+</div><div class="cl-preview-section"><h2 id="多端口-service" style="font-size: 30px;">4. 多端口 Service</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">有时候我们会为同一个应用分配多个端口，比如开放 http 端口 80，开放 https 端口 443，我们同样可以在 Service 对象中配置多个端口。但是需要注意的是，当使用多个端口时，必须提供所有端口名称，以他们无歧义。端口名称只能包含小写字母数字字符和中划线，并且必须以字母数字字符开头和结尾。如下是一个多端口 Service 的定义描述。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">apiVersion: v1
+kind: Service
+metadata:
+  name: my-service
+spec:
+  selector:
+    app: MyApp
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 9376
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 9377
+</code></pre>
+</div><div class="cl-preview-section"><h2 id="设置固定-ip" style="font-size: 30px;">5. 设置固定 IP</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">前面的 Service 都是分配了随机 IP，随机 IP 在 ApiServer 的启动参数 <code>service-cluster-ip-range</code> 的 CIDR 范围内。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">如果我们想要对 IP 有更强的掌控力，那么我们可以在 Service 的定义中通过参数 <code>spec.clusterIP</code> 指定自己的 clusterIP，比如希望替换一个已存在的 DNS 条目，或者遗留系统中已经配置了一个固定 IP 并且修改起来比较麻烦。</p>
+</div><div class="cl-preview-section"><h2 id="服务发现" style="font-size: 30px;">6. 服务发现</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Kubernetes 提供了两种服务发现模式：环境变量和 DNS。</p>
+</div><div class="cl-preview-section"><h4 id="环境变量" style="font-size: 26px;">环境变量</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">环境变量的方式指的是 Kubernetes 会将集群中的 Service 对象以环境变量的方式注入到 Pod 中，形如 <code>{SVCNAME}_SERVICE_HOST</code> 和 <code>{SVCNAME}_SERVICE_PORT</code> 。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">举个例子，一个 redis 实例  <code>redis-master</code> 的 Service 暴露了 TCP 端口 6379，同时分配了 ClusterIP 地址 10.0.0.11，对应的环境变量如下。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">REDIS_MASTER_SERVICE_HOST<span class="token operator">=</span>10.0.0.11
+REDIS_MASTER_SERVICE_PORT<span class="token operator">=</span>6379
+REDIS_MASTER_PORT<span class="token operator">=</span>tcp://10.0.0.11:6379
+REDIS_MASTER_PORT_6379_TCP<span class="token operator">=</span>tcp://10.0.0.11:6379
+REDIS_MASTER_PORT_6379_TCP_PROTO<span class="token operator">=</span>tcp
+REDIS_MASTER_PORT_6379_TCP_PORT<span class="token operator">=</span>6379
+REDIS_MASTER_PORT_6379_TCP_ADDR<span class="token operator">=</span>10.0.0.11
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">环境变量这种方式有个比较明显的弊端：环境变量不会自动更新。如果 Service 在 Pod 启动之后才创建成功，那么这个 Service 在该 Pod 内的环境变量中是找不到的。</p>
+</div><div class="cl-preview-section"><h4 id="dns" style="font-size: 26px;">DNS</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Kubernetes 集群的 DNS 服务器，比如 CoreDNS，会监控集群中的新服务，并为每个服务创建一组 DNS 记录。如果整个集群中都启用了 DNS，则所有的 Pod 都应该能够通过其 DNS 名称自动解析服务。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">举个例子，如果在 Namespace <code>my-ns</code> 中有一个名称为 <code>my-svc</code> 的服务，则 DNS 服务器会为该服务创建一个 DNS 条目 <code>my-svc.my-ns</code> 。位于 Namespace <code>my-ns</code> 下的 Pod 则可以通过名称 <code>my-svc</code> 或者 <code>my-svc.my-ns</code> 来进行服务发现。其他 Namespace 下的 Pod 则可以通过 <code>my-svc.my-ns</code> 来进行服务发现。</p>
+</div><div class="cl-preview-section"><h2 id="headless-service" style="font-size: 30px;">7. Headless Service</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">对于拥有 ClusterIP 的 Service，当我们访问其 ClusterIP 时，其会自动为我们做负载均衡。但是有的时候我们想要嵌入我们自己的负载均衡策略，那么对于这种情况，可以通过指定 ClusterIP 的值为 <code>None</code> ，这个时候创建出来的 Service 则为 <code>Headless</code> Service。我们在做服务发现时，这个 Service 返回的为后端的 Pod 列表，这个时候我们就可以灵活发挥了。下面举个例子。</p>
+</div><div class="cl-preview-section"><pre class="  language-yaml"><code class="prism  language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> nginx<span class="token punctuation">-</span>service
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">clusterIP</span><span class="token punctuation">:</span> None
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> nginx
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">protocol</span><span class="token punctuation">:</span> TCP
+      <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">80</span>
+      <span class="token key atrule">targetPort</span><span class="token punctuation">:</span> <span class="token number">80</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这个是一个很简单的 Headless Service，后端代理了多个具有 label: app=nginx 的 Pod。我们将该 Service 进行部署，然后在 Kubernetes 集群中的某个 Pod 内部通过 nslookup 来查询该服务。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">/ $ <span class="token function">nslookup</span> nginx-service
+
+Name:      nginx-service
+Address 1: 10.1.1.154 10-1-1-154.nginx-service.imooc.svc.cluster.local
+Address 2: 10.1.2.31 10-1-2-31.nginx-service.imooc.svc.cluster.local
+Address 3: 10.1.2.159 10-1-2-159.nginx-service.imooc.svc.cluster.local
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们可以看到服务发现时候，直接将后端的 Pod 列表返回了，每个 Pod 对应的 DNS 条目为 ip.&lt;svc-name&gt;.&lt;namespace&gt;.svc.cluster.local，这个时候我们就可以根据需求来做进一步操作了。</p>
+</div><div class="cl-preview-section"><h2 id="总结" style="font-size: 30px;">8. 总结</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">本篇文章介绍了 Kubernetes 中的 API 对象 Service 的基本情况，下一篇文章将会和大家介绍 Kubernetes 提供的多种 Service 类型。</p>
+</div>}
+                        </div>
+                    </div>
+                                            <!-- 买过的阅读 -->
+                        <div class="art-next-prev clearfix">
+                                                                                                <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2443">
+                                                                    <div class="prev l clearfix">
+                                        <div class="icon l">
+                                            <i class="imv2-arrow3_l"></i>
+                                        </div>
+                                        <p>
+                                            40 Kubernetes 有状态应用管理 StatefulSet 
+                                        </p>
+                                    </div>
+                                </a>
+                                                                                                                            <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2446">
+                                                                    <div class="next r clearfix">
+                                        <p>
+                                            42 Kubernetes Service 类型
+                                        </p>
+                                        <div class="icon r">
+                                            <i class="imv2-arrow3_r"></i>
+                                        </div>
+
+                                    </div>
+                                </a>
+                                                    </div>
+                                    </div>
+                <div class="comments-con js-comments-con" id="coments_con">
+                </div>
+
+                
+            </div>
+            
+            
+            
+
+        </div>
+    </div>
+</div>
+
+<div class="modal modal-jiaQun-new hide" id="modal-jiaQun">
+    <div class="inner" style="">
+        <div class="modal-close js-close-jiaQun">
+            <i class="imv2-close"></i>
+        </div>
+        <div class="content">
+            <img src="https://img1.sycdn.imooc.com/5f18f4360001392b05330597.jpg">
+            <div class="right-info">
+                <div class="title">
+                    扫码加入慕课前沿技术核心用户群
+                </div>
+                <div class="desc">
+                                            <p class="mb6">验证信息：<span id="joincode">2011031946279713</span><span class="copy js-copy-joincode">复制</span></p>
+                                        <p class="mb6">QQ讨论群号：729941811</p>
+                                            <p>QQ群URL：<a href="https://jq.qq.com/?_wv=1027&amp;k=5WJLMxV" target="_blank">点击访问</a></p>
+                                    </div>
+            </div>
+            <p class="tip">若遇到搜索不到QQ群或加群失败，请联系客服邮箱:kf@imooc.com</p>
+        </div>
+    </div>
+</div>
+ 
+<!-- 专栏介绍页专栏评价 -->
+
+<!-- 专栏介绍页底部三条评价 -->
+
+<!-- 专栏阅读页弹层目录和介绍页页面目录 -->
+
+<!-- 专栏阅读页发布回复 -->
+
+<!-- 专栏阅读页发布评论 -->
+
+<!-- 专栏阅读页底部评论 -->
+
+<!-- 专栏阅读 单个 评论 -->
+
+<!-- 新增回复和展开三条以外回复 -->
+
+<!-- 立即订阅的弹窗 -->
+
+
+
+
+
+
+
+
+
+
+
+
+</div></body></html>

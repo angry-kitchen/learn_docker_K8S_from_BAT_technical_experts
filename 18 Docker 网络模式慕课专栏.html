@@ -1,0 +1,232 @@
+<html><head><meta charset="utf-8"><title>18 Docker 网络模式-慕课专栏</title>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+			<meta name="renderer" content="webkit">
+			<meta property="qc:admins" content="77103107776157736375">
+			<meta property="wb:webmaster" content="c4f857219bfae3cb">
+			<meta http-equiv="Access-Control-Allow-Origin" content="*">
+			<meta http-equiv="Cache-Control" content="no-transform ">
+			<meta http-equiv="Cache-Control" content="no-siteapp">
+			<link rel="apple-touch-icon" sizes="76x76" href="https://www.imooc.com/static/img/common/touch-icon-ipad.png">
+			<link rel="apple-touch-icon" sizes="120x120" href="https://www.imooc.com/static/img/common/touch-icon-iphone-retina.png">
+			<link rel="apple-touch-icon" sizes="152x152" href="https://www.imooc.com/static/img/common/touch-icon-ipad-retina.png">
+			<link href="https://moco.imooc.com/captcha/style/captcha.min.css" rel="stylesheet">
+			<link rel="stylesheet" href="https://www.imooc.com/static/moco/v1.0/dist/css/moco.min.css?t=201907021539" type="text/css">
+			<link rel="stylesheet" href="https://www.imooc.com/static/lib/swiper/swiper-3.4.2.min.css?t=201907021539">
+			<link rel="stylesheet" href="https://static.mukewang.com/static/css/??base.css,common/common-less.css?t=2.5,column/zhuanlanChapter-less.css?t=2.5,course/inc/course_tipoff-less.css?t=2.5?v=201907051055" type="text/css">
+			<link charset="utf-8" rel="stylesheet" href="https://www.imooc.com/static/lib/ueditor/themes/imooc/css/ueditor.css?v=201907021539"><link rel="stylesheet" href="https://www.imooc.com/static/lib/baiduShare/api/css/share_style0_16.css?v=6aba13f0.css"></head>
+			<body><div id="main">
+
+
+<div class="main-con hide-menu">
+    <!-- 左侧菜单 & 索引 -->
+    
+    <div class="right-content" style="padding-left: 0px;">
+        <div class="container clearfix" id="top" style="width: 1134px; display: block;">
+            
+            
+            <div class="center_con js-center_con l" style="width: 1134px;">
+                <div class="article-con">
+                                            <!-- 买过的阅读 -->
+                        
+
+                    
+                    <div class="art-title" style="margin-top: 0px;">
+                        18 Docker 网络模式
+                    </div>
+                    <div class="art-info clearfix">
+                        
+                        <span class="l">
+                            更新时间：2020-08-26 09:57:10
+                        </span>
+                    </div>
+                    <div class="art-top">
+                                                <img src="https://img3.sycdn.imooc.com/5f45c0eb0001e5a406400426.jpg" alt="">
+                                                                        <div class="famous-word-box">
+                            <img src="https://www.imooc.com/static/img/column/bg-l.png" alt="" class="bg1 bg">
+                            <img src="https://www.imooc.com/static/img/column/bg-r.png" alt="" class="bg2 bg">
+                            <div class="famous-word">机会不会上门来找人，只有人去找机会。——狄更斯<p></p></div>
+                        </div>
+                                            </div>
+                    <div class="art-content js-lookimg">
+                        <div id="article_content">
+                            <div class="cl-preview-section"><h1 id="docker-网络模式">Docker 网络模式</h1>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">在上一篇文章我们介绍了 Docker 网络的工作模式，包括 docker0 网桥和 iptables 等。其中 docker0 网桥是 Docker 默认网络模式，也就是 bridge 模式。</p>
+</div><div class="cl-preview-section"><h2 id="概览" style="font-size: 30px;">1. 概览</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Docker 现在的网络模块是插件式的，只要按既定协议实现就可以使用。Docker 默认实现了五种网络模式如下（现在网络上面可以搜索到的文章都说 Docker 支持四种网络模式，其实是不准确的），我们可以在 <code>Docker run</code> 的时候通过参数 <code>--net</code> 指定。</p>
+</div><div class="cl-preview-section"><h3 id="bridge-模式">bridge 模式</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Docker 的默认网络模式。这种模式会将创建出来的所有 Docker 容器链接到 docker0 网桥或者自定义网桥上，所有的 Docker 容器处于同一个子网。</p>
+</div><div class="cl-preview-section"><h3 id="host-模式"><em><strong>host</strong></em> 模式</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">顾名思义，这种模式下，Docker 容器和宿主机使用同一个网络协议栈，也就是同一个 network namespace，和宿主机共享网卡、IP、端口等信息。好处是性能更好，缺点也很明显，没有做网络隔离。</p>
+</div><div class="cl-preview-section"><h3 id="overlay-模式"><em><strong>overlay</strong></em> 模式</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这种模式在多个 Docker daemon 主机之间创建一个分布式网络，该网络位于 Docker 主机层次之上，允许容器之间加密通讯，需要处理容器之间和主机之间的网络包。</p>
+</div><div class="cl-preview-section"><h3 id="macvlan-模式"><em><strong>macvlan</strong></em> 模式</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">macvlan 是 Linux 的一个内核模块，算是一个比较新的特性。本质上是一种网卡虚拟化技术，通过 macvlan 可以在同一个物理网卡上虚拟出多个网卡，通过不同的 Mac 地址在数据链路层进行网络数据的转发，一块网卡上配置多个 Mac 地址。Docker 的 macvlan 网络实际上就是使用 Linux 提供的 macvlan 驱动。</p>
+</div><div class="cl-preview-section"><h3 id="none-模式"><em><strong>none</strong></em> 模式</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这种模式下 Docker 容器拥有自己的 network namespace，但是并不会做任何网络配置。换句话说，这个 Docker 容器除了 network namespace 自带的 lo 网卡（loopback，127.0.0.1）外没有其他任何网卡、IP 等信息。这种模式如果不做额外配置是无法使用的，要使用需要自己添加网卡等，也就是它给了用户最大的自由度。</p>
+</div><div class="cl-preview-section"><h3 id="network-plugins">network plugins</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">除了上面默认实现的五种网络模式，你还可以使用第三方的网络插件。这部分需要较多篇幅，本篇文章暂时不介绍了。感兴趣的同学可以参考<a href="https://docs.docker.com/engine/extend/plugins_network/">这篇</a>文章。</p>
+</div><div class="cl-preview-section"><h2 id="bridge-模式-1" style="font-size: 30px;">2. Bridge 模式</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">虽然上一篇文章已经基于 bridge 模式做了分析，这里还是简单介绍一下 bridge 模式下，Docker 初始化容器网络的步骤：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">创建一对虚拟网卡（veth pair）。</li>
+<li style="font-size: 20px; line-height: 38px;">赋予其中一块网卡类似 “vethxxx” 的名字，将其绑定到 docker0 或者自定义网桥，用来连接宿主机的 network namespace。</li>
+<li style="font-size: 20px; line-height: 38px;">将 veth pair 的另一块网卡放入新创建的 Docker 容器的 network namespace 中，命名为 eth0。</li>
+<li style="font-size: 20px; line-height: 38px;">从网桥的子网中选取一个未使用的 IP 分配给 eth0，并为 Docker 容器网络设置路由和网格。</li>
+</ul>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Docker 会自动创建 docker0 网桥，使用 bridge 模式的 Docker 容器默认使用 docker0 网桥，除此之外，你也可以使用自定义网桥（User-defined bridge network）。自定义网桥和默认 docker0 网桥的区别在于：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">自定义网桥提供容器间的自定义 DNS 解析。默认网桥网络下的 Docker 容器只能通过 IP 地址交互，除非使用 <code>--link</code> 参数将多个 Docker 容器连接起来。</li>
+<li style="font-size: 20px; line-height: 38px;">自定义网桥具有更好的隔离性。默认创建的 Docker 容器如果没有指定 <code>--network</code> 参数，都会连接到默认的 docker0 网桥上，这样相当于将所有不不相干的容器都置于一个同一个网络环境中，可能存在风险。自定义网桥相当于将 docker0 网桥按我们需要分隔成多个自定义网桥，毫无疑问，这样隔离性更好。</li>
+<li style="font-size: 20px; line-height: 38px;">容器可以在运行时和自定义网桥进行绑定或者解绑。这个默认 docker0 网桥是不行的，需要停止容器。</li>
+<li style="font-size: 20px; line-height: 38px;">每个自定义网桥可以自定义自己的配置，比如 MTU 和 iptables 规则等。但是如果使用默认 docker0 网桥，相当于共享配置。</li>
+<li style="font-size: 20px; line-height: 38px;">通过默认网桥 Link 的 Docker 容器可以共享环境变量。所谓 Link 是指 <code>docker run</code> 的时候指定 <code>--link</code> 参数。这个在自定义网桥中是不行的，但是可以通过其他方式来实现，比如：
+<ul>
+<li style="font-size: 20px; line-height: 38px;">将需要共享的数据放到 volume 中，多个 Docker 容器自行 mount。</li>
+<li style="font-size: 20px; line-height: 38px;">使用 <code>docker-compose</code> 启动多个 Docker 容器，将共享变量定义到 compose 文件中。</li>
+</ul>
+</li>
+</ul>
+</div><div class="cl-preview-section"><h2 id="host-模式-1" style="font-size: 30px;">3. Host 模式</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Host 模式可以通过参数  <code>--network host</code> 指定，比如我们使用 host 模式启动一个 nginx 容器。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@docker ~<span class="token punctuation">]</span><span class="token comment"># docker run --rm -d --network host --name host_nginx nginx</span>
+38a4b19971e5f503dc902ba070d4dec270f0737197e574f50eb9dff253c56129
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Nginx 进程会使用 80 端口，那么我们看一下刚才启动 nginx 容器有没有占用宿主机的 80 端口。首先我们要获取到容器对应的宿主机上面的进程 pid，使用命令 <code>docker top</code> 命令。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@docker ~<span class="token punctuation">]</span><span class="token comment"># docker ps | grep host_nginx</span>
+38a4b19971e5        nginx               <span class="token string">"nginx -g 'daemon of…"</span>   3 minutes ago       Up 3 minutes                                 host_nginx
+<span class="token punctuation">[</span>root@docker ~<span class="token punctuation">]</span><span class="token comment"># docker top 38a4b19971e5</span>
+UID                 PID                 PPID                C                   STIME               TTY                 TIME                CMD
+root                28480               28460               0                   20:29               ?                   00:00:00            nginx: master process nginx -g daemon off<span class="token punctuation">;</span>
+101                 28506               28480               0                   20:29               ?                   00:00:00            nginx: worker process
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">上面的输出表示 nginx 的 Docker 容器启动了两个进程 nginx master 和 nginx worker，分别对应到宿主机的 28480 和 28506 号进程。然后我们通过 <code>netstat</code> 命令查看 nginx master 进程有没有占用宿主机的 80 端口。答案很明显是的。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@docker ~<span class="token punctuation">]</span><span class="token comment"># netstat -anlp | grep 28480</span>
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      28480/nginx: master
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Host 模式的优缺点都很明显。</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;"><strong>缺点</strong>：没有和宿主机的 network namespace 进行隔离。可能会存在端口冲突的情况，比如 nginx 镜像的 Docker 容器会使用 80 端口，那么我们就不能以 host 模式启动两个容器，不然会冲突。</li>
+<li style="font-size: 20px; line-height: 38px;"><strong>优点</strong>：共用同一个 network namespace 也就意味没有个多个 network namespace 之间的数据转发，性能更好。</li>
+</ul>
+</div><div class="cl-preview-section"><h2 id="none-模式-1" style="font-size: 30px;">4. none 模式</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">None 模式就是禁止 Docker 容器的网络，没啥可以多说的，我们还是以一个实际的例子来好了。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@docker ~<span class="token punctuation">]</span><span class="token comment"># docker run --rm -ti --network none --name none-net-busybox busybox:latest sh</span>
+/ <span class="token comment"># ifconfig</span>
+lo        Link encap:Local Loopback
+          inet addr:127.0.0.1  Mask:255.0.0.0
+          UP LOOPBACK RUNNING  MTU:65536  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:1
+          RX bytes:0 <span class="token punctuation">(</span>0.0 B<span class="token punctuation">)</span>  TX bytes:0 <span class="token punctuation">(</span>0.0 B<span class="token punctuation">)</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们首先通过 <code>--network none</code> 参数启动一个 none 模式的 busybox 容器，然后在容器中通过 ifconfig 查看发现只有一个 loopback 网卡，这也就意味这个 Docker 容器是不可访问的，也就是 none 模式的含义。</p>
+</div><div class="cl-preview-section"><h2 id="overlay--macvlan" style="font-size: 30px;">5. overlay &amp;&amp; macvlan</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Overlay 和 Macvlan 模式我们这里就不做过多介绍了，Overlay 模式网络我们后面在 Kubernetes 网络相关内容再介绍，毕竟现在的跨主机的 Docker 容器部署基本都是通过 Kubernetes 来部署的。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Macvlan 相当于是处理 VM 迁移到 Docker 容器的历史遗留问题使用的方式，大部分人应该都应用不到，这里不做过多介绍。感兴趣的同学可以参考<a href="https://docs.docker.com/network/macvlan/">这里</a>。</p>
+</div><div class="cl-preview-section"><h2 id="最佳实践" style="font-size: 30px;">6. 最佳实践</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">官方给了一个针对各个网络模式的选择使用建议：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;"><em><strong>User-defined bridge network</strong></em> 适用于同一个宿主机上多个 Docker 容器进行通信。这里的 <em><strong>user-defined</strong></em> 可以理解为自定义网桥，不适用 docker0 网桥，这样可以更灵活地设置子网和 iptables。</li>
+<li style="font-size: 20px; line-height: 38px;"><em><strong>Host networks</strong></em> 适用于 Docker 容器的网络不需要和宿主机进行隔离的场景，比如对于网络性能比较敏感的场景。</li>
+<li style="font-size: 20px; line-height: 38px;"><em><strong>Overlay networks</strong></em> 适用于运行在多个宿主机上 Docker 容器之间的通信情况。</li>
+<li style="font-size: 20px; line-height: 38px;"><em><strong>Macvlan networks</strong></em> 适用于 VM 迁移的场景，这样每个 Docker 容器看起来和物理主机一样。</li>
+<li style="font-size: 20px; line-height: 38px;"><em><strong>Third-party network plugins</strong></em> 适用于将 Docker 和特定网络协议栈整合的场景。</li>
+</ul>
+</div><div class="cl-preview-section"><h2 id="总结" style="font-size: 30px;">7. 总结</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">本篇文章介绍了 Docker 支持的集中网络模式，并重点介绍了最常用的 bridge 和 host 模式。由于篇幅有限，macvlan 和 第三方的 network plugin 没有做介绍，感兴趣的同学可以自行查阅。</p>
+</div>}
+                        </div>
+                    </div>
+                                            <!-- 买过的阅读 -->
+                        <div class="art-next-prev clearfix">
+                                                                                                <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2249">
+                                                                    <div class="prev l clearfix">
+                                        <div class="icon l">
+                                            <i class="imv2-arrow3_l"></i>
+                                        </div>
+                                        <p>
+                                            17 Docker 网络初探
+                                        </p>
+                                    </div>
+                                </a>
+                                                                                                                            <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2251">
+                                                                    <div class="next r clearfix">
+                                        <p>
+                                            19 容器间网络通信：link 的技术原理解析
+                                        </p>
+                                        <div class="icon r">
+                                            <i class="imv2-arrow3_r"></i>
+                                        </div>
+
+                                    </div>
+                                </a>
+                                                    </div>
+                                    </div>
+                <div class="comments-con js-comments-con" id="coments_con">
+                </div>
+
+                
+            </div>
+            
+            
+            
+
+        </div>
+    </div>
+</div>
+
+<div class="modal modal-jiaQun-new hide" id="modal-jiaQun">
+    <div class="inner" style="">
+        <div class="modal-close js-close-jiaQun">
+            <i class="imv2-close"></i>
+        </div>
+        <div class="content">
+            <img src="https://img4.sycdn.imooc.com/5f18f4360001392b05330597.jpg">
+            <div class="right-info">
+                <div class="title">
+                    扫码加入慕课前沿技术核心用户群
+                </div>
+                <div class="desc">
+                                            <p class="mb6">验证信息：<span id="joincode">2011031946279713</span><span class="copy js-copy-joincode">复制</span></p>
+                                        <p class="mb6">QQ讨论群号：729941811</p>
+                                            <p>QQ群URL：<a href="https://jq.qq.com/?_wv=1027&amp;k=5WJLMxV" target="_blank">点击访问</a></p>
+                                    </div>
+            </div>
+            <p class="tip">若遇到搜索不到QQ群或加群失败，请联系客服邮箱:kf@imooc.com</p>
+        </div>
+    </div>
+</div>
+ 
+<!-- 专栏介绍页专栏评价 -->
+
+<!-- 专栏介绍页底部三条评价 -->
+
+<!-- 专栏阅读页弹层目录和介绍页页面目录 -->
+
+<!-- 专栏阅读页发布回复 -->
+
+<!-- 专栏阅读页发布评论 -->
+
+<!-- 专栏阅读页底部评论 -->
+
+<!-- 专栏阅读 单个 评论 -->
+
+<!-- 新增回复和展开三条以外回复 -->
+
+<!-- 立即订阅的弹窗 -->
+
+
+
+
+
+
+
+
+
+
+
+
+</div></body></html>

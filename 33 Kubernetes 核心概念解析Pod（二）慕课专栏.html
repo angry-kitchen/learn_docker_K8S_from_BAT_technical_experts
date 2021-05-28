@@ -1,0 +1,379 @@
+<html><head><meta charset="utf-8"><title>33 Kubernetes 核心概念解析：Pod（二）-慕课专栏</title>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+			<meta name="renderer" content="webkit">
+			<meta property="qc:admins" content="77103107776157736375">
+			<meta property="wb:webmaster" content="c4f857219bfae3cb">
+			<meta http-equiv="Access-Control-Allow-Origin" content="*">
+			<meta http-equiv="Cache-Control" content="no-transform ">
+			<meta http-equiv="Cache-Control" content="no-siteapp">
+			<link rel="apple-touch-icon" sizes="76x76" href="https://www.imooc.com/static/img/common/touch-icon-ipad.png">
+			<link rel="apple-touch-icon" sizes="120x120" href="https://www.imooc.com/static/img/common/touch-icon-iphone-retina.png">
+			<link rel="apple-touch-icon" sizes="152x152" href="https://www.imooc.com/static/img/common/touch-icon-ipad-retina.png">
+			<link href="https://moco.imooc.com/captcha/style/captcha.min.css" rel="stylesheet">
+			<link rel="stylesheet" href="https://www.imooc.com/static/moco/v1.0/dist/css/moco.min.css?t=201907021539" type="text/css">
+			<link rel="stylesheet" href="https://www.imooc.com/static/lib/swiper/swiper-3.4.2.min.css?t=201907021539">
+			<link rel="stylesheet" href="https://static.mukewang.com/static/css/??base.css,common/common-less.css?t=2.5,column/zhuanlanChapter-less.css?t=2.5,course/inc/course_tipoff-less.css?t=2.5?v=201907051055" type="text/css">
+			<link charset="utf-8" rel="stylesheet" href="https://www.imooc.com/static/lib/ueditor/themes/imooc/css/ueditor.css?v=201907021539"><link rel="stylesheet" href="https://www.imooc.com/static/lib/baiduShare/api/css/share_style0_16.css?v=6aba13f0.css"></head>
+			<body><div id="main">
+
+
+<div class="main-con hide-menu">
+    <!-- 左侧菜单 & 索引 -->
+    
+    <div class="right-content" style="padding-left: 0px;">
+        <div class="container clearfix" id="top" style="width: 1134px; display: block;">
+            
+            
+            <div class="center_con js-center_con l" style="width: 1134px;">
+                <div class="article-con">
+                                            <!-- 买过的阅读 -->
+                        
+
+                    
+                    <div class="art-title" style="margin-top: 0px;">
+                        33 Kubernetes 核心概念解析：Pod（二）
+                    </div>
+                    <div class="art-info clearfix">
+                        
+                        <span class="l">
+                            更新时间：2020-10-19 09:54:02
+                        </span>
+                    </div>
+                    <div class="art-top">
+                                                <img src="https://img4.sycdn.imooc.com/5f7fcf050001860406400426.jpg" alt="">
+                                                                        <div class="famous-word-box">
+                            <img src="https://www.imooc.com/static/img/column/bg-l.png" alt="" class="bg1 bg">
+                            <img src="https://www.imooc.com/static/img/column/bg-r.png" alt="" class="bg2 bg">
+                            <div class="famous-word">上天赋予的生命，就是要为人类的繁荣和平和幸福而奉献。——松下幸之助<p></p></div>
+                        </div>
+                                            </div>
+                    <div class="art-content js-lookimg">
+                        <div id="article_content">
+                            <div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">上一篇文章我们从背景和设计的角度介绍了 Kubernetes 的 Pod，这篇文章我们来看一下 Pod 如何使用？需要提前说明的一下的是，真正在生产环境中，我们很少会直接去创建 Pod 对象，更多是通过其他控制器来创建，比如 Deployment、Daemonset，在这些控制器中，Pod 将会被定义为其中的一个 template，这个我们后面再说，这一节还是以介绍 Pod 的使用为主。</p>
+</div><div class="cl-preview-section"><h2 id="概览" style="font-size: 30px;">1. 概览</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">本文将从一个最简单的 Pod 的例子开始，然后由浅入深地介绍 Pod 的特性。首先下面是一个最简单 Pod 示例。</p>
+</div><div class="cl-preview-section"><pre class=" language-yaml"><code class="prism  language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Pod
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> myapp<span class="token punctuation">-</span>pod
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> myapp
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> myapp<span class="token punctuation">-</span>container
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> busybox<span class="token punctuation">:</span><span class="token number">1.28</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">其中包含的字段包括：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">apiVersion：表示 api 对象的版本（比如 Pod 就是一种 api 对象）；</li>
+<li style="font-size: 20px; line-height: 38px;">kind : 表明 api 对象类型，Pod 对应的 kind 是 <code>Pod</code>；</li>
+<li style="font-size: 20px; line-height: 38px;">metadata : 包含一些元信息，比如 <code>name</code> 、 <code>labels</code> 等；</li>
+<li style="font-size: 20px; line-height: 38px;">spec：定义了 Pod 的一些描述信息，重要信息都是在 spec 这里进行描述的，比如：
+<ul>
+<li style="font-size: 20px; line-height: 38px;">containers：Pod 中运行的容器的镜像列表，可以包含多个，我们后面细说；</li>
+<li style="font-size: 20px; line-height: 38px;">affinity：亲和性，在 Pod 调度的时候使用，比如我要把特定的 Pod 调度到特定的节点上，就可以使用这个特性；</li>
+<li style="font-size: 20px; line-height: 38px;">hostAliases：hosts 条目，会在 Pod 启动的时候注入到 Pod 中；</li>
+<li style="font-size: 20px; line-height: 38px;">hostIPC：Pod 内的容器使用宿主机的 IPC namespace，默认是 false；</li>
+<li style="font-size: 20px; line-height: 38px;">hostNetwork：Pod 内的容器使用宿主机的网络 namespace，相当于 Docker 网络中的 host network，默认为 false；</li>
+<li style="font-size: 20px; line-height: 38px;">hostPID：Pod 内的容器使用宿主机的 pid namespace，也就是同一个进程空间；</li>
+<li style="font-size: 20px; line-height: 38px;">hostname：指定 Pod 的 hostname；</li>
+<li style="font-size: 20px; line-height: 38px;">dnsPolicy：Pod 内的容器的 dns 策略；</li>
+<li style="font-size: 20px; line-height: 38px;">imagePullSecrets：我们有时候使用的镜像是私有的，需要指定用户名密码，就是通过这个字段来指定，一般是将镜像的用户名密码配置成一个 Secret；</li>
+<li style="font-size: 20px; line-height: 38px;">initContainers：init 容器，Pod 中的一种特殊容器，会先启动。后面会细说；</li>
+<li style="font-size: 20px; line-height: 38px;">nodeSelector：在调度的时候，有时候我们希望 Pod 被调度到指定的 node 节点上，那么我们就可以使用这个特性；</li>
+<li style="font-size: 20px; line-height: 38px;">restartPolicy：Pod 内的容器的重启策略，当容器异常退出或者健康检查失败时，kubelet 将根据该字段的值来进行响应的操作，取值包括：
+<ul>
+<li style="font-size: 20px; line-height: 38px;">Always：容器失效时，由 kubelet 自动重启该容器；</li>
+<li style="font-size: 20px; line-height: 38px;">OnFailure：当容器终止运行且退出码不为 0 时，由 kubelet 自动重启；</li>
+<li style="font-size: 20px; line-height: 38px;">Never：不论容器如何失败，kubelet 都不会重启该容器。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">其中最重要的是 spec.containers 字段，containers 下面是一个 List，包含一些列的 container。我们看一下 container 支持的重要字段：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">name：启动之后的容器名字；</li>
+<li style="font-size: 20px; line-height: 38px;">image：镜像名称；</li>
+<li style="font-size: 20px; line-height: 38px;">imagePullPolicy：描述 Pod 启动时不同的镜像拉取策略，取值有 <code>Always</code>， <code>Never</code>、<code>IfNotPresent</code>，含义分别为：
+<ul>
+<li style="font-size: 20px; line-height: 38px;">Always：每次 Pod 启动或者重启，都去镜像中心拉取镜像；</li>
+<li style="font-size: 20px; line-height: 38px;">Never：每次 Pod 启动或者重启，都不去拉取镜像，而是使用本地的；</li>
+<li style="font-size: 20px; line-height: 38px;">IfNotPresent：每次 Pod 启动或者重启时，先从本地找有没有该镜像，如果本地存在，则使用本地的，否则去镜像中心拉取；</li>
+</ul>
+</li>
+<li style="font-size: 20px; line-height: 38px;">command：我们知道镜像可以有一个默认的 EntryPoint，这个 command 相当于我们使用一个新的执行代码覆盖容器默认的 EntryPoint；</li>
+<li style="font-size: 20px; line-height: 38px;">args：参数，和 command 配合使用；</li>
+<li style="font-size: 20px; line-height: 38px;">env：注入到容器内部的环境变量；</li>
+<li style="font-size: 20px; line-height: 38px;">livenessProbe：存活性检测；</li>
+<li style="font-size: 20px; line-height: 38px;">readinessProbe：可用性检测。这个是为了和存活性进行区分的，比如有些进程存在，可能并不代表可以正常对外服务；</li>
+<li style="font-size: 20px; line-height: 38px;">volumeMounts：存储卷挂载点。</li>
+</ul>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们下面通过几个例子来循序渐进的理解这些特性。</p>
+</div><div class="cl-preview-section"><h2 id="command" style="font-size: 30px;">2. command</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">command 的使用场景主要是当容器的默认 entrypoint 一直启动失败时，我们想要进行调试，那么可以用 command 来覆盖容器的默认 entrypoint，比如将 command 设置成功 <code>/bin/bash</code> 或者 <code>sh</code>。下面我们将 busybox 镜像的默认 entrypoint 覆盖，用一个 shell 命令替换。</p>
+</div><div class="cl-preview-section"><pre class=" language-yaml"><code class="prism  language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Pod
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> myapp<span class="token punctuation">-</span>pod
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> myapp
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> myapp<span class="token punctuation">-</span>container
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> busybox
+    <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'sh'</span><span class="token punctuation">,</span> <span class="token string">'-c'</span><span class="token punctuation">,</span> <span class="token string">'echo Hello Kubernetes! &amp;&amp; sleep 3600'</span><span class="token punctuation">]</span>
+</code></pre>
+</div><div class="cl-preview-section"><h2 id="affinity" style="font-size: 30px;">3. affinity</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Kubernetes 的 Pod 的亲和性提供了一种调度上的遍历行，主要包括三种：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">nodeAffinity：描述了 Pod 和 Node 之间的调度关系，比如把 Pod 调度到含有指定的标签的 Node 节点上；</li>
+<li style="font-size: 20px; line-height: 38px;">podAffinity：描述了 Pod 之间的调度关系，比如将某两种 Pod 调度到指定的节点上；</li>
+<li style="font-size: 20px; line-height: 38px;">podAntiAffinity：和 podAffinity 正好相反，这个叫反亲和，比如让某两种 Pod 不要调度到同一个节点。</li>
+</ul>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">下面是一个应用 <code>nodeAffinity</code> 的 Pod 的例子。其中的 <code>requiredDuringSchedulingIgnoredDuringExecution</code> 是 <code>nodeAffinity</code> 的一种策略，表示 Pod 必须部署到满足条件的节点上，如果没有满足条件的节点，就不停重试。其中 IgnoreDuringExecution 表示 Pod 部署之后运行的时候，如果节点标签发生变化，不再满足 Pod 指定的条件，Pod 也会继续运行。除此之外，<code>nodeAffinity</code> 还支持其他策略，比如：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">requiredDuringSchedulingRequiredDuringExecution：类似 <code>requiredDuringSchedulingIgnoredDuringExecution</code>，不过如果节点标签发生了变化，不再满足pod指定的条件，则重新选择符合要求的节点。</li>
+<li style="font-size: 20px; line-height: 38px;">preferredDuringSchedulingIgnoredDuringExecution：表示优先部署到满足条件的节点上，如果没有满足条件的节点，就忽略这些条件，按照正常逻辑部署。</li>
+<li style="font-size: 20px; line-height: 38px;">preferredDuringSchedulingIgnoredDuringExecution：表示优先部署到满足条件的节点上，如果没有满足条件的节点，就忽略这些条件，按照正常逻辑部署。其中RequiredDuringExecution表示如果后面节点标签发生了变化，满足了条件，则重新调度到满足条件的节点。</li>
+</ul>
+</div><div class="cl-preview-section"><pre class=" language-yaml"><code class="prism  language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Pod
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> myapp<span class="token punctuation">-</span>pod
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> myapp
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">affinity</span><span class="token punctuation">:</span>
+  	<span class="token key atrule">nodeAffinity</span><span class="token punctuation">:</span>
+  		<span class="token key atrule">requiredDuringSchedulingIgnoredDuringExecution</span><span class="token punctuation">:</span>
+  			<span class="token key atrule">nodeSelectorTerms</span><span class="token punctuation">:</span>
+  			<span class="token punctuation">-</span> <span class="token key atrule">matchExpressions</span><span class="token punctuation">:</span>
+  			  <span class="token punctuation">-</span> <span class="token key atrule">key</span><span class="token punctuation">:</span> &lt;label<span class="token punctuation">-</span>name<span class="token punctuation">&gt;</span>
+  			    <span class="token key atrule">operator</span><span class="token punctuation">:</span> In
+  			    <span class="token key atrule">values</span><span class="token punctuation">:</span>
+  			    <span class="token punctuation">-</span> &lt;value<span class="token punctuation">&gt;</span>
+  <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> myapp<span class="token punctuation">-</span>container
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> busybox<span class="token punctuation">:</span>latest
+    <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'sh'</span><span class="token punctuation">,</span> <span class="token string">'-c'</span><span class="token punctuation">,</span> <span class="token string">'echo Hello Kubernetes! &amp;&amp; sleep 3600'</span><span class="token punctuation">]</span>
+</code></pre>
+</div><div class="cl-preview-section"><h2 id="hostaliases" style="font-size: 30px;">4. hostAliases</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">使用过 Docker 的同学应该都有印象，我们不能直接修改 Docker 容器中的 /etc/hosts 文件，所以就有一些奇淫技巧，比如在 Docker 镜像的 entrypoint 中去修改 hosts 文件，这其实是一种非常不规范的做法。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">在 Kubernetes 中，我们有时候也要修改 Pod 的 hosts 文件，我们使用的方式是 Kubernetes 中提供了 Pod 的特性：hostAlias，非常简单，下面是我们一个实际的例子。</p>
+</div><div class="cl-preview-section"><pre class=" language-yaml"><code class="prism  language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Pod
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> myapp<span class="token punctuation">-</span>pod<span class="token punctuation">-</span>hostalias
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> myapp
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">hostAliases</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">ip</span><span class="token punctuation">:</span> <span class="token string">"1.2.3.4"</span>
+    <span class="token key atrule">hostnames</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token string">"foo.local"</span>
+    <span class="token punctuation">-</span> <span class="token string">"bar.local"</span>
+  <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> myapp<span class="token punctuation">-</span>container
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> busybox
+    <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'sh'</span><span class="token punctuation">,</span> <span class="token string">'-c'</span><span class="token punctuation">,</span> <span class="token string">'echo Hello Kubernetes! &amp;&amp; sleep 3600'</span><span class="token punctuation">]</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们通过 <code>kubectl apply</code> 一下，然后看一下 Pod 内部的 hosts 文件情况，最后一行就是我们添加的条目。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">kubectl <span class="token function">exec</span> myapp-pod-hostalias -n imooc -- <span class="token function">cat</span> /etc/hosts
+<span class="token comment"># Kubernetes-managed hosts file.</span>
+127.0.0.1	localhost
+::1	localhost ip6-localhost ip6-loopback
+fe00::0	ip6-localnet
+fe00::0	ip6-mcastprefix
+fe00::1	ip6-allnodes
+fe00::2	ip6-allrouters
+10.1.2.134	myapp-pod-hostalias
+
+<span class="token comment"># Entries added by HostAliases.</span>
+1.2.3.4	foo.local	bar.local
+</code></pre>
+</div><div class="cl-preview-section"><h2 id="init-container" style="font-size: 30px;">5. Init Container</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Pod 可以包含多个容器，有时候我们想要某个或者某几个容器先于其他容器启动，这个时候我们就需要 init contaienr。init container 与普通的容器区别在于：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">init contaienr 总是运行到完成；</li>
+<li style="font-size: 20px; line-height: 38px;">每个 init container 运行完成，下一个容器才会运行。如果有多个 init container，则按顺序启动。</li>
+</ul>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">如果 Pod 的 init container 运行失败，Kubernetes 会不断地重启该 Pod，知道 init container 成功为止，除非 restartPolicy 值为 Never。init contaienr 在 Pod 的 spec 中定义和 contaienr 在一个层级，具备的功能和普通容器没有区别。</p>
+</div><div class="cl-preview-section"><pre class=" language-yaml"><code class="prism  language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Pod
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> app<span class="token punctuation">-</span>container <span class="token comment"># 应用容器</span>
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> <span class="token punctuation">...</span>
+  <span class="token key atrule">initContainers</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> init<span class="token punctuation">-</span>container<span class="token punctuation">-</span><span class="token number">1 </span><span class="token comment"># init 容器</span>
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> <span class="token punctuation">...</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> init<span class="token punctuation">-</span>container<span class="token punctuation">-</span><span class="token number">2 </span><span class="token comment"># init 容器</span>
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> <span class="token punctuation">...</span>
+</code></pre>
+</div><div class="cl-preview-section"><h4 id="init-container-的好处" style="font-size: 26px;">init container 的好处</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">init container 使用与应用容器分离的单独镜像，具有如下优势:</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">init container 可以包含一些安装过程中应用容器中不存在的使用工具或个性化代码。例如，没有必要仅仅为了在安装过程中使用类似 <code>sed</code>、<code>awk</code>、<code>python</code>、<code>dig</code> 这样的工具而去 <code>FROM</code> 一个镜像来生成新的镜像；</li>
+<li style="font-size: 20px; line-height: 38px;">init container 可以安全地运行这些工具，避免这些工具导致应用镜像的安全性降低；</li>
+<li style="font-size: 20px; line-height: 38px;">应用镜像的创建者和部署者可以各自独立工作，而没有必要联合构建一个单独的应用镜像；</li>
+<li style="font-size: 20px; line-height: 38px;">init container 能以不同于Pod内应用容器的文件系统视图运行。因此，Init容器可具有访问 <a href="https://kubernetes.io/docs/concepts/configuration/secret/">Secrets</a> 的权限，而应用容器不能够访问；</li>
+<li style="font-size: 20px; line-height: 38px;">由于 init container 必须在应用容器启动之前运行完成，因此 init container 提供了一种机制来阻塞或延迟应用容器的启动，直到满足了一组先决条件。一旦前置条件满足，Pod内的所有的应用容器会并行启动。</li>
+</ul>
+</div><div class="cl-preview-section"><h4 id="init-container-使用" style="font-size: 26px;">init container 使用</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">下面是官方的 init container 的使用示例，这个 Pod 里面的应用容器依赖于两个服务：<code>myservice</code> 和 <code>mydb</code>，需要这两个服务启动之后，应用容器才能启动。那么我们就可以定义两个 init container 用来检测依赖服务有没有启动：一个等待 <code>myservice</code> 启动；一个等待 <code>mydb</code> 启动。其中检测的方式是检测 service 对应 dns 域名有没有。</p>
+</div><div class="cl-preview-section"><pre class=" language-yaml"><code class="prism  language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Pod
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> myapp<span class="token punctuation">-</span>pod
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> myapp
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> myapp<span class="token punctuation">-</span>container
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> busybox<span class="token punctuation">:</span><span class="token number">1.28</span>
+    <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'sh'</span><span class="token punctuation">,</span> <span class="token string">'-c'</span><span class="token punctuation">,</span> <span class="token string">'echo The app is running! &amp;&amp; sleep 3600'</span><span class="token punctuation">]</span>
+  <span class="token key atrule">initContainers</span><span class="token punctuation">:</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> init<span class="token punctuation">-</span>myservice
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> busybox<span class="token punctuation">:</span><span class="token number">1.28</span>
+    <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'sh'</span><span class="token punctuation">,</span> <span class="token string">'-c'</span><span class="token punctuation">,</span> <span class="token string">"until nslookup myservice.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for myservice; sleep 2; done"</span><span class="token punctuation">]</span>
+  <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> init<span class="token punctuation">-</span>mydb
+    <span class="token key atrule">image</span><span class="token punctuation">:</span> busybox<span class="token punctuation">:</span><span class="token number">1.28</span>
+    <span class="token key atrule">command</span><span class="token punctuation">:</span> <span class="token punctuation">[</span><span class="token string">'sh'</span><span class="token punctuation">,</span> <span class="token string">'-c'</span><span class="token punctuation">,</span> <span class="token string">"until nslookup mydb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for mydb; sleep 2; done"</span><span class="token punctuation">]</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">为了便于演示，下面的对象定义了两个依赖的 service。</p>
+</div><div class="cl-preview-section"><pre class=" language-yaml"><code class="prism  language-yaml"><span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> myservice
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">protocol</span><span class="token punctuation">:</span> TCP
+      <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">80</span>
+      <span class="token key atrule">targetPort</span><span class="token punctuation">:</span> <span class="token number">9376</span>
+<span class="token punctuation">---</span>
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Service
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> mydb
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token key atrule">protocol</span><span class="token punctuation">:</span> TCP
+      <span class="token key atrule">port</span><span class="token punctuation">:</span> <span class="token number">80</span>
+      <span class="token key atrule">targetPort</span><span class="token punctuation">:</span> <span class="token number">9377</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">为了直观看到 init container 的作用，我们先启动 Pod（我们这里把 demo 启动到一个专门的 namespace <code>imooc</code>里面）。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">➜  kubectl apply -f myapp.yaml -n imooc
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">然后查看 Pod 状态，从 <code>STATUS</code> 字段发现 Pod 启动还卡在 Init 上，也就是 init container，因为我们还没有启动 service。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">➜  kubectl get pods -n imooc
+NAME        READY   STATUS     RESTARTS   AGE
+myapp-pod   0/1     Init:0/2   0          59s
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们下面使用上面的 yaml 启动两个依赖的 service：<code>myservice</code> 和 <code>mydb</code>。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">➜  kubectl apply -f myservice-mydb.yaml -n imooc
+service/myservice created
+service/mydb created
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这时候我们再看 Pod 的运行状态，发现 <code>STATUS</code> 已经变成 <em><strong>Running</strong></em> 了。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">➜  kubectl get pods -n imooc
+NAME        READY   STATUS    RESTARTS   AGE
+myapp-pod   1/1     Running   0          4m27s
+</code></pre>
+</div><div class="cl-preview-section"><h2 id="总结" style="font-size: 30px;">6. 总结</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">本文从具体的一个例子开始介绍 Pod 的使用和 Pod 的一些特性，但是 Pod 的特性实在是太多了，想通过一篇文章介绍完基本不可能，所以希望大家还是可以多实践。</p>
+</div>}
+                        </div>
+                    </div>
+                                            <!-- 买过的阅读 -->
+                        <div class="art-next-prev clearfix">
+                                                                                                <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2396">
+                                                                    <div class="prev l clearfix">
+                                        <div class="icon l">
+                                            <i class="imv2-arrow3_l"></i>
+                                        </div>
+                                        <p>
+                                            32 Kubernetes 核心概念解析：Pod（一）
+                                        </p>
+                                    </div>
+                                </a>
+                                                                                                                            <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2407">
+                                                                    <div class="next r clearfix">
+                                        <p>
+                                            34 配置管理：ConfigMap 和 Secret
+                                        </p>
+                                        <div class="icon r">
+                                            <i class="imv2-arrow3_r"></i>
+                                        </div>
+
+                                    </div>
+                                </a>
+                                                    </div>
+                                    </div>
+                <div class="comments-con js-comments-con" id="coments_con">
+                </div>
+
+                
+            </div>
+            
+            
+            
+
+        </div>
+    </div>
+</div>
+
+<div class="modal modal-jiaQun-new hide" id="modal-jiaQun">
+    <div class="inner" style="">
+        <div class="modal-close js-close-jiaQun">
+            <i class="imv2-close"></i>
+        </div>
+        <div class="content">
+            <img src="https://img3.sycdn.imooc.com/5f18f4360001392b05330597.jpg">
+            <div class="right-info">
+                <div class="title">
+                    扫码加入慕课前沿技术核心用户群
+                </div>
+                <div class="desc">
+                                            <p class="mb6">验证信息：<span id="joincode">2011031946279713</span><span class="copy js-copy-joincode">复制</span></p>
+                                        <p class="mb6">QQ讨论群号：729941811</p>
+                                            <p>QQ群URL：<a href="https://jq.qq.com/?_wv=1027&amp;k=5WJLMxV" target="_blank">点击访问</a></p>
+                                    </div>
+            </div>
+            <p class="tip">若遇到搜索不到QQ群或加群失败，请联系客服邮箱:kf@imooc.com</p>
+        </div>
+    </div>
+</div>
+ 
+<!-- 专栏介绍页专栏评价 -->
+
+<!-- 专栏介绍页底部三条评价 -->
+
+<!-- 专栏阅读页弹层目录和介绍页页面目录 -->
+
+<!-- 专栏阅读页发布回复 -->
+
+<!-- 专栏阅读页发布评论 -->
+
+<!-- 专栏阅读页底部评论 -->
+
+<!-- 专栏阅读 单个 评论 -->
+
+<!-- 新增回复和展开三条以外回复 -->
+
+<!-- 立即订阅的弹窗 -->
+
+
+
+
+
+
+
+
+
+
+
+
+</div></body></html>

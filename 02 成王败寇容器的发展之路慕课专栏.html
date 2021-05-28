@@ -1,0 +1,292 @@
+<html><head><meta charset="utf-8"><title>02 成王败寇：容器的发展之路-慕课专栏</title>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+			<meta name="renderer" content="webkit">
+			<meta property="qc:admins" content="77103107776157736375">
+			<meta property="wb:webmaster" content="c4f857219bfae3cb">
+			<meta http-equiv="Access-Control-Allow-Origin" content="*">
+			<meta http-equiv="Cache-Control" content="no-transform ">
+			<meta http-equiv="Cache-Control" content="no-siteapp">
+			<link rel="apple-touch-icon" sizes="76x76" href="https://www.imooc.com/static/img/common/touch-icon-ipad.png">
+			<link rel="apple-touch-icon" sizes="120x120" href="https://www.imooc.com/static/img/common/touch-icon-iphone-retina.png">
+			<link rel="apple-touch-icon" sizes="152x152" href="https://www.imooc.com/static/img/common/touch-icon-ipad-retina.png">
+			<link href="https://moco.imooc.com/captcha/style/captcha.min.css" rel="stylesheet">
+			<link rel="stylesheet" href="https://www.imooc.com/static/moco/v1.0/dist/css/moco.min.css?t=201907021539" type="text/css">
+			<link rel="stylesheet" href="https://www.imooc.com/static/lib/swiper/swiper-3.4.2.min.css?t=201907021539">
+			<link rel="stylesheet" href="https://static.mukewang.com/static/css/??base.css,common/common-less.css?t=2.5,column/zhuanlanChapter-less.css?t=2.5,course/inc/course_tipoff-less.css?t=2.5?v=201907051055" type="text/css">
+			<link charset="utf-8" rel="stylesheet" href="https://www.imooc.com/static/lib/ueditor/themes/imooc/css/ueditor.css?v=201907021539"><link rel="stylesheet" href="https://www.imooc.com/static/lib/baiduShare/api/css/share_style0_16.css?v=6aba13f0.css"></head>
+			<body><div id="main">
+
+
+<div class="main-con hide-menu">
+    <!-- 左侧菜单 & 索引 -->
+    
+    <div class="right-content" style="padding-left: 0px;">
+        <div class="container clearfix" id="top" style="width: 1134px; display: block;">
+            
+            
+            <div class="center_con js-center_con l" style="width: 1134px;">
+                <div class="article-con">
+                                            <!-- 买过的阅读 -->
+                        
+
+                    
+                    <div class="art-title" style="margin-top: 0px;">
+                        02 成王败寇：容器的发展之路
+                    </div>
+                    <div class="art-info clearfix">
+                        
+                        <span class="l">
+                            更新时间：2020-07-21 18:58:26
+                        </span>
+                    </div>
+                    <div class="art-top">
+                                                <img src="https://img4.sycdn.imooc.com/5f1681e90001653606400426.jpg" alt="">
+                                                                        <div class="famous-word-box">
+                            <img src="https://www.imooc.com/static/img/column/bg-l.png" alt="" class="bg1 bg">
+                            <img src="https://www.imooc.com/static/img/column/bg-r.png" alt="" class="bg2 bg">
+                            <div class="famous-word">既然我已经踏上这条道路，那么，任何东西都不应妨碍我沿着这条路走下去。——康德<p></p></div>
+                        </div>
+                                            </div>
+                    <div class="art-content js-lookimg">
+                        <div id="article_content">
+                            <div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这篇文章我们来回顾一下 Docker 容器的发展之路，如何在巨头中崭露头角，并在群雄逐鹿中脱颖而出的。在了解了这些历史背景之后，我们就能明白 Docker 容器技术的必然性和其伟大之处。</p>
+</div><div class="cl-preview-section"><h2 id="历史环境：paas" style="font-size: 30px;">1. 历史环境：PaaS</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们从 2013 年开始说起，那时候云计算技术逐渐开始落地，各项主流技术也开始蓬勃发展。这里面的代表有如日中天的 AWS 和 IBM 的 OpenStack，以及后起之秀——诞生于 VMware 的 Cloud Foundry。我们下面以 Cloud Foundry 介绍一下 PaaS 的理念和核心问题。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f16822800019bf110800558.png" data-original="//img1.sycdn.imooc.com/5f16822800019bf110800558.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Cloud Foundry 号称是业界第一个开源 PaaS 云平台，它支持多种框架、语言、运行时环境、云平台及应用服务，使开发人员能够在几秒钟内进行应用程序的部署和扩展，无需担心任何基础架构的问题。该软件最初由VMWare开发，于2014年转入 Pivotal 和 open source。2015年，Cloud Foundry 基金会成立。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">PaaS 的核心在于为应用提供一套打包和分发机制，Cloud Foundry 为多种主流语言都提供了一种打包格式。所谓打包就是将我们的应用程序的可执行文件和启动脚本打成一个压缩包，然后上传到 Cloud Foundry 的存储中心，然后有调度器选择将压缩包分发到特定的虚拟机上。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">以 Cloud Foundary 为例，把本地的应用部署到云端只需要一条命令：</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">$ cf push <span class="token string">"应用"</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">在应用部署完之后，要在同一台虚拟机上启动来自不同用户的多个应用。Cloud Foundry 会使用 Linux 提供的 NameSpace 和 CGroup 技术对不同的应用进行隔离和资源限制。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">稍微了解容器技术的同学，应该知道 <strong>Linux 容器也是采用了这个技术</strong>。严格意义上来说，<strong>Cloud Foundry 也是使用的容器技术</strong>。所以在 Docker 诞生之后，Cloud Foundry 的产品经理 James Bayer 就在社区进行了一次详细的对比，最后结论是 Docker 使用的技术和 Cloud Foundry 没有本质区别，不值得关注，言下之意就是 Docker 难以撼动 Cloud Foundry 的市场地位。但是我们知道，这次Cloud Foundry 判断错了。</p>
+</div><div class="cl-preview-section"><h2 id="崭露头角" style="font-size: 30px;">2. 崭露头角</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Docker 确实是也是使用 NameSpace 和 CGroup 技术没有错，但是 <strong>Docker 相比于各种 PaaS 云平台技术的核心优势其实是它的镜像技术</strong>。正是利用镜像技术，Docker 在诞生之后的几个月在各大 PaaS 软件还没有反应过来的时候迅速占领市场的有力地位。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f16823200012aa313540894.png" data-original="//img1.sycdn.imooc.com/5f16823200012aa313540894.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">PaaS 软件在运行用户的应用上和 Docker 技术没有区别，但是在打包应用上却显得极为繁琐。以 Cloud Foundry 为例，<strong>它为不同的主流编程语言定义不同的打包方式，维护起来极其繁琐且容易出问题，用户往往也是因为这个环节苦不堪言</strong>。那么 Docker 镜像是如何解决这个问题呢？</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">很简单，<strong>Docker 镜像是一套操作系统文件 + 应用程序</strong>。镜像一般都会有一个 base 镜像，而这个 base 镜像一般都是操作系统或者其 mini 版本。这样如果我们的应用在云端是运行在 Centos 7.4 上面，那么我们的 base 镜像直接使用 Centos 7.4 的操作系统文件即可，这样就解除了用户要保持本地环境和云上环境的底层一致的心智负担。简单来说，<strong>Docker 镜像的精髓是保证了环境的一致性</strong>。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">除此之外，<strong>Docker 镜像技术是一套统一的技术</strong>，我们再也<strong>不需要根据我们应用的开发语言不同而选择不同的打包方式</strong>。在 Docker 中，我们打包镜像使用的技术叫做 Dockerfile 技术，我们只需要按照镜像技术的规范去编写 Dockerfile 即可，下面是一个简单的 Dockerfile 例子。</p>
+</div><div class="cl-preview-section"><pre class="  language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">FROM</span>        quay.io/prometheus/busybox<span class="token punctuation">:</span>glibc
+<span class="token keyword">LABEL</span> maintainer=<span class="token string">"The Prometheus Authors &lt;prometheus-developers@googlegroups.com&gt;"</span>
+
+<span class="token keyword">COPY</span> node_exporter /bin/node_exporter
+
+<span class="token keyword">EXPOSE</span>      9100
+<span class="token keyword">USER</span>        nobody
+<span class="token keyword">ENTRYPOINT</span>  <span class="token punctuation">[</span> <span class="token string">"/bin/node_exporter"</span> <span class="token punctuation">]</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">其中第一行 FROM 就是引用基础镜像，这里的 busybox 就是一个精简版的操作系统镜像，相当于 Docker 镜像中 hello world。第 4 行将我们本地的可执行文件拷贝到镜像中；第 6 行和第 7 行设置端口和用户，最后一行设置应用的启动入口。如果没有看懂，也没有关系，后面我们会针对 Dockerfile 的编写有一节单独的内容说明。</p>
+</div><div class="cl-preview-section"><h2 id="群雄逐鹿" style="font-size: 30px;">3. 群雄逐鹿</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">容器技术的繁荣促进其生态快速发展，这其中最重要的就是<strong>容器编排技术</strong>。对于规模稍微大一点应用，在生存环境中，需要发布的容器数量很可能极其庞大，这也就意味着如何管理容器之间的联系和拓扑结构并不是一件简单的事情。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">举个例子，对于<strong>一个成熟的 web 应用，首先要具备高可用架构，其次其内部可能包含数据库、缓存等各种依赖，除此之外还有很多运维管理需求，比如监控告警等</strong>。对于这些操作，通过人工来管理肯定是不现实的。这个时候我们就需要定义容器集群的编排和部署工具。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">说到容器编排，不得不提三剑客：Compose、Machine 和 Swarm。</p>
+</div><div class="cl-preview-section"><h3 id="compose">compose</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">为了展示容器编排的内容，我们这里简单展示一下如何去部署一个 Flask 应用。Flask 应用如下，定义一个 route："/"，当访问到来的时候，redis 会做一个访问计数。</p>
+</div><div class="cl-preview-section"><pre class="  language-python"><code class="prism  language-python"><span class="token keyword">from</span> flask <span class="token keyword">import</span> Flask
+<span class="token keyword">from</span> redis <span class="token keyword">import</span> Redis
+<span class="token keyword">import</span> os
+
+app <span class="token operator">=</span> Flask<span class="token punctuation">(</span>__name__<span class="token punctuation">)</span>
+redis <span class="token operator">=</span> Redis<span class="token punctuation">(</span>host<span class="token operator">=</span><span class="token string">'redis'</span><span class="token punctuation">,</span> port<span class="token operator">=</span><span class="token number">6379</span><span class="token punctuation">)</span>
+
+@app<span class="token punctuation">.</span>route<span class="token punctuation">(</span><span class="token string">'/'</span><span class="token punctuation">)</span>
+<span class="token keyword">def</span> <span class="token function">hello</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    redis<span class="token punctuation">.</span>incr<span class="token punctuation">(</span><span class="token string">'hits'</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token string">"Hello World. I am a Flask App!"</span>
+
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">"__main__"</span><span class="token punctuation">:</span>
+    app<span class="token punctuation">.</span>run<span class="token punctuation">(</span>host<span class="token operator">=</span><span class="token string">"0.0.0.0"</span><span class="token punctuation">,</span> debug<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">然后我们要生成一个 Docker 镜像，打包镜像只需要定义一个 Dockerfile，如下：</p>
+</div><div class="cl-preview-section"><pre class="  language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">From</span> python<span class="token punctuation">:</span>2.7
+<span class="token keyword">ADD</span> . /code
+<span class="token keyword">WORKDIR</span> /code
+<span class="token keyword">RUN</span> pip install flask
+<span class="token keyword">RUN</span> pip install redis
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">最后我们通过 compose.yml 来定义部署拓扑。</p>
+</div><div class="cl-preview-section"><pre class="  language-yaml"><code class="prism  language-yaml"><span class="token key atrule">web</span><span class="token punctuation">:</span>
+  <span class="token key atrule">build</span><span class="token punctuation">:</span> .
+  <span class="token key atrule">command</span><span class="token punctuation">:</span> python app.py
+  <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token string">"5000:5000"</span>
+  <span class="token key atrule">volumes</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> .<span class="token punctuation">:</span>/code
+  <span class="token key atrule">links</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> redis
+<span class="token key atrule">redis</span><span class="token punctuation">:</span>
+  <span class="token key atrule">image</span><span class="token punctuation">:</span> redis
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这里是编排部署的核心，这里定义了两个最高级别的 key: web 和 redis，也就是说 compose 定义了由两个 ”服务“  （web 和 redis）组成的 Docker ”集群“。这里 compose 部署的 docker 集群其实是在一台机器上的。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">通过 compose 定义完 Docker 集群之后，通过 docker-compose up 就可以将服务部署起来了。限于篇幅，我们这里不对这些 yaml 的编排规范做过多解释。</p>
+</div><div class="cl-preview-section"><h3 id="machine">Machine</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Machine 的主要功能是帮助用户在不同的云主机提供商上创建和管理虚拟机，并在虚拟机中安装 Docker。除了搭建环境之外，Machine 还可以帮助用户配置 Docker 的连接参数等、管理 Docker 主机，比如启动、关闭、重启、删除等操作。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Machine 简单来说就是一个统一管理工具，成功的关键与否还是要看各大云厂商买不买单，接不接入。目前来看，情况不太乐观。</p>
+</div><div class="cl-preview-section"><h3 id="swarm">Swarm</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Swarm 也是 Docker 集群的编排和管理工具，和 Compose 不同的是，这里的集群是真正的由多个主机组成的集群。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Docker 生态依托 Compose、Machine 和 Swarm 重新定义了一个容器生态的 PaaS。</p>
+</div><div class="cl-preview-section"><h3 id="marathon">Marathon</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">但是现实往往伴随着搅局者，这个搅局者就是 Mesosphere，Mesosphere 公司成名作是 Mesos，属于 Apache 社区，具有和大数据调度系统 Yarn 一样的统治力。但是 Mesos 由于其初衷是针对大数据系统的调度，让它来处理 Docker 典型应用 long-running 应用并不是具有太大的优势。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Mesosphere 随之提出了针对容器系统编排的 Marathon，相比如 Docker 公司这个年轻后生，Mesosphere 具有足够大规模集群资源管理的经验，2014 年，Mesos 就能够管理 10000 规模的集群调度。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Marathon 诞生之后就以 Swarm 的强力竞争者而存在，但是由于 Mesosphere 公司的 Apache 属性，生态显得略微封闭，同时 Swarm 作为 Docker 的亲儿子，与 Marathon 竞争起来并没有显现出过多的颓势，说势均力敌也不为过。</p>
+</div><div class="cl-preview-section"><h3 id="kubernetes">Kubernetes</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">真正的转机出现在 2015 年，随着 Docker 技术的火热，容器领域的玩家开始对 Docker 公司体现出的强硬态度开始不满。自然而然地，几家大公司开始商量对 Docker 公司的话语权进行切割，于是一个中立的基金会成立了，这个基金会叫做 CNCF。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">CNCF，全名 Cloud Native Computing Foundation，由 Google、RedHat 等开源基础设施领域玩家们共同发起。这个基金会的目的其实很容易理解：<strong>它希望以 Kubernetes 项目为基础，建立一个由开源基础设施领域厂商主导的、按照独立基金会方式运营的平台级社区，来对抗以 Docker 公司为核心的容器商业生态</strong>。而为了打造出这样一个围绕 Kubernetes 项目的“护城河”，CNCF 社区就需要至少确保两件事情：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">Kubernetes 项目必须能够在容器编排领域取得足够大的竞争优势；</li>
+<li style="font-size: 20px; line-height: 38px;">CNCF 社区必须以 Kubernetes 项目为核心，覆盖足够多的场景。</li>
+</ul>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Kubernetes 项目就是在这样的环境下开始飞速成长。但是这并不是说 Kubernetes 是靠着 “<strong>政治</strong>” 取胜的，<strong>Kubernetes 项目具有非常优秀的设计理念和健康的社区基础</strong>，其对于开发者的开放态度也迅速吸引着大量的开发者。</p>
+</div><div class="cl-preview-section"><pre class="  language-python"><code class="prism  language-python"><span class="token keyword">from</span> flask <span class="token keyword">import</span> Flask
+<span class="token keyword">from</span> redis <span class="token keyword">import</span> Redis
+<span class="token keyword">import</span> os
+
+app <span class="token operator">=</span> Flask<span class="token punctuation">(</span>__name__<span class="token punctuation">)</span>
+redis <span class="token operator">=</span> Redis<span class="token punctuation">(</span>host<span class="token operator">=</span><span class="token string">'redis'</span><span class="token punctuation">,</span> port<span class="token operator">=</span><span class="token number">6379</span><span class="token punctuation">)</span>
+
+@app<span class="token punctuation">.</span>route<span class="token punctuation">(</span><span class="token string">'/'</span><span class="token punctuation">)</span>
+<span class="token keyword">def</span> <span class="token function">hello</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span>
+    redis<span class="token punctuation">.</span>incr<span class="token punctuation">(</span><span class="token string">'hits'</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> <span class="token string">"hello world. I am a Flask App"</span>
+
+<span class="token keyword">if</span> __name__ <span class="token operator">==</span> <span class="token string">"__main__"</span><span class="token punctuation">:</span>
+    app<span class="token punctuation">.</span>run<span class="token punctuation">(</span>host<span class="token operator">=</span><span class="token string">"0.0.0.0"</span><span class="token punctuation">,</span> debug<span class="token operator">=</span><span class="token boolean">True</span><span class="token punctuation">)</span>
+</code></pre>
+</div><div class="cl-preview-section"><h2 id="鹿死谁手" style="font-size: 30px;">4. 鹿死谁手</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">鹿死谁手，这两年市场已经告诉了我们答案，赢家是 Kubernetes 了。Kubernetes 凭借其优秀的设计理念和 Google 背后的技术领导力加持，迅速在市场上占据大部分和容器相关场景。早期的容器编排软件逐渐退出了历史舞台，比如阿里云的容器服务就宣布自 2019 年 12 月份将不再支持 Swarm，而形成鲜明对比的是，基于 Kubernetes 的产品形态却越来越多。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Kubernetes 的特点主要包括如下几个方面：</p>
+</div><div class="cl-preview-section"><h3 id="优秀的设计理念">优秀的设计理念</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Kubernetes 并不是凭空设计出来的，其前身来自 Google 内部的 Borg 和 Omega 系统。我们可以看一下下图，感受一下 Borg 和 Omega 系统在 Google 内部的位置。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f16824e0001c7ed12440728.png" data-original="//img1.sycdn.imooc.com/5f16824e0001c7ed12440728.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Borg 亦或是 Omega 在 Google 内部是作为底层调度系统存在的，并且是经过系统内部多年的生产环境考验的。Kubernetes 相当于 Borg 和 Omega 针对容器的调度系统，这里的容器可以是 Docker 也可以是其他 Linux 容器，目前默认是 Docker。关于优秀的设计理念，这里简单举一个例子：<strong>Pod</strong>。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">如果我们有两个容器 A 和 B 需要调度在一台机器上，其中 A 和 B 各需要内存 1 G，但是这个时候机器只有 1.5 G，如果先调度 A，A 是可以被调度到机器上的，但是后面的 B 调度却会有问题了。要想解决这个问题，如果 A 和 B 单独调度，往往需要考虑非常多的场景和复杂的解决算法。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Kubernetes 针对这个问题提出了 Pod 的概念，Pod 是一组容器的集合，类似进程组，Pod 是 Kubernetes 中一个最小的调度单位，也就是说同一个 Pod 中的不同容器一定会被调度到一台机器上，并且可以互相共享 NameSpace。Pod 的提出解决了很多调度需要考虑的复杂问题。</p>
+</div><div class="cl-preview-section"><h3 id="声明式-api">声明式 API</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">所谓声明式 API，是直接描述我们要什么或者要达到一种什么状态。与之对于是命令式 API，命令式 API 对应的则是一个具体的动作：比如 “创建容器”，“修改容器” 等。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">声明式 API 的一个典型例子就是 SQL，在下面的 SQL 中，我们直接说明我们需要的东西是 a, b, c 三个字段，现在条件是 id &gt; 123。但是我们并不需要管这条 SQL 如果是数据库引擎中的真正的执行计划是什么样的。</p>
+</div><div class="cl-preview-section"><pre class="  language-sql"><code class="prism  language-sql"><span class="token keyword">select</span> <span class="token number">a</span><span class="token punctuation">,</span> <span class="token number">b</span><span class="token punctuation">,</span> <span class="token number">c</span> <span class="token keyword">from</span> <span class="token keyword">table</span> <span class="token keyword">where</span> id <span class="token operator">&gt;</span> <span class="token number">123</span><span class="token punctuation">;</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">那么在 Kubernetes 中，我们如何去声明我们需要什么呢？下面是一个创建两个 nginx 副本的 Deployment。其中的 replicas 就是我们最终需要的副本数，也就是最终状态需要有两个副本运行，Kubernetes 如何去保证，我们不需要关心。</p>
+</div><div class="cl-preview-section"><pre class="  language-yaml"><code class="prism  language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apps/v1 <span class="token comment"># for versions before 1.9.0 use apps/v1beta2</span>
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> Deployment
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> nginx<span class="token punctuation">-</span>deployment
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
+      <span class="token key atrule">app</span><span class="token punctuation">:</span> nginx
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">2 </span><span class="token comment"># tells deployment to run 2 pods matching the template</span>
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">app</span><span class="token punctuation">:</span> nginx
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> nginx
+        <span class="token key atrule">image</span><span class="token punctuation">:</span> nginx<span class="token punctuation">:</span>1.7.9
+        <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">80</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">声明式 API 的最大好处是解放开发者的心智负担，让编程变得简单。</p>
+</div><div class="cl-preview-section"><h3 id="开放的生态">开放的生态</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们看一下下面的 Kubernetes 分层架构图。<br>
+<img class="" src="https://img1.sycdn.imooc.com/5f1682620001ad0c08150471.png" data-original="//img1.sycdn.imooc.com/5f1682620001ad0c08150471.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">在上图的最底部包含了很多开放生态，包括容器运行时，网络插件，存储插件、以及云厂商 Provider。这样各大云厂商在将 Kubernetes 运行在自己的云上环境的时候就可以很方便的将自己的存储以及网络产品以一种插件式的方式集成到 Kubernetes 中。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Kubernetes 正是靠着这种开放的开发者生态，吸引了越来越多的开发者投入其中，并乐此不疲。反过来，生态的繁荣也促进 Kubernetes 在历史车轮的推动下不断向前。</p>
+</div><div class="cl-preview-section"><h2 id="结语" style="font-size: 30px;">5. 结语</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">在本篇文章中，我们回顾了 Docker 技术的诞生和发展，以及 Kubernetes 的简介。后面专栏中，这些内容我们将会进行由浅入深的讨论。</p>
+</div>}
+                        </div>
+                    </div>
+                                            <!-- 买过的阅读 -->
+                        <div class="art-next-prev clearfix">
+                                                                                                <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2233">
+                                                                    <div class="prev l clearfix">
+                                        <div class="icon l">
+                                            <i class="imv2-arrow3_l"></i>
+                                        </div>
+                                        <p>
+                                            01 开篇词：欢迎来到 Docker 的世界
+                                        </p>
+                                    </div>
+                                </a>
+                                                                                                                            <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2235">
+                                                                    <div class="next r clearfix">
+                                        <p>
+                                            03 Docker 安装与运行
+                                        </p>
+                                        <div class="icon r">
+                                            <i class="imv2-arrow3_r"></i>
+                                        </div>
+
+                                    </div>
+                                </a>
+                                                    </div>
+                                    </div>
+                <div class="comments-con js-comments-con" id="coments_con">
+                </div>
+
+                
+            </div>
+            
+            
+            
+
+        </div>
+    </div>
+</div>
+
+<div class="modal modal-jiaQun-new hide" id="modal-jiaQun">
+    <div class="inner" style="">
+        <div class="modal-close js-close-jiaQun">
+            <i class="imv2-close"></i>
+        </div>
+        <div class="content">
+            <img src="https://img2.sycdn.imooc.com/5f18f4360001392b05330597.jpg">
+            <div class="right-info">
+                <div class="title">
+                    扫码加入慕课前沿技术核心用户群
+                </div>
+                <div class="desc">
+                                            <p class="mb6">验证信息：<span id="joincode">2011031946279713</span><span class="copy js-copy-joincode">复制</span></p>
+                                        <p class="mb6">QQ讨论群号：729941811</p>
+                                            <p>QQ群URL：<a href="https://jq.qq.com/?_wv=1027&amp;k=5WJLMxV" target="_blank">点击访问</a></p>
+                                    </div>
+            </div>
+            <p class="tip">若遇到搜索不到QQ群或加群失败，请联系客服邮箱:kf@imooc.com</p>
+        </div>
+    </div>
+</div>
+ 
+<!-- 专栏介绍页专栏评价 -->
+
+<!-- 专栏介绍页底部三条评价 -->
+
+<!-- 专栏阅读页弹层目录和介绍页页面目录 -->
+
+<!-- 专栏阅读页发布回复 -->
+
+<!-- 专栏阅读页发布评论 -->
+
+<!-- 专栏阅读页底部评论 -->
+
+<!-- 专栏阅读 单个 评论 -->
+
+<!-- 新增回复和展开三条以外回复 -->
+
+<!-- 立即订阅的弹窗 -->
+
+
+
+
+
+
+
+
+
+
+
+
+</div></body></html>

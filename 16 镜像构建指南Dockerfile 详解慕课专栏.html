@@ -1,0 +1,301 @@
+<html><head><meta charset="utf-8"><title>16 镜像构建指南：Dockerfile 详解-慕课专栏</title>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+			<meta name="renderer" content="webkit">
+			<meta property="qc:admins" content="77103107776157736375">
+			<meta property="wb:webmaster" content="c4f857219bfae3cb">
+			<meta http-equiv="Access-Control-Allow-Origin" content="*">
+			<meta http-equiv="Cache-Control" content="no-transform ">
+			<meta http-equiv="Cache-Control" content="no-siteapp">
+			<link rel="apple-touch-icon" sizes="76x76" href="https://www.imooc.com/static/img/common/touch-icon-ipad.png">
+			<link rel="apple-touch-icon" sizes="120x120" href="https://www.imooc.com/static/img/common/touch-icon-iphone-retina.png">
+			<link rel="apple-touch-icon" sizes="152x152" href="https://www.imooc.com/static/img/common/touch-icon-ipad-retina.png">
+			<link href="https://moco.imooc.com/captcha/style/captcha.min.css" rel="stylesheet">
+			<link rel="stylesheet" href="https://www.imooc.com/static/moco/v1.0/dist/css/moco.min.css?t=201907021539" type="text/css">
+			<link rel="stylesheet" href="https://www.imooc.com/static/lib/swiper/swiper-3.4.2.min.css?t=201907021539">
+			<link rel="stylesheet" href="https://static.mukewang.com/static/css/??base.css,common/common-less.css?t=2.5,column/zhuanlanChapter-less.css?t=2.5,course/inc/course_tipoff-less.css?t=2.5?v=201907051055" type="text/css">
+			<link charset="utf-8" rel="stylesheet" href="https://www.imooc.com/static/lib/ueditor/themes/imooc/css/ueditor.css?v=201907021539"><link rel="stylesheet" href="https://www.imooc.com/static/lib/baiduShare/api/css/share_style0_16.css?v=6aba13f0.css"></head>
+			<body><div id="main">
+
+
+<div class="main-con hide-menu">
+    <!-- 左侧菜单 & 索引 -->
+    
+    <div class="right-content" style="padding-left: 0px;">
+        <div class="container clearfix" id="top" style="width: 1134px; display: block;">
+            
+            
+            <div class="center_con js-center_con l" style="width: 1134px;">
+                <div class="article-con">
+                                            <!-- 买过的阅读 -->
+                        
+
+                    
+                    <div class="art-title" style="margin-top: 0px;">
+                        16 镜像构建指南：Dockerfile 详解
+                    </div>
+                    <div class="art-info clearfix">
+                        
+                        <span class="l">
+                            更新时间：2020-08-21 10:19:43
+                        </span>
+                    </div>
+                    <div class="art-top">
+                                                <img src="https://img3.sycdn.imooc.com/5f3f2ebb0001e57006400391.jpg" alt="">
+                                                                        <div class="famous-word-box">
+                            <img src="https://www.imooc.com/static/img/column/bg-l.png" alt="" class="bg1 bg">
+                            <img src="https://www.imooc.com/static/img/column/bg-r.png" alt="" class="bg2 bg">
+                            <div class="famous-word">合理安排时间，就等于节约时间。——培根<p></p></div>
+                        </div>
+                                            </div>
+                    <div class="art-content js-lookimg">
+                        <div id="article_content">
+                            <div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们在前面的文章中也介绍过构建镜像的话需要编写一个 Dockerfile 文件，我们可以类比 C++ 项目中的 makefile，不过要比 makefile 简单很多。这一章节我们就来看看 Dockerfile 应该如何去写。</p>
+</div><div class="cl-preview-section"><h2 id="dockerfile-的使用" style="font-size: 30px;">1. Dockerfile 的使用</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">在正式介绍 Dockerfile 的语法之前，我们先来看一下如何使用 Dockerfile。Dockerfile 要联合 <code>docker build</code> 命令进行使用，我们可以通过 -f 参数指定 Dockerfile 的路径（这个路径不光是本地路径，甚至可以是一个可以访问的 URL），如果没有指定则在 PATH 目录（PATH 目录为 <code>docker build</code> 的最后一个参数，当然我们一般使用 PATH 都是当前目录，可以用 “.” 来表示）下寻找名字叫 “Dockerfile” 的文件，也就是下面两种方式。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">docker build -f /path/to/dockerfile <span class="token keyword">.</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">或者</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">docker build <span class="token keyword">.</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">但是这样 build 出来的镜像是没有名字和 tag 的，下面是一个简单 Dockerfile。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">FROM</span> busybox<span class="token punctuation">:</span>latest
+
+<span class="token keyword">COPY</span> 1 /tmp
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们通过上面这种方式 <code>docker build .</code> 的方式 build 完之后，通过 <code>docker images</code> 查看 build 出来的镜像会发现 REPOSITORY 和 TAG 都是 &lt;none&gt;。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@docker dockerfile<span class="token punctuation">]</span><span class="token comment"># docker images</span>
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+<span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>              <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>              d9420474dd92        7 minutes ago       1.22MB
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">对于上面说到的这种情况，我们可以通过 <code>-t</code> 参数指定生成的镜像的名字和 tag。比如 <code>-t hello:v1</code>，我们执行一下。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@docker dockerfile<span class="token punctuation">]</span><span class="token comment"># docker build -t hello:v1 .</span>
+Sending build context to Docker daemon   2.56kB
+Step 1/2 <span class="token keyword">:</span> FROM busybox:latest
+ ---<span class="token operator">&gt;</span> 6d5fcfe5ff17
+Step 2/2 <span class="token keyword">:</span> COPY 1 /tmp
+ ---<span class="token operator">&gt;</span> Using cache
+ ---<span class="token operator">&gt;</span> d9420474dd92
+Successfully built d9420474dd92
+Successfully tagged hello:v1
+<span class="token punctuation">[</span>root@docker dockerfile<span class="token punctuation">]</span><span class="token comment"># docker images</span>
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+hello               v1                  d9420474dd92        9 minutes ago       1.22MB
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">当然如果你想了解 <code>docker build</code> 可以支持的所有参数，可以通过 <code>docker build --help</code> 查看，这里就不赘述了。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f3f2f2e0001ac5122761546.png" data-original="//img1.sycdn.imooc.com/5f3f2f2e0001ac5122761546.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><h2 id="dockerfile-的语法" style="font-size: 30px;">2. Dockerfile 的语法</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">下面我们来进入正题，也就是 Dockerfile 支持的语法有哪些。如果你的机器上安装了 Docker，可以通过 <code>man dockerfile</code> 来查看，如果没有安装也没有关系，这篇文章会详细解释。Dockerfile 的文件格式一般都是以一个关键字开头，比如上面例子中的 <code>FROM</code> 和 <code>COPY</code>，其中 <code>FROM</code> 表示引用的基础镜像，<code>COPY</code> 表示拷贝一个文件到镜像中。Dockerfile 支持的常用关键字主要有如下几种：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">FROM : 指定引用的基础镜像；</li>
+<li style="font-size: 20px; line-height: 38px;">MAINTAINER : 指定该 Dockerfile 的维护者信息，这个在公司内部的时候比较有用，我们可以将公司内部的邮箱或者工号写上；</li>
+<li style="font-size: 20px; line-height: 38px;">LABEL : 用来指定镜像的一些元信息；</li>
+<li style="font-size: 20px; line-height: 38px;">RUN : 运行该关键字之后紧跟着的命令，比如 <code>RUN cp 1 /tmp</code>；</li>
+<li style="font-size: 20px; line-height: 38px;">COPY : 文件或者文件夹拷贝；</li>
+<li style="font-size: 20px; line-height: 38px;">ADD : 该命令也是文件拷贝，后面我们会详细比较它和 COPY 的区别；</li>
+<li style="font-size: 20px; line-height: 38px;">EXPOSE：设置容器的监听端口；</li>
+<li style="font-size: 20px; line-height: 38px;">WORKDIR: 指定工作目录；</li>
+<li style="font-size: 20px; line-height: 38px;">ENV: 指定环境变量；</li>
+<li style="font-size: 20px; line-height: 38px;">VOLUME：指定磁盘挂载点；</li>
+<li style="font-size: 20px; line-height: 38px;">USER: 指定命令的执行用户；</li>
+<li style="font-size: 20px; line-height: 38px;">CMD: 指定该镜像的默认启动命令，CMD 只需要指定一个即可，形如 <code>CMD ["executable", "param1", "param2"]</code> 。如果指定了多个 CMD，只有最后一个会生效；</li>
+<li style="font-size: 20px; line-height: 38px;">ENTRYPOINT：容器的默认启动入口。比如我们使用 <code>docker run</code> 启动容器时，容器的默认启动入口就是镜像中通过该指令指定的命令或者脚本，我们可以在外面使用参数将其覆盖掉；</li>
+<li style="font-size: 20px; line-height: 38px;">ARG：在 build 的时候指定参数；</li>
+<li style="font-size: 20px; line-height: 38px;">注释：注释以 <code>#</code> 开始。</li>
+</ul>
+</div><div class="cl-preview-section"><h3 id="from">FROM</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><code>FROM</code> 很简单，需要注意的是 <code>FROM</code> 必须是 Dockerfile 的第一条有效命令，所谓有效是指非注释命令。<code>FROM</code> 后面跟随的 docker 镜像可以有多种格式，比如：</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">FROM image
+FROM image:tag
+FROM image@digest
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><strong>如果没有指定 tag 或者 digest，则表示把该镜像的 latest 版本作为基础镜像</strong>。当然在生产环境下，<strong>latest 版本永远不应该作为基础镜像</strong>，因为如果将 latest 版本作为基础镜像就意味着镜像会一直变化。</p>
+</div><div class="cl-preview-section"><h3 id="maintainer">MAINTAINER</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">类似如下格式。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">MAINTAINER <span class="token operator">&lt;</span>name<span class="token operator">&gt;</span> <span class="token punctuation">(</span>xxx@imooc.com<span class="token punctuation">)</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">但是现在官方文档上面已经将 <code>MAINTAINER</code> 标注为 <em><strong>deprecated</strong></em> 了，一般是通过 <code>LABEL</code> 来指定维护者信息，比较维护者也可以算是镜像的原信息。</p>
+</div><div class="cl-preview-section"><h3 id="label">LABEL</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">正如上面说说，<code>LABEL</code> 用来添加镜像的 metadata，格式也比较简单，如下，也就是说这里的 metadata 都是 key value 对。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">LABEL <span class="token operator">&lt;</span>key<span class="token operator">&gt;=</span><span class="token operator">&lt;</span>value<span class="token operator">&gt;</span> <span class="token operator">&lt;</span>key<span class="token operator">&gt;=</span><span class="token operator">&lt;</span>value<span class="token operator">&gt;</span> <span class="token operator">&lt;</span>key<span class="token operator">&gt;=</span><span class="token operator">&lt;</span>value<span class="token operator">&gt;</span> <span class="token punctuation">..</span>.
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">当然你也可以将 metadata 中的 key-value 拆成每行一个，都以 LABEL 开头。一旦 Dockerfile 中增加了 <code>LABEL</code> 信息，build 出来的镜像则可以通过 <code>docker inspect</code> 命令进行查看。下面就是我们通过 <code>docker inspect</code> 查看到的 nginx 镜像的 label 信息。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@docker dockerfile<span class="token punctuation">]</span><span class="token comment"># docker inspect nginx</span>
+<span class="token punctuation">..</span>.
+<span class="token string">"Labels"</span><span class="token keyword">:</span> <span class="token punctuation">{</span>
+	<span class="token string">"maintainer"</span><span class="token keyword">:</span> <span class="token string">"NGINX Docker Maintainers &lt;docker-maint@nginx.com&gt;"</span>
+<span class="token punctuation">}</span>,
+<span class="token punctuation">..</span>.
+</code></pre>
+</div><div class="cl-preview-section"><h3 id="run">RUN</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><code>RUN</code> 命令表示运行后面紧跟的命令，有如下两种形式。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">RUN <span class="token operator">&lt;</span>command<span class="token operator">&gt;</span>
+RUN <span class="token punctuation">[</span><span class="token string">"executable"</span>, <span class="token string">"param1"</span>, <span class="token string">"params"</span><span class="token punctuation">]</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这个命令应该是 Dockerfile 中最常用的命令了，比如我们要在镜像中通过 yum 安装 redis，那么我们可以通过如下方式编写我们的 Dockerfile。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">RUN</span> yum install redis
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">或者</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">RUN</span> <span class="token punctuation">[</span><span class="token string">"yum"</span><span class="token punctuation">,</span> <span class="token string">"install"</span><span class="token punctuation">,</span> <span class="token string">"redis"</span><span class="token punctuation">]</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><code>RUN</code> 还有一点需要注意的是 Dockerfile 中的每一个 RUN 命令都会生成一个新的镜像层，这个我们再讨论。</p>
+</div><div class="cl-preview-section"><h3 id="copy">COPY</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><code>COPY</code> 用来拷贝文件或者文件夹。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">COPY</span> hom* /mydir/
+</code></pre>
+</div><div class="cl-preview-section"><h3 id="add">ADD</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">类似 <code>COPY</code>，可以认为是增强版的 <code>COPY</code>。区别主要体现在两个地方：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">当 <code>ADD</code>  后面跟压缩文件时，拷贝的时候会将压缩文件进行解压。</li>
+<li style="font-size: 20px; line-height: 38px;"><code>ADD</code> 可以用来下载网上的文件</li>
+</ul>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">ADD</span> html.tar.gz /var/www/html
+<span class="token keyword">ADD</span> https<span class="token punctuation">:</span>//xxx.com/html.tar.gz /var/www/html
+</code></pre>
+</div><div class="cl-preview-section"><h3 id="expose">EXPOSE</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">表明 Docker 应用内部监听的端口，可以指定端口的协议是 TCP 还是 UDP，没有指定认为是 TCP。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">EXPOSE <span class="token operator">&lt;</span>port<span class="token operator">&gt;</span> <span class="token punctuation">[</span><span class="token operator">&lt;</span>port<span class="token operator">&gt;</span>/<span class="token operator">&lt;</span>protocal<span class="token operator">&gt;</span><span class="token punctuation">..</span>.<span class="token punctuation">]</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">比如我们要暴露 80 端口。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">EXPOSE</span> 80
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">容器内部监听了端口，那么我们启动容器的时候一般都会通过 <code>-p</code> 参数将该端口暴露出去。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">docker run -p 80:80 <span class="token punctuation">..</span>.
+</code></pre>
+</div><div class="cl-preview-section"><h3 id="workdir">WORKDIR</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">指定工作目录。一旦指定，则后面的命令（比如 <code>RUN</code>）的工作目录都是 <code>WORKDIR</code> 指定的目录，也就是说命令 <code>pwd</code> 的输出就是 <code>WORKDIR</code></p>
+</div><div class="cl-preview-section"><h3 id="env">ENV</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">用来指定环境变量，格式如下：</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">ENV</span> &lt;key<span class="token punctuation">&gt;</span> &lt;value<span class="token punctuation">&gt;</span>
+<span class="token keyword">ENV</span> &lt;key<span class="token punctuation">&gt;</span>=&lt;value<span class="token punctuation">&gt;</span> <span class="token punctuation">...</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">其意义类似我们在 Linux 中使用的 export 导入环境变量。</p>
+</div><div class="cl-preview-section"><h3 id="volume">VOLUME</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><code>VOLUME</code> 会为镜像生成一个新的挂载点。但是我们也可以不使用 <code>VOLUME</code>，而是在 <code>docker run</code> 的时候通过 <code>-v</code> 参数指定。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">VOLUME</span> <span class="token punctuation">[</span><span class="token string">"/data"</span><span class="token punctuation">]</span>
+<span class="token keyword">VOLUME</span> /data
+</code></pre>
+</div><div class="cl-preview-section"><h3 id="user">USER</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><code>USER</code> 对应的需求是：有的时候，不同命令需要通过不同的用户或者用户组来执行，那么我们在 dockerfile 中就可以通过 <code>USER</code> 来设置接下来的命令 （比如 <code>RUN</code>）的执行用户。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">USER</span> &lt;user<span class="token punctuation">&gt;</span><span class="token punctuation">[</span><span class="token punctuation">:</span>&lt;group<span class="token punctuation">&gt;</span><span class="token punctuation">]</span> or
+<span class="token keyword">USER</span> &lt;UID<span class="token punctuation">&gt;</span><span class="token punctuation">[</span><span class="token punctuation">:</span>&lt;GID<span class="token punctuation">&gt;</span><span class="token punctuation">]</span>
+</code></pre>
+</div><div class="cl-preview-section"><h3 id="cmd">CMD</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><code>CMD</code> 用来为镜像指定一个默认的启动命令，所谓默认是说我们可以通过 <code>docker run</code> 命令行参数通过其他的命令来覆盖 <code>CMD</code>。<code>CMD</code> 支持的格式如下：</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">CMD</span> <span class="token punctuation">[</span><span class="token string">"executable"</span><span class="token punctuation">,</span><span class="token string">"param1"</span><span class="token punctuation">,</span><span class="token string">"param2"</span><span class="token punctuation">]</span> 
+<span class="token keyword">CMD</span> command param1 param2 
+<span class="token keyword">CMD</span> <span class="token punctuation">[</span><span class="token string">"param1"</span><span class="token punctuation">,</span><span class="token string">"param2"</span><span class="token punctuation">]</span> 
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">其中第三种方式，会将 param1 和 param2 作为参数传递给 ENTRYPOINT。我们可以通过如下的方式通过 <code>docker run</code> 指定 docker 的启动命令为 <code>/bin/bash</code> 覆盖 <code>CMD</code>。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">docker run <span class="token operator">&lt;</span>params<span class="token operator">&gt;</span> <span class="token operator">&lt;</span>image<span class="token operator">&gt;</span> /bin/bash
+</code></pre>
+</div><div class="cl-preview-section"><h3 id="entrypoint">ENTRYPOINT</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><code>ENTRYPOINT</code> 类似 <code>CMD</code>，也是指定镜像的默认启动命令，但是不能像上面那样 <code>docker run</code> 的方式来覆盖。那么问题来了，如果我想通过其他的启动程序来验证我的镜像，我怎么做呢？举个例子，<code>ENTRYPOINT</code> 指定的是应用程序启动，但是我们启动的过程中一直启动不了，所以我想通过 <code>/bin/bash</code> 想把 docker 启动起来，然后再检测依赖环境，那么怎么做呢？</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">答案是通过 --entrypoint 参数来覆盖。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">docker run --entrypoint /bin/bash <span class="token punctuation">..</span>.
+</code></pre>
+</div><div class="cl-preview-section"><h3 id="arg">ARG</h3>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><code>ARG</code> 用来在 <code>docker build</code> 的时候传参，比如如下的 dockerfile 我们就可以在 build 的时候指定 user。</p>
+</div><div class="cl-preview-section"><pre class=" language-dockerfile"><code class="prism  language-dockerfile"><span class="token keyword">ARG</span> <span class="token keyword">user</span>
+<span class="token keyword">USER</span> $user
+<span class="token punctuation">...</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">构建的时候指定参数</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">docker build --build-arg user<span class="token operator">=</span>root -t myDocker:v1 <span class="token keyword">.</span>
+</code></pre>
+</div><div class="cl-preview-section"><h2 id="总结" style="font-size: 30px;">3. 总结</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">本文介绍了 dockerfile 的语法和常用命令，基本通过这些常用命令足够我们去构建我们的日常开发中需要的大部分镜像了。但是还是希望大家可以多实践，毕竟实践才能出真知。</p>
+</div>}
+                        </div>
+                    </div>
+                                            <!-- 买过的阅读 -->
+                        <div class="art-next-prev clearfix">
+                                                                                                <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2247">
+                                                                    <div class="prev l clearfix">
+                                        <div class="icon l">
+                                            <i class="imv2-arrow3_l"></i>
+                                        </div>
+                                        <p>
+                                            15 Docker 的本质是进程
+                                        </p>
+                                    </div>
+                                </a>
+                                                                                                                            <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2249">
+                                                                    <div class="next r clearfix">
+                                        <p>
+                                            17 Docker 网络初探
+                                        </p>
+                                        <div class="icon r">
+                                            <i class="imv2-arrow3_r"></i>
+                                        </div>
+
+                                    </div>
+                                </a>
+                                                    </div>
+                                    </div>
+                <div class="comments-con js-comments-con" id="coments_con">
+                </div>
+
+                
+            </div>
+            
+            
+            
+
+        </div>
+    </div>
+</div>
+
+<div class="modal modal-jiaQun-new hide" id="modal-jiaQun">
+    <div class="inner" style="">
+        <div class="modal-close js-close-jiaQun">
+            <i class="imv2-close"></i>
+        </div>
+        <div class="content">
+            <img src="https://img3.sycdn.imooc.com/5f18f4360001392b05330597.jpg">
+            <div class="right-info">
+                <div class="title">
+                    扫码加入慕课前沿技术核心用户群
+                </div>
+                <div class="desc">
+                                            <p class="mb6">验证信息：<span id="joincode">2011031946279713</span><span class="copy js-copy-joincode">复制</span></p>
+                                        <p class="mb6">QQ讨论群号：729941811</p>
+                                            <p>QQ群URL：<a href="https://jq.qq.com/?_wv=1027&amp;k=5WJLMxV" target="_blank">点击访问</a></p>
+                                    </div>
+            </div>
+            <p class="tip">若遇到搜索不到QQ群或加群失败，请联系客服邮箱:kf@imooc.com</p>
+        </div>
+    </div>
+</div>
+ 
+<!-- 专栏介绍页专栏评价 -->
+
+<!-- 专栏介绍页底部三条评价 -->
+
+<!-- 专栏阅读页弹层目录和介绍页页面目录 -->
+
+<!-- 专栏阅读页发布回复 -->
+
+<!-- 专栏阅读页发布评论 -->
+
+<!-- 专栏阅读页底部评论 -->
+
+<!-- 专栏阅读 单个 评论 -->
+
+<!-- 新增回复和展开三条以外回复 -->
+
+<!-- 立即订阅的弹窗 -->
+
+
+
+
+
+
+
+
+
+
+
+
+</div></body></html>

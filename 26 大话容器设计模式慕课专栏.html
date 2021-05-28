@@ -1,0 +1,233 @@
+<html><head><meta charset="utf-8"><title>26 大话容器设计模式-慕课专栏</title>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+			<meta name="renderer" content="webkit">
+			<meta property="qc:admins" content="77103107776157736375">
+			<meta property="wb:webmaster" content="c4f857219bfae3cb">
+			<meta http-equiv="Access-Control-Allow-Origin" content="*">
+			<meta http-equiv="Cache-Control" content="no-transform ">
+			<meta http-equiv="Cache-Control" content="no-siteapp">
+			<link rel="apple-touch-icon" sizes="76x76" href="https://www.imooc.com/static/img/common/touch-icon-ipad.png">
+			<link rel="apple-touch-icon" sizes="120x120" href="https://www.imooc.com/static/img/common/touch-icon-iphone-retina.png">
+			<link rel="apple-touch-icon" sizes="152x152" href="https://www.imooc.com/static/img/common/touch-icon-ipad-retina.png">
+			<link href="https://moco.imooc.com/captcha/style/captcha.min.css" rel="stylesheet">
+			<link rel="stylesheet" href="https://www.imooc.com/static/moco/v1.0/dist/css/moco.min.css?t=201907021539" type="text/css">
+			<link rel="stylesheet" href="https://www.imooc.com/static/lib/swiper/swiper-3.4.2.min.css?t=201907021539">
+			<link rel="stylesheet" href="https://static.mukewang.com/static/css/??base.css,common/common-less.css?t=2.5,column/zhuanlanChapter-less.css?t=2.5,course/inc/course_tipoff-less.css?t=2.5?v=201907051055" type="text/css">
+			<link charset="utf-8" rel="stylesheet" href="https://www.imooc.com/static/lib/ueditor/themes/imooc/css/ueditor.css?v=201907021539"><link rel="stylesheet" href="https://www.imooc.com/static/lib/baiduShare/api/css/share_style0_16.css?v=6aba13f0.css"></head>
+			<body><div id="main">
+
+
+<div class="main-con hide-menu">
+    <!-- 左侧菜单 & 索引 -->
+    
+    <div class="right-content" style="padding-left: 0px;">
+        <div class="container clearfix" id="top" style="width: 1134px; display: block;">
+            
+            
+            <div class="center_con js-center_con l" style="width: 1134px;">
+                <div class="article-con">
+                                            <!-- 买过的阅读 -->
+                        
+
+                    
+                    <div class="art-title" style="margin-top: 0px;">
+                        26 大话容器设计模式
+                    </div>
+                    <div class="art-info clearfix">
+                        
+                        <span class="l">
+                            更新时间：2020-09-14 10:40:04
+                        </span>
+                    </div>
+                    <div class="art-top">
+                                                <img src="https://img4.sycdn.imooc.com/5f5ed79600011ab306400426.jpg" alt="">
+                                                                        <div class="famous-word-box">
+                            <img src="https://www.imooc.com/static/img/column/bg-l.png" alt="" class="bg1 bg">
+                            <img src="https://www.imooc.com/static/img/column/bg-r.png" alt="" class="bg2 bg">
+                            <div class="famous-word">先相信你自己，然后别人才会相信你。——屠格涅夫<p></p></div>
+                        </div>
+                                            </div>
+                    <div class="art-content js-lookimg">
+                        <div id="article_content">
+                            <div class="cl-preview-section"><h1 id="容器设计模式">容器设计模式</h1>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">本文来讨论一下容器设计模式，来源于 Google 于 2016 年发布的论文 <em>Design patterns for conntainer-based distributed system</em>，作者是 <em>Brendan Burns</em> 和 <em>David Oppenheimer</em>，Kubernetes 项目创始人。从论文题目中我们可以看到几个关键词：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">container-base：应用都将是容器化的</li>
+<li style="font-size: 20px; line-height: 38px;">distributed system：分布式系统</li>
+<li style="font-size: 20px; line-height: 38px;">design pattern：设计模式</li>
+</ul>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">所以这篇论文的核心应该是探讨容器化的分布式系统的设计模式，我们下面来一起看一下。</p>
+</div><div class="cl-preview-section"><h2 id="概述" style="font-size: 30px;">1. 概述</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">论文观点，继上一波面向对象编程引领了软件开发革命（1980 年代和 1990 早期）之后，目前基于容器构建的微服务体系也在悄悄改变着分布式系统领域。这篇论文发表于 2016 年，目前来看，这个预言确实是没有错的。继 2018 年 Kubernetes 全面爆发之后，全民应用容器化的趋势已成定局。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">论文总结了三大设计模式：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">单容器模式（single-container management patterns）；</li>
+<li style="font-size: 20px; line-height: 38px;">单节点，多容器模式（single-node，multi-container application patterns）；</li>
+<li style="font-size: 20px; line-height: 38px;">多节点模式（multi-node application patterns）。</li>
+</ul>
+</div><div class="cl-preview-section"><h2 id="单容器模式" style="font-size: 30px;">2. 单容器模式</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">容器类似 OOP 编程中的 Object，定义了一系列的 interface。不仅可以暴露应用相关的功能函数，还可以暴露一些方便应用管理的 hook 接口。</p>
+</div><div class="cl-preview-section"><h4 id="现状" style="font-size: 26px;">现状</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">目前容器暴露出来的接口非常有限：run，pause，stop。毫无疑问这些接口都是很有用的，但是我们其实可以暴露出来更丰富的接口给开发者和管理员来使用。另外鉴于基本每一种主流的系统都提供了通过 http server 来暴露必要的信息，这一块容器其实也可以加强。那么具体来说，针对容器，有哪些可以加强的呢？</p>
+</div><div class="cl-preview-section"><h4 id="upward-视角" style="font-size: 26px;">upward 视角</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">向上视角，容器可以提供关于应用更加丰富的信息，包括监控指标（比如 QPS）、profiling 信息（比如线程相关信息、堆栈使用、锁竞争、网络统计信息等）、配置信息、log 信息等。通过这些信息，开发者可以做更多的事情，比如系统诊断和调优点。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">举个具体的例子，容器管理系统，比如 Kubernetes、Aurora、Marathon 等都提供了通过 HTTP 协议暴露健康检测的功能。</p>
+</div><div class="cl-preview-section"><h4 id="downward-视角" style="font-size: 26px;">downward 视角</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">向下视角，容器可以提供：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">lifecycle：生命周期管理，以及每个阶段的 hook 使用，比如 Kubernetes 提供的 postStart 和 preStart。</li>
+<li style="font-size: 20px; line-height: 38px;">priority：优先级管理，不同优先级应用的容器对应不同的优先级，我们应该优先保障高优先级的容器。</li>
+<li style="font-size: 20px; line-height: 38px;">replicate yourself：快速创建一组相同的应用容器以达到横向扩容的目的。</li>
+</ul>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">举个例子，考虑一下 Android Activity 模型，抽象出了一系列的 callback，比如 onCreate()、onStart()、onStop()，以及形式化的状态机来定义开发者如何去触发这些 callback。这种应用的生命周期管理，毫无疑问帮助了开发者降低心智负担。</p>
+</div><div class="cl-preview-section"><h2 id="单节点、多容器模式" style="font-size: 30px;">3. 单节点、多容器模式</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">单节点、多容器模式考虑的是多个容器被调度到同一台机器的情况。在很多容器调度管理系统中，都支持这种共同调度的场景，比如 Kubernetes 中将多个容器组成一个 Pod，把 Pod 作为一个原子调度单位。下面讨论的前提是系统提供对类似 Kubernetes 系统中的 Pod 抽象的支持。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">针对这种模式，论文提出了三种不同的方案，分别是：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">Sidecar 模式</li>
+<li style="font-size: 20px; line-height: 38px;">Ambassador 模式</li>
+<li style="font-size: 20px; line-height: 38px;">Adapter 模式</li>
+</ul>
+</div><div class="cl-preview-section"><h4 id="sidecar" style="font-size: 26px;">Sidecar</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">sidecar 是最常见的多容器调度的一种模式，简单来说这种模式下有一个主容器，然后其他容器都是针对主容器的扩展和增强，其他容器在这里的角色就类似 sidecar，也被称作 sidecar 容器。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">举个例子，主容器是 web server 应用容器，sidecar 容器是一个日志收集容器用来将 web server 的日志收集并转存至特殊的文件系统中。<br>
+<img class="" src="https://img1.sycdn.imooc.com/5f5ed7fc0001c6d210280576.png" data-original="//img1.sycdn.imooc.com/5f5ed7fc0001c6d210280576.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><h4 id="ambassador" style="font-size: 26px;">Ambassador</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">ambassador 这个单词中文一般翻译为大使，但是大使并不能准备表达其意思，我们看一下韦氏词典的准确翻译：</p>
+</div><div class="cl-preview-section"><blockquote>
+<p style="font-size: 20px; line-height: 38px;">a person who acts as a representative or promoter of a specified activity.</p>
+</blockquote>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这样就很明了了，就是用来负责专门活动的人。ambassador 也是取自这个意思，ambassador 容器负责主容器通信的中转节点。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">举个例子，有些 web 应用需要访问缓存，比如 memcached，这时 twemproxy 容器就可以作为一个 ambassador 容器和应用容器部署在同一个节点，web 应用像访问本地应用（localhost）一样访问 ambassador 容器，而 ambassador 容器在负责将请求路由到真正的 memcached 集群。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f5ed7f40001bb3410040486.png" data-original="//img1.sycdn.imooc.com/5f5ed7f40001bb3410040486.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这种模式的好处在于精简了开发模式：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">开发者只需要考虑自己的应用如何和本地的 memcached server 通过 localhost 访问</li>
+<li style="font-size: 20px; line-height: 38px;">测试也非常简单，直接启动一个 standalone 的 memcached 实例即可</li>
+<li style="font-size: 20px; line-height: 38px;">复用 twemproxy 的代码逻辑</li>
+</ul>
+</div><div class="cl-preview-section"><h4 id="adapter" style="font-size: 26px;">Adapter</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">某些程度上，adapter 看上去和 ambassador 很像。区别在于 adapter 做的事情要更多，adapter 为应用容器提供了一个统一的视图。adapter 将不同容器的输出和交互都抽象成统一的结构。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">一个简单的例子，通过 adapter 来实现同一个监控指标暴露。不同系统的监控指标会有不同的暴露方式，比如 jmx、statsd 等。对于由多种应用容器组成的微服务系统，如果每个应用透出监控指标的方式都不尽相同，那么外部的监控对接系统将会非常的麻烦。我们通过 adapter 将不用应用的指标做个标准化的封装然后再进行透出，这样会使得外部对接更加的方便。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f5ed7eb00018c2410040420.png" data-original="//img1.sycdn.imooc.com/5f5ed7eb00018c2410040420.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><h2 id="多节点模式" style="font-size: 30px;">4. 多节点模式</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">多节点模式是容器可能会部署到不同的节点上，当然这里讨论的前提也是系统提供对 Pod 抽象的支持。针对多节点部署模式，论文中讨论了三种不同的模式，分别是：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">
+<p style="font-size: 20px; line-height: 38px;">Leader Election 模式</p>
+</li>
+<li style="font-size: 20px; line-height: 38px;">
+<p style="font-size: 20px; line-height: 38px;">Work Queue 模式</p>
+</li>
+<li style="font-size: 20px; line-height: 38px;">
+<p style="font-size: 20px; line-height: 38px;">Scatter/Gather 模式</p>
+</li>
+</ul>
+</div><div class="cl-preview-section"><h4 id="leader-election-模式" style="font-size: 26px;">Leader Election 模式</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">在分布式系统中一个非常常见的问题就是 Leader Election，中文一般叫做领导者选举。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">尽管有很多 Leader Election 的算法库，但是大部分都是和特定的编程语言相关的。Leader Election 的一种容器解决方案是将选角算法封装到容器中，我们可以称之为 leader-election 容器，然后这些容器通过 HTTP 协议暴露特定的选举信息。当其他应用需要使用进行 Leader 选举时，直接和 leader-election 容器进行交互即可。leader-election 容器可以由有经验的专家开发，一旦开发完成，其他开发者要使用则可以直接通过网络进行交互，而不用考虑语言实现问题。这也是一种非常好的抽象和封装。</p>
+</div><div class="cl-preview-section"><h4 id="work-queue-模式" style="font-size: 26px;">Work Queue 模式</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Work Queue 就是工作队列，将 task 放入工作队列，然后进行统一处理。Work Queue 框架如同 Leader Election 一样，也是分布式系统讨论比较多的话题。类似 leader 选举，传统的工作队列框架同样和编程语言强相关。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们通过容器实现 Work Queue 模式同样可以作为一种好的抽象和封装。比如实现接口 run()、mount() 等，作为 Work Queue 的抽象。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f5ed7e3000119f812360832.png" data-original="//img1.sycdn.imooc.com/5f5ed7e3000119f812360832.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><h4 id="scattergather-模式" style="font-size: 26px;">Scatter/Gather 模式</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">scatter 是集中的意思，gather 是分散的意思，Scatter/Gather 模式也是一种形而上学的定义。具体来说，Scatter/Gather 模式讨论的场景是外部的 client 将请求发送给 root 或者 parent 节点，然后 root 将请求转发给后端多个 server 来做并行计算，最后将不同 server 的结果进行汇总。最常见的例子就是分布式查询引擎、搜索引擎等。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">容器化的解决方案可以使用多个 leaf 容器和 1 个 merge 容器来实现通用的 scatter/gather 框架。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f5ed7d90001d0fe10700818.png" data-original="//img1.sycdn.imooc.com/5f5ed7d90001d0fe10700818.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><h2 id="总结" style="font-size: 30px;">5. 总结</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">本文介绍了容器的多种设计模式，处处都能看到 Kubernetes 的影子，我们后面再介绍 Kubernetes。</p>
+</div>}
+                        </div>
+                    </div>
+                                            <!-- 买过的阅读 -->
+                        <div class="art-next-prev clearfix">
+                                                                                                <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2336">
+                                                                    <div class="prev l clearfix">
+                                        <div class="icon l">
+                                            <i class="imv2-arrow3_l"></i>
+                                        </div>
+                                        <p>
+                                            25 为什么说容器是个单进程模型
+                                        </p>
+                                    </div>
+                                </a>
+                                                                                                                            <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2344">
+                                                                    <div class="next r clearfix">
+                                        <p>
+                                            27 Docker 容器监控方案概览
+                                        </p>
+                                        <div class="icon r">
+                                            <i class="imv2-arrow3_r"></i>
+                                        </div>
+
+                                    </div>
+                                </a>
+                                                    </div>
+                                    </div>
+                <div class="comments-con js-comments-con" id="coments_con">
+                </div>
+
+                
+            </div>
+            
+            
+            
+
+        </div>
+    </div>
+</div>
+
+<div class="modal modal-jiaQun-new hide" id="modal-jiaQun">
+    <div class="inner" style="">
+        <div class="modal-close js-close-jiaQun">
+            <i class="imv2-close"></i>
+        </div>
+        <div class="content">
+            <img src="https://img4.sycdn.imooc.com/5f18f4360001392b05330597.jpg">
+            <div class="right-info">
+                <div class="title">
+                    扫码加入慕课前沿技术核心用户群
+                </div>
+                <div class="desc">
+                                            <p class="mb6">验证信息：<span id="joincode">2011031946279713</span><span class="copy js-copy-joincode">复制</span></p>
+                                        <p class="mb6">QQ讨论群号：729941811</p>
+                                            <p>QQ群URL：<a href="https://jq.qq.com/?_wv=1027&amp;k=5WJLMxV" target="_blank">点击访问</a></p>
+                                    </div>
+            </div>
+            <p class="tip">若遇到搜索不到QQ群或加群失败，请联系客服邮箱:kf@imooc.com</p>
+        </div>
+    </div>
+</div>
+ 
+<!-- 专栏介绍页专栏评价 -->
+
+<!-- 专栏介绍页底部三条评价 -->
+
+<!-- 专栏阅读页弹层目录和介绍页页面目录 -->
+
+<!-- 专栏阅读页发布回复 -->
+
+<!-- 专栏阅读页发布评论 -->
+
+<!-- 专栏阅读页底部评论 -->
+
+<!-- 专栏阅读 单个 评论 -->
+
+<!-- 新增回复和展开三条以外回复 -->
+
+<!-- 立即订阅的弹窗 -->
+
+
+
+
+
+
+
+
+
+
+
+
+</div></body></html>

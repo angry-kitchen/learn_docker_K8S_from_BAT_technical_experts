@@ -1,0 +1,266 @@
+<html><head><meta charset="utf-8"><title>17 Docker 网络初探-慕课专栏</title>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+			<meta name="renderer" content="webkit">
+			<meta property="qc:admins" content="77103107776157736375">
+			<meta property="wb:webmaster" content="c4f857219bfae3cb">
+			<meta http-equiv="Access-Control-Allow-Origin" content="*">
+			<meta http-equiv="Cache-Control" content="no-transform ">
+			<meta http-equiv="Cache-Control" content="no-siteapp">
+			<link rel="apple-touch-icon" sizes="76x76" href="https://www.imooc.com/static/img/common/touch-icon-ipad.png">
+			<link rel="apple-touch-icon" sizes="120x120" href="https://www.imooc.com/static/img/common/touch-icon-iphone-retina.png">
+			<link rel="apple-touch-icon" sizes="152x152" href="https://www.imooc.com/static/img/common/touch-icon-ipad-retina.png">
+			<link href="https://moco.imooc.com/captcha/style/captcha.min.css" rel="stylesheet">
+			<link rel="stylesheet" href="https://www.imooc.com/static/moco/v1.0/dist/css/moco.min.css?t=201907021539" type="text/css">
+			<link rel="stylesheet" href="https://www.imooc.com/static/lib/swiper/swiper-3.4.2.min.css?t=201907021539">
+			<link rel="stylesheet" href="https://static.mukewang.com/static/css/??base.css,common/common-less.css?t=2.5,column/zhuanlanChapter-less.css?t=2.5,course/inc/course_tipoff-less.css?t=2.5?v=201907051055" type="text/css">
+			<link charset="utf-8" rel="stylesheet" href="https://www.imooc.com/static/lib/ueditor/themes/imooc/css/ueditor.css?v=201907021539"><link rel="stylesheet" href="https://www.imooc.com/static/lib/baiduShare/api/css/share_style0_16.css?v=6aba13f0.css"></head>
+			<body><div id="main">
+
+
+<div class="main-con hide-menu">
+    <!-- 左侧菜单 & 索引 -->
+    
+    <div class="right-content" style="padding-left: 0px;">
+        <div class="container clearfix" id="top" style="width: 1134px; display: block;">
+            
+            
+            <div class="center_con js-center_con l" style="width: 1134px;">
+                <div class="article-con">
+                                            <!-- 买过的阅读 -->
+                        
+
+                    
+                    <div class="art-title" style="margin-top: 0px;">
+                        17 Docker 网络初探
+                    </div>
+                    <div class="art-info clearfix">
+                        
+                        <span class="l">
+                            更新时间：2020-08-24 09:34:27
+                        </span>
+                    </div>
+                    <div class="art-top">
+                                                <img src="https://img1.sycdn.imooc.com/5f4318f70001336206400426.jpg" alt="">
+                                                                        <div class="famous-word-box">
+                            <img src="https://www.imooc.com/static/img/column/bg-l.png" alt="" class="bg1 bg">
+                            <img src="https://www.imooc.com/static/img/column/bg-r.png" alt="" class="bg2 bg">
+                            <div class="famous-word">没有智慧的头脑，就象没有腊烛的灯笼。——列夫·托尔斯泰<p></p></div>
+                        </div>
+                                            </div>
+                    <div class="art-content js-lookimg">
+                        <div id="article_content">
+                            <div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">从本节课开始，我们将正式进入 Docker 网络这一重要环节，在开始介绍 Docker 网络之前，我们先来了解一下 Docker 网络是如何工作的。</p>
+</div><div class="cl-preview-section"><h2 id="docker0-网桥（bridge）" style="font-size: 30px;">1. docker0 网桥（Bridge）</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们在 Linux 宿主机上面启动了 Docker Daemon 进程之后，通过 ifconfig 查看，会发现多了一个叫 docker0 的网卡，这个就是 docker0 网桥。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@docker ~<span class="token punctuation">]</span><span class="token comment"># ifconfig</span>
+docker0: flags<span class="token operator">=</span>4163<span class="token operator">&lt;</span>UP,BROADCAST,RUNNING,MULTICAST<span class="token operator">&gt;</span>  mtu 1500
+        inet 172.17.0.1  netmask 255.255.0.0  broadcast 172.17.255.255
+        ether 02:42:3e:ce:27:81  txqueuelen 0  <span class="token punctuation">(</span>Ethernet<span class="token punctuation">)</span>
+        RX packets 3643  bytes 311618 <span class="token punctuation">(</span>304.3 KiB<span class="token punctuation">)</span>
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 3017  bytes 3388653 <span class="token punctuation">(</span>3.2 MiB<span class="token punctuation">)</span>
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">网桥，简而言之，就是<strong>早期的两端口二层网络设备，用来连接不同的局域网，对数据包进行存储、转发操作</strong>。这里的一个关键点就是两端口，<strong>docker0 网桥连接的就是容器网段和宿主机网段</strong>。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><strong>docker0 网桥是在 Docker Daemon 启动的时候自动创建的</strong>，从我们上面的结果 (inet 和 netmask) 可以看出来 docker0 的 IP 为 172.17.0.1/16。<strong>之后使用 bridge 模式（默认）创建出来的 Docker 容器都将在 docker0 子网的范围内选取一个未被占用的 IP 使用</strong>，并连接到 docker0 网桥上。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">docker0 网桥的 IP 地址和子网范围是可以通过参数修改的，使用 CIDR 的格式，感兴趣的同学可以自行查阅 <code>--bip=CIDR</code>。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f431910000158ad05000299.png" data-original="//img1.sycdn.imooc.com/5f431910000158ad05000299.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">在 Linux 系统中，我们可以通过 brctl 命令来查看网桥的信息（如果提示找不到命令，需要先安装 bridge-utils 软件包）。下面是我的一台运行了多个 Docker 容器的 Centos 机器的 brctl 的显示结果。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f4319170001fbaa16420434.png" data-original="//img1.sycdn.imooc.com/5f4319170001fbaa16420434.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们从 brctl 的结果中可以看到网桥上面连接了很多了 veth 设备，同时 veth 设备总是成对出现的，那么也就意味着 veth 的另一端连接的是容器的 eth0，正如上面那幅图所示。</p>
+</div><div class="cl-preview-section"><h2 id="iptables" style="font-size: 30px;">2. iptables</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">介绍完了 Bridge 之后，我们还需要了解一下 iptables。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">iptables 可以简单理解为是<strong>一个命令行防火墙（firewall）工具，我们可以设置一些 iptables 规则来达到流量控制</strong>。Docker 会在宿主机系统上增加一些 iptables 规则，以用来管理 Docker 容器和容器之间以及和外界的通信。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">下面我们通过命令 <code>iptables-save</code> 命令来查看一下我的这台虚拟机（运行着多个 Docker 容器）上面的 iptable 规则情况，下面是全部命令输出，我们下面就看看 Docker 的数据转发是怎么做的？</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@docker ~<span class="token punctuation">]</span><span class="token comment"># clear</span>
+<span class="token punctuation">[</span>root@docker ~<span class="token punctuation">]</span><span class="token comment"># iptables-save</span>
+<span class="token comment"># Generated by iptables-save v1.4.21 on Sun Mar 29 14:28:38 2020</span>
+*nat
+:PREROUTING ACCEPT <span class="token punctuation">[</span>904001:54226848<span class="token punctuation">]</span>
+:INPUT ACCEPT <span class="token punctuation">[</span>904000:54226788<span class="token punctuation">]</span>
+:OUTPUT ACCEPT <span class="token punctuation">[</span>60846644:3691707360<span class="token punctuation">]</span>
+:POSTROUTING ACCEPT <span class="token punctuation">[</span>60846645:3691707420<span class="token punctuation">]</span>
+:DOCKER - <span class="token punctuation">[</span>0:0<span class="token punctuation">]</span>
+-A PREROUTING -m addrtype --dst-type LOCAL -j DOCKER
+-A OUTPUT <span class="token operator">!</span> -d 127.0.0.0/8 -m addrtype --dst-type LOCAL -j DOCKER
+-A POSTROUTING -s 172.17.0.0/16 <span class="token operator">!</span> -o docker0 -j MASQUERADE
+-A POSTROUTING -s 172.17.0.4/32 -d 172.17.0.4/32 -p tcp -m tcp --dport 80 -j MASQUERADE
+-A POSTROUTING -s 172.17.0.5/32 -d 172.17.0.5/32 -p tcp -m tcp --dport 6379 -j MASQUERADE
+-A POSTROUTING -s 172.17.0.6/32 -d 172.17.0.6/32 -p tcp -m tcp --dport 5000 -j MASQUERADE
+-A DOCKER -i docker0 -j RETURN
+-A DOCKER <span class="token operator">!</span> -i docker0 -p tcp -m tcp --dport 8080 -j DNAT --to-destination 172.17.0.4:80
+-A DOCKER <span class="token operator">!</span> -i docker0 -p tcp -m tcp --dport 6379 -j DNAT --to-destination 172.17.0.5:6379
+-A DOCKER <span class="token operator">!</span> -i docker0 -p tcp -m tcp --dport 5000 -j DNAT --to-destination 172.17.0.6:5000
+COMMIT
+<span class="token comment"># Completed on Sun Mar 29 14:28:38 2020</span>
+<span class="token comment"># Generated by iptables-save v1.4.21 on Sun Mar 29 14:28:38 2020</span>
+*filter
+:INPUT ACCEPT <span class="token punctuation">[</span>450195298:73092369567<span class="token punctuation">]</span>
+:FORWARD DROP <span class="token punctuation">[</span>0:0<span class="token punctuation">]</span>
+:OUTPUT ACCEPT <span class="token punctuation">[</span>802081724:168977653504<span class="token punctuation">]</span>
+:DOCKER - <span class="token punctuation">[</span>0:0<span class="token punctuation">]</span>
+:DOCKER-ISOLATION-STAGE-1 - <span class="token punctuation">[</span>0:0<span class="token punctuation">]</span>
+:DOCKER-ISOLATION-STAGE-2 - <span class="token punctuation">[</span>0:0<span class="token punctuation">]</span>
+:DOCKER-USER - <span class="token punctuation">[</span>0:0<span class="token punctuation">]</span>
+-A FORWARD -j DOCKER-USER
+-A FORWARD -j DOCKER-ISOLATION-STAGE-1
+-A FORWARD -o docker0 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+-A FORWARD -o docker0 -j DOCKER
+-A FORWARD -i docker0 <span class="token operator">!</span> -o docker0 -j ACCEPT
+-A FORWARD -i docker0 -o docker0 -j ACCEPT
+-A DOCKER -d 172.17.0.4/32 <span class="token operator">!</span> -i docker0 -o docker0 -p tcp -m tcp --dport 80 -j ACCEPT
+-A DOCKER -d 172.17.0.5/32 <span class="token operator">!</span> -i docker0 -o docker0 -p tcp -m tcp --dport 6379 -j ACCEPT
+-A DOCKER -d 172.17.0.6/32 <span class="token operator">!</span> -i docker0 -o docker0 -p tcp -m tcp --dport 5000 -j ACCEPT
+-A DOCKER-ISOLATION-STAGE-1 -i docker0 <span class="token operator">!</span> -o docker0 -j DOCKER-ISOLATION-STAGE-2
+-A DOCKER-ISOLATION-STAGE-1 -j RETURN
+-A DOCKER-ISOLATION-STAGE-2 -o docker0 -j DROP
+-A DOCKER-ISOLATION-STAGE-2 -j RETURN
+-A DOCKER-USER -j RETURN
+COMMIT
+<span class="token comment"># Completed on Sun Mar 29 14:28:38 2020</span>
+<span class="token punctuation">[</span>root@docker ~<span class="token punctuation">]</span><span class="token comment">#</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">iptables 默认有 4 个表：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;"><em><strong>nat</strong></em>：地址转换表；</li>
+<li style="font-size: 20px; line-height: 38px;"><em><strong>filter</strong></em>：数据过滤表；</li>
+<li style="font-size: 20px; line-height: 38px;"><em><strong>raw</strong></em>：状态跟踪表；</li>
+<li style="font-size: 20px; line-height: 38px;"><em><strong>mangle</strong></em>：包标记表。</li>
+</ul>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们这里的输出只有 <em><strong>nat</strong></em> 表和 <em><strong>filter</strong></em> 表。其中 <em><strong>nat</strong></em> 表中有一条规则如下：</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">-A POSTROUTING -s 172.17.0.0/16 <span class="token operator">!</span> -o docker0 -j MASQUERADE
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这条规则的含义定义了 Docker 容器和外界的通信，含义是将源地址为 172.17.0.0/16 （docker0 网桥的子网，也就是 Docker 容器发出的数据） 的数据包，当不是从 docker0 网卡发出时做 SNAT 转换。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">SNAT 的意思是源地址转换，将 IP 包的源地址转换为相应网卡的地址。这条规则的作用是当我们从 Docker 容器访问外网时，在外边看来就是从宿主机上发出的，外部对于 Docker 容器无感知。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">上面这条规则定义 Docker 容器访问外部，那么从外部访问 Docker 容器服务时，是怎么处理的呢？我们可以看一下两条规则</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">*nat
+<span class="token punctuation">..</span>.
+-A DOCKER <span class="token operator">!</span> -i docker0 -p tcp -m tcp --dport 6379 -j DNAT --to-destination 172.17.0.5:6379
+<span class="token punctuation">..</span>.
+*filter
+<span class="token punctuation">..</span>.
+-A DOCKER -d 172.17.0.5/32 <span class="token operator">!</span> -i docker0 -o docker0 -p tcp -m tcp --dport 6379 -j ACCEPT
+<span class="token punctuation">..</span>.
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">其中 <em><strong>nat</strong></em> 表中的规则含义是将访问宿主机的 6379 端口流量转发到 172.17.0.5 的 6379 端口上。熟悉 redis 的同学这个时候一定反应过来了，172.17.0.5 一定是一个运行着 redis-server 的 Docker 容器，同时在启动的时候做了容器端口 6379 到宿主机端口 6379 的端口映射。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">事实确实是这样的。所以我们可以得出结论：<strong>外界访问 Docker 容器是通过 iptables 做 DNAT 实现的</strong>。DNAT 将 SNAT 中的 Source 换成 Destination，表示目的地址转换。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><em><strong>filter</strong></em> 表中的规则用来对流量做限制，这里的这条规则表示允许所有的外部 IP 访问容器，可以通过在 filter 的 Docker 链上添加规则来对外部的 IP 访问做出限制，这里就不再演示了。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">不光是与外界通信，Docker 容器之间通信也受到 iptables 规则限制。我们前面也了解到宿主机上面的所有 Docker 容器都位于 docker0 网桥的子网内。同时我们从 iptables 中的输出看到一条 <em><strong>filter</strong></em> 规则。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">-A FORWARD -i docker0 -o docker0 -j ACCEPT
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这条规则保证容器之间可以互相通信，如果将 Docker Server 启动参数 <code>--icc</code> 设置为 false，则这条规则会被设置为 DROP，容器之间的相互通信就会被禁止。</p>
+</div><div class="cl-preview-section"><h2 id="ip-forward" style="font-size: 30px;">3. IP-Forward</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">在 Docker 容器网络通信的过程中，还涉及到数据包在多个网卡间的转发，这需要将内核参数 <strong>ip-forward</strong> 打开，参数位于 /proc/sys/net/ipv4/ip_forward。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@docker ~<span class="token punctuation">]</span><span class="token comment"># cat /proc/sys/net/ipv4/ip_forward</span>
+1
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">通常这一步不需要我们手动来设置，Docker server 启动的时候默认会将 ip-forward 设置为 1。</p>
+</div><div class="cl-preview-section"><h2 id="dns-和主机名" style="font-size: 30px;">4. DNS 和主机名</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">容器的主机名以及 DNS 是设置在文件 /etc/hostname、/etc/hosts、/etc/resolv.conf 中的，对于容器来说，在容器启动后会覆盖这些文件从而达到修改属性的目的。下面是我的机器上面的示例。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@docker ~<span class="token punctuation">]</span><span class="token comment"># docker exec -ti 4be4cca01392 sh</span>
+/ <span class="token comment"># mount</span>
+<span class="token punctuation">..</span>.
+/dev/vda1 on /etc/hostname <span class="token function">type</span> ext4 <span class="token punctuation">(</span>rw,relatime,data<span class="token operator">=</span>ordered<span class="token punctuation">)</span>
+/dev/vda1 on /etc/hosts <span class="token function">type</span> ext4 <span class="token punctuation">(</span>rw,relatime,data<span class="token operator">=</span>ordered<span class="token punctuation">)</span>
+/dev/vda1 on /etc/resolv.conf <span class="token function">type</span> ext4 <span class="token punctuation">(</span>rw,relatime,data<span class="token operator">=</span>ordered<span class="token punctuation">)</span>
+<span class="token punctuation">..</span>.
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">同时我们也可以通过参数 <code>-h HOSTNAME</code> 和 <code>--dns=IP_ADDRESS…</code> 来对 hostname 和 DNS 进行设置。</p>
+</div><div class="cl-preview-section"><h2 id="总结" style="font-size: 30px;">5. 总结</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">本文介绍了 Docker 网络的工作模式，主要包括 docker0 网桥和 iptables，可能有些同学对于这些网络基础知识看的一头雾水，希望大家可以自己多实践。对于计算机网络的知识学习确实没有什么好的途径，唯有实践出真知。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">下一章我们介绍 Docker 支持的多种网络模式。</p>
+</div>}
+                        </div>
+                    </div>
+                                            <!-- 买过的阅读 -->
+                        <div class="art-next-prev clearfix">
+                                                                                                <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2248">
+                                                                    <div class="prev l clearfix">
+                                        <div class="icon l">
+                                            <i class="imv2-arrow3_l"></i>
+                                        </div>
+                                        <p>
+                                            16 镜像构建指南：Dockerfile 详解
+                                        </p>
+                                    </div>
+                                </a>
+                                                                                                                            <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2250">
+                                                                    <div class="next r clearfix">
+                                        <p>
+                                            18 Docker 网络模式
+                                        </p>
+                                        <div class="icon r">
+                                            <i class="imv2-arrow3_r"></i>
+                                        </div>
+
+                                    </div>
+                                </a>
+                                                    </div>
+                                    </div>
+                <div class="comments-con js-comments-con" id="coments_con">
+                </div>
+
+                
+            </div>
+            
+            
+            
+
+        </div>
+    </div>
+</div>
+
+<div class="modal modal-jiaQun-new hide" id="modal-jiaQun">
+    <div class="inner" style="">
+        <div class="modal-close js-close-jiaQun">
+            <i class="imv2-close"></i>
+        </div>
+        <div class="content">
+            <img src="https://img1.sycdn.imooc.com/5f18f4360001392b05330597.jpg">
+            <div class="right-info">
+                <div class="title">
+                    扫码加入慕课前沿技术核心用户群
+                </div>
+                <div class="desc">
+                                            <p class="mb6">验证信息：<span id="joincode">2011031946279713</span><span class="copy js-copy-joincode">复制</span></p>
+                                        <p class="mb6">QQ讨论群号：729941811</p>
+                                            <p>QQ群URL：<a href="https://jq.qq.com/?_wv=1027&amp;k=5WJLMxV" target="_blank">点击访问</a></p>
+                                    </div>
+            </div>
+            <p class="tip">若遇到搜索不到QQ群或加群失败，请联系客服邮箱:kf@imooc.com</p>
+        </div>
+    </div>
+</div>
+ 
+<!-- 专栏介绍页专栏评价 -->
+
+<!-- 专栏介绍页底部三条评价 -->
+
+<!-- 专栏阅读页弹层目录和介绍页页面目录 -->
+
+<!-- 专栏阅读页发布回复 -->
+
+<!-- 专栏阅读页发布评论 -->
+
+<!-- 专栏阅读页底部评论 -->
+
+<!-- 专栏阅读 单个 评论 -->
+
+<!-- 新增回复和展开三条以外回复 -->
+
+<!-- 立即订阅的弹窗 -->
+
+
+
+
+
+
+
+
+
+
+
+
+</div></body></html>

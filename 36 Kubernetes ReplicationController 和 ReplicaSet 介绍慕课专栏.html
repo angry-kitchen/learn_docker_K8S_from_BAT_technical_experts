@@ -1,0 +1,412 @@
+<html><head><meta charset="utf-8"><title>36 Kubernetes ReplicationController 和 ReplicaSet 介绍-慕课专栏</title>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+			<meta name="renderer" content="webkit">
+			<meta property="qc:admins" content="77103107776157736375">
+			<meta property="wb:webmaster" content="c4f857219bfae3cb">
+			<meta http-equiv="Access-Control-Allow-Origin" content="*">
+			<meta http-equiv="Cache-Control" content="no-transform ">
+			<meta http-equiv="Cache-Control" content="no-siteapp">
+			<link rel="apple-touch-icon" sizes="76x76" href="https://www.imooc.com/static/img/common/touch-icon-ipad.png">
+			<link rel="apple-touch-icon" sizes="120x120" href="https://www.imooc.com/static/img/common/touch-icon-iphone-retina.png">
+			<link rel="apple-touch-icon" sizes="152x152" href="https://www.imooc.com/static/img/common/touch-icon-ipad-retina.png">
+			<link href="https://moco.imooc.com/captcha/style/captcha.min.css" rel="stylesheet">
+			<link rel="stylesheet" href="https://www.imooc.com/static/moco/v1.0/dist/css/moco.min.css?t=201907021539" type="text/css">
+			<link rel="stylesheet" href="https://www.imooc.com/static/lib/swiper/swiper-3.4.2.min.css?t=201907021539">
+			<link rel="stylesheet" href="https://static.mukewang.com/static/css/??base.css,common/common-less.css?t=2.5,column/zhuanlanChapter-less.css?t=2.5,course/inc/course_tipoff-less.css?t=2.5?v=201907051055" type="text/css">
+			<link charset="utf-8" rel="stylesheet" href="https://www.imooc.com/static/lib/ueditor/themes/imooc/css/ueditor.css?v=201907021539"><link rel="stylesheet" href="https://www.imooc.com/static/lib/baiduShare/api/css/share_style0_16.css?v=6aba13f0.css"></head>
+			<body><div id="main">
+
+
+<div class="main-con hide-menu">
+    <!-- 左侧菜单 & 索引 -->
+    
+    <div class="right-content" style="padding-left: 0px;">
+        <div class="container clearfix" id="top" style="width: 1134px; display: block;">
+            
+            
+            <div class="center_con js-center_con l" style="width: 1134px;">
+                <div class="article-con">
+                                            <!-- 买过的阅读 -->
+                        
+
+                    
+                    <div class="art-title" style="margin-top: 0px;">
+                        36 Kubernetes ReplicationController 和 ReplicaSet 介绍
+                    </div>
+                    <div class="art-info clearfix">
+                        
+                        <span class="l">
+                            更新时间：2020-10-19 09:56:58
+                        </span>
+                    </div>
+                    <div class="art-top">
+                                                <img src="https://img1.sycdn.imooc.com/5f8cf1d700011d5f06400426.jpg" alt="">
+                                                                        <div class="famous-word-box">
+                            <img src="https://www.imooc.com/static/img/column/bg-l.png" alt="" class="bg1 bg">
+                            <img src="https://www.imooc.com/static/img/column/bg-r.png" alt="" class="bg2 bg">
+                            <div class="famous-word">人生太短，要干的事太多，我要争分夺秒。——爱迪生<p></p></div>
+                        </div>
+                                            </div>
+                    <div class="art-content js-lookimg">
+                        <div id="article_content">
+                            <div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">前面我们的示例中都是单个 Pod 的介绍，但是实际在生产应用中并不推荐直接使用 Pod 对象来部署应用，而是使用控制器来管理我们的应用，常见的控制有：ReplicationController 、ReplicaSet 和 Deployment 等。这章我们介绍一下 ReplicationController 和 ReplicaSet。</p>
+</div><div class="cl-preview-section"><h2 id="replicationcontroller" style="font-size: 30px;">1. ReplicationController</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">ReplicationController 确保集群内任何时刻都有指定的 Pod 副本处于运行状态，这样我们就能保证应用的高可用。</p>
+</div><div class="cl-preview-section"><h4 id="创建" style="font-size: 26px;">1.1 创建</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">下面的示例是使用 ReplicationController 运行 nginx web 服务器的三副本。</p>
+</div><div class="cl-preview-section"><pre class=" language-yaml"><code class="prism  language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ReplicationController
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> nginx
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">3</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> nginx
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">name</span><span class="token punctuation">:</span> nginx
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">app</span><span class="token punctuation">:</span> nginx
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> nginx
+        <span class="token key atrule">image</span><span class="token punctuation">:</span> nginx
+        <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">80</span>
+        <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+          <span class="token key atrule">limits</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> 100m
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> 200Mi
+          <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> 100m
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> 200Mi
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">上面的 yaml 文件中有几个重要的地方：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">kind: 指定为 ReplicationController；</li>
+<li style="font-size: 20px; line-height: 38px;">metadata: 指定该 ReplicationController 的一些元信息，比如 name 等；</li>
+<li style="font-size: 20px; line-height: 38px;">spec：该 ReplicationController 的核心定义，包括几个部分：
+<ul>
+<li style="font-size: 20px; line-height: 38px;">replicas：定义要运行的 Pod 的副本数；</li>
+<li style="font-size: 20px; line-height: 38px;">selector：控制器用来筛选 Pod，需要和下面的 Pod template 定义中的 metadata 信息一致；</li>
+<li style="font-size: 20px; line-height: 38px;">template：该 ReplicationController 管理的 Pod 的定义模板，下面定义和 Pod 的定义一致。</li>
+</ul>
+</li>
+</ul>
+</div><div class="cl-preview-section"><h4 id="使用" style="font-size: 26px;">1.2 使用</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">通过 <code>kubectl apply</code> 创建 ReplicationController 对象，下面命令中的 imooc 是我自己创建的用来跑 demo 的 namespace，大家实践的使用可以替换成自己的 namespace 名字。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">kubectl apply -f nginx-rc.yaml -n imooc
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">然后我们可以通过 <code>kubectl describe rc</code> 来查看该 ReplicationController，这里的 rc 就是 ReplicationController 的简写。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">$ kubectl describe rc nginx -n imooc
+Name:         nginx
+Namespace:    imooc
+Selector:     app<span class="token operator">=</span>nginx
+Labels:       app<span class="token operator">=</span>nginx
+Annotations:  kubectl.kubernetes.io/last-applied-configuration:
+                <span class="token punctuation">{</span><span class="token string">"apiVersion"</span><span class="token keyword">:</span><span class="token string">"v1"</span>,<span class="token string">"kind"</span><span class="token keyword">:</span><span class="token string">"ReplicationController"</span>,<span class="token string">"metadata"</span>:<span class="token punctuation">{</span><span class="token string">"annotations"</span>:<span class="token punctuation">{</span><span class="token punctuation">}</span>,<span class="token string">"name"</span><span class="token keyword">:</span><span class="token string">"nginx"</span>,<span class="token string">"namespace"</span><span class="token keyword">:</span><span class="token string">"imooc"</span><span class="token punctuation">}</span>,<span class="token string">"spec"</span>:<span class="token punctuation">{</span><span class="token string">"replicas"</span>:3,"s<span class="token punctuation">..</span>.
+Replicas:     3 current / 3 desired
+Pods Status:  3 Running / 0 Waiting / 0 Succeeded / 0 Failed
+Pod Template:
+  Labels:  app<span class="token operator">=</span>nginx
+  Containers:
+   nginx:
+    Image:      nginx
+    Port:       80/TCP
+    Host Port:  0/TCP
+    Limits:
+      cpu:     100m
+      memory:  200Mi
+    Requests:
+      cpu:        100m
+      memory:     200Mi
+    Environment:  <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>
+    Mounts:       <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>
+  Volumes:        <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>
+Events:
+  Type    Reason            Age    From                    Message
+  ----    ------            ----   ----                    -------
+  Normal  SuccessfulCreate  3m43s  replication-controller  Created pod: nginx-q5pdl
+  Normal  SuccessfulCreate  3m43s  replication-controller  Created pod: nginx-2qkhd
+  Normal  SuccessfulCreate  3m43s  replication-controller  Created pod: nginx-xggxr
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">上面的输出中有几点值得关注的是：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">Replicas：表示当前集群中有几个 Pod 副本在运行，<code>3 current / 3 desired</code> 表示期望运行的 Pod 是 3 个，当前运行的Pod 也是 3 个，也就是正常；</li>
+<li style="font-size: 20px; line-height: 38px;">Pods Status：表示集群中运行的 Pod 的状态。<code>3 Running / 0 Waiting / 0 Succeeded / 0 Failed</code> 表示目前有 3 个 Pod 处于 Running 状态；</li>
+<li style="font-size: 20px; line-height: 38px;">Events：events 在 Kubernetes 是非常重要的信息，基本每个 Kubernetes 对象都有 events 字段。我们看到这里的 events 创建了三个以 nginx 作为前缀命名的 Pod。</li>
+</ul>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们可以通过 <code>kubectl get pods</code> 来查看一下这个 ReplicationController 创建出来的 pod。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">$ kubectl get pods -n imooc <span class="token operator">|</span> <span class="token function">grep</span> nginx
+nginx-2qkhd           1/1     Running   0          1
+nginx-q5pdl           1/1     Running   0          4h30m
+nginx-xggxr           1/1     Running   0          4h30m
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">下面我们展示一下 ReplicationController 自动拉起的功能。首先将上面的三个 Pod 任选一个删除，比如第一个。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">$ kubectl delete po nginx-2qkhd -n imooc
+pod <span class="token string">"nginx-2qkhd"</span> deleted
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">然后我们再通过 <code>kubectl get pods</code> 来查看一下运行状态的 Pod。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">➜  rc kubectl get pods -n imooc <span class="token operator">|</span> <span class="token function">grep</span> nginx
+nginx-lctmn           1/1     Running   0          54s
+nginx-q5pdl           1/1     Running   0          7h29m
+nginx-xggxr           1/1     Running   0          7h29m
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们再查看一下 ReplicationController 的 events 情况。会发现多了一条如下的记录：创建新的 Pod。这就是 ReplicationController 对失败 Pod 自动拉起的直观展示。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">Events:
+  Type    Reason            Age    From                    Message
+  ----    ------            ----   ----                    -------
+  Normal  SuccessfulCreate  2m12s  replication-controller  Created pod: nginx-lctmn
+</code></pre>
+</div><div class="cl-preview-section"><h4 id="删除-replicationcontroller" style="font-size: 26px;">1.3 删除 ReplicationController</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Kubernetes 中所有的对象删除操作都可以通过 <code>kubectl delete</code> 来操作，对于 ReplicationController 也是一样。如下显示，我们删除完之后再通过 <code>kubectl get</code> 已经查不到了。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">$ kubectl delete rc nginx -n imooc
+replicationcontroller <span class="token string">"nginx"</span> deleted
+$ kubectl get rc  -n imooc
+No resources found <span class="token keyword">in</span> imooc namespace.
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这里有个问题：删除完 ReplicationController 之后，之前通过 ReplicationController 启动的 Pod 会被删除吗？答案是会的。如果只想删除 ReplicationController，而不想删除 Pod，可以在 <code>kubectl delete</code> 的参数上增加选项 <code>--cascade=false</code>。</p>
+</div><div class="cl-preview-section"><h4 id="工作原理" style="font-size: 26px;">1.4 工作原理</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">ReplicationController 会监听 Kubernetes 集群内运行的 Pod 的个数，如果多于指定的副本数，则删除多余的 Pod；如果少于指定的副本数，则启动缺少的 Pod。这里所有的删除和启动操作都是通过 ReplicationController 来自动完成的。与手动创建的 Pod 不同的是，由 ReplicationController 创建的 Pod 在失败、删除或者终止时会被自动替换，比如在系统升级之后，节点上的 Pod 会被重建。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">在使用中，即使应用程序只需要一个 Pod，也建议使用 ReplicationController 来创建 Pod。可以将 ReplicationController 类比成 supervisor 这种进程管理器，不同在于 ReplicationController 不是管理单个进程，而是监控管理集群内部跨多个节点的多个 Pod。</p>
+</div><div class="cl-preview-section"><h2 id="replicaset" style="font-size: 30px;">2. ReplicaSet</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">ReplicaSet 可以认为是下一代 Replication Controller，改进的地方主要在于选择器的支持上。ReplicaSet 支持新的基于集合的选择器，其实不光是 ReplicaSet，像 Deployment，DaemonSet 等都支持，只能说 ReplicationController 是老一代的失败产物。关于选择器，我们这里举个例子。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">ReplicationController 支持的选择器类似下面。</p>
+</div><div class="cl-preview-section"><pre class=" language-yaml"><code class="prism  language-yaml"><span class="token key atrule">selector</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> nginx
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">而 ReplicaSet 支持的选择器则更加的灵活，如下所示 matchExpressions 提供了一种基于集合的选择器，包括 <code>In</code> 和 <code>NotIn</code> 。</p>
+</div><div class="cl-preview-section"><pre class=" language-yaml"><code class="prism  language-yaml"><span class="token key atrule">selector</span><span class="token punctuation">:</span>
+  <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">component</span><span class="token punctuation">:</span> redis
+  <span class="token key atrule">matchExpressions</span><span class="token punctuation">:</span>
+    <span class="token punctuation">-</span> <span class="token punctuation">{</span><span class="token key atrule">key</span><span class="token punctuation">:</span> tier<span class="token punctuation">,</span> <span class="token key atrule">operator</span><span class="token punctuation">:</span> In<span class="token punctuation">,</span> <span class="token key atrule">values</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>cache<span class="token punctuation">]</span><span class="token punctuation">}</span>
+    <span class="token punctuation">-</span> <span class="token punctuation">{</span><span class="token key atrule">key</span><span class="token punctuation">:</span> environment<span class="token punctuation">,</span> <span class="token key atrule">operator</span><span class="token punctuation">:</span> NotIn<span class="token punctuation">,</span> <span class="token key atrule">values</span><span class="token punctuation">:</span> <span class="token punctuation">[</span>dev<span class="token punctuation">]</span><span class="token punctuation">}</span>
+</code></pre>
+</div><div class="cl-preview-section"><h4 id="创建-replicaset" style="font-size: 26px;">2.1 创建 ReplicaSet</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">和 Replication Controller 类似，我们创建 ReplicaSet 也只需要编写一个 ReplicaSet 对象的 yaml 文件即可，下面是一个示例。</p>
+</div><div class="cl-preview-section"><pre class=" language-yaml"><code class="prism  language-yaml"><span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> apps/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> ReplicaSet
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> frontend
+  <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+    <span class="token key atrule">app</span><span class="token punctuation">:</span> guestbook
+    <span class="token key atrule">tier</span><span class="token punctuation">:</span> frontend
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">replicas</span><span class="token punctuation">:</span> <span class="token number">3</span>
+  <span class="token key atrule">selector</span><span class="token punctuation">:</span>
+    <span class="token key atrule">matchLabels</span><span class="token punctuation">:</span>
+      <span class="token key atrule">tier</span><span class="token punctuation">:</span> frontend
+  <span class="token key atrule">template</span><span class="token punctuation">:</span>
+    <span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+      <span class="token key atrule">labels</span><span class="token punctuation">:</span>
+        <span class="token key atrule">tier</span><span class="token punctuation">:</span> frontend
+    <span class="token key atrule">spec</span><span class="token punctuation">:</span>
+      <span class="token key atrule">containers</span><span class="token punctuation">:</span>
+      <span class="token punctuation">-</span> <span class="token key atrule">name</span><span class="token punctuation">:</span> nginx
+        <span class="token key atrule">image</span><span class="token punctuation">:</span> nginx
+        <span class="token key atrule">ports</span><span class="token punctuation">:</span>
+        <span class="token punctuation">-</span> <span class="token key atrule">containerPort</span><span class="token punctuation">:</span> <span class="token number">80</span>
+        <span class="token key atrule">resources</span><span class="token punctuation">:</span>
+          <span class="token key atrule">limits</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> 100m
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> 200Mi
+          <span class="token key atrule">requests</span><span class="token punctuation">:</span>
+            <span class="token key atrule">cpu</span><span class="token punctuation">:</span> 100m
+            <span class="token key atrule">memory</span><span class="token punctuation">:</span> 200Mi
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们可以看到 ReplicaSet 的 spec 和 Replication Controller 非常的类似，主要包括几个域：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">
+<p style="font-size: 20px; line-height: 38px;">kind：指定为 ReplicaSet；</p>
+</li>
+<li style="font-size: 20px; line-height: 38px;">
+<p style="font-size: 20px; line-height: 38px;">.spec.replicas：同时运行的 Pod 的副本个数；</p>
+</li>
+<li style="font-size: 20px; line-height: 38px;">
+<p style="font-size: 20px; line-height: 38px;">.spec.selector：选择器。ReplicaSet 管理所有标签匹配与标签选择器的 Pod。它不区分自己创建或删除的 Pod 和其他人或进程创建或删除的pod。</p>
+<p style="font-size: 20px; line-height: 38px;">这允许在不影响运行中的 Pod 的情况下替换副本集。需要注意的是 <code>.spec.template.metadata.labels</code> 必须匹配 <code>.spec.selector</code>，否则 Kubernetes 则认为是非法的；</p>
+</li>
+<li style="font-size: 20px; line-height: 38px;">
+<p style="font-size: 20px; line-height: 38px;">.spec.template：Pod 模板。</p>
+</li>
+</ul>
+</div><div class="cl-preview-section"><h4 id="使用-1" style="font-size: 26px;">2.2 使用</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们仍然可以通过 <code>kubectl apply</code> 来创建 ReplicaSet 。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">$ kubectl apply -f nginx-rs.yaml -n imooc
+replicaset.apps/frontend created
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">然后我们通过 <code>kubectl describe</code> 来查看我们创建出来的 ReplicaSet，rs 是 ReplicaSet 的缩写。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">$ kubectl describe rs frontend -n imooc
+Name:         frontend
+Namespace:    imooc
+Selector:     tier<span class="token operator">=</span>frontend
+Labels:       app<span class="token operator">=</span>guestbook
+              tier<span class="token operator">=</span>frontend
+Annotations:  kubectl.kubernetes.io/last-applied-configuration:
+                <span class="token punctuation">{</span><span class="token string">"apiVersion"</span><span class="token keyword">:</span><span class="token string">"apps/v1"</span>,<span class="token string">"kind"</span><span class="token keyword">:</span><span class="token string">"ReplicaSet"</span>,<span class="token string">"metadata"</span>:<span class="token punctuation">{</span><span class="token string">"annotations"</span>:<span class="token punctuation">{</span><span class="token punctuation">}</span>,<span class="token string">"labels"</span>:<span class="token punctuation">{</span><span class="token string">"app"</span><span class="token keyword">:</span><span class="token string">"guestbook"</span>,<span class="token string">"tier"</span><span class="token keyword">:</span><span class="token string">"frontend"</span><span class="token punctuation">}</span>,<span class="token string">"name"</span><span class="token keyword">:</span><span class="token string">"frontend"</span>,<span class="token punctuation">..</span>.
+Replicas:     3 current / 3 desired
+Pods Status:  3 Running / 0 Waiting / 0 Succeeded / 0 Failed
+Pod Template:
+  Labels:  tier<span class="token operator">=</span>frontend
+  Containers:
+   nginx:
+    Image:      nginx
+    Port:       80/TCP
+    Host Port:  0/TCP
+    Limits:
+      cpu:     100m
+      memory:  200Mi
+    Requests:
+      cpu:        100m
+      memory:     200Mi
+    Environment:  <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>
+    Mounts:       <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>
+  Volumes:        <span class="token operator">&lt;</span>none<span class="token operator">&gt;</span>
+Events:
+  Type    Reason            Age   From                   Message
+  ----    ------            ----  ----                   -------
+  Normal  SuccessfulCreate  99s   replicaset-controller  Created pod: frontend-9klqt
+  Normal  SuccessfulCreate  99s   replicaset-controller  Created pod: frontend-tr696
+  Normal  SuccessfulCreate  99s   replicaset-controller  Created pod: frontend-7h6rq
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们可以看到通过 <code>kubectl describe</code> 显示出来的 ReplicaSet 的详情和前面的 Replication Controller 非常的类似。在 events 的列表里面我们也可以看到创建了三个 Pod 的事件。我们查看一下 Pod 情况。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">$ kubectl get pods -n imooc <span class="token operator">|</span> <span class="token function">grep</span> frontend
+frontend-7h6rq        1/1     Running   0          5m4s
+frontend-9klqt        1/1     Running   0          5m4s
+frontend-tr696        1/1     Running   0          5m4s
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们可以将第一个 Pod 删除，然后查看有没有新的 Pod 被创建出来，同时查看 ReplicaSet 的 event 事件中有没有类似上面 Replication Controller 中新建 Pod 的 event。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">$ kubectl delete pods frontend-7h6rq -n imooc
+pod <span class="token string">"frontend-7h6rq"</span> deleted
+$ kubectl get pods -n imooc <span class="token operator">|</span> <span class="token function">grep</span> frontend
+frontend-9klqt        1/1     Running   0          9m34s
+frontend-n9vsb        1/1     Running   0          79s
+frontend-tr696        1/1     Running   0          9m34s
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">ReplicaSet 中新增的 event 如下。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">Events:
+  Type    Reason            Age   From                   Message
+  ----    ------            ----  ----                   -------
+  Normal  SuccessfulCreate  10m   replicaset-controller  Created pod: frontend-9klqt
+</code></pre>
+</div><div class="cl-preview-section"><h4 id="删除" style="font-size: 26px;">2.3 删除</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">如果我们要同时删除 ReplicaSet 和 Pod，则直接使用 <code>kubectl delete</code> 删除即可。</p>
+</div><div class="cl-preview-section"><pre class=" language-bash"><code class="prism  language-bash">$ kubectl delete rs frontend -n imooc
+replicaset.extensions <span class="token string">"frontend"</span> deleted
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">如果我们只想删除 ReplicaSet，但是想保留 Pod，则将 <code>kubectl delete</code> 命令后面添加参数 <code>--cascade=false</code> 即可。</p>
+</div><div class="cl-preview-section"><h4 id="replicaset-高级使用" style="font-size: 26px;">2.4 ReplicaSet 高级使用</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们可以通过修改 ReplicaSet 中的 <code>.spec.replicas</code> 字段来实现运行的 Pod 个数伸缩限制。我们更新完 yaml 文件之后直接使用 <code>kubectl apply</code> 重新应用一下即可。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">ReplicaSet 还可以结合 HorizontalPodAutoscaler（中文可以叫作水平 Pod 缩放器，可以简写为 HPA） 来使用。HAP 可以基于CPU利用率自动伸缩 replication controller、deployment和 replica set 中的 pod 数量，（除了 CPU 利用率）也可以 基于其他应程序提供的度量指标<a href="https://git.k8s.io/community/contributors/design-proposals/instrumentation/custom-metrics-api.md">custom metrics</a>。下面就是基于 CPU 使用来做弹性伸缩的示例，当 CPU 使用率达到 50 时则进行自动伸缩。</p>
+</div><div class="cl-preview-section"><pre class=" language-yaml"><code class="prism  language-yaml">controllers/hpa<span class="token punctuation">-</span>rs.yaml 
+
+<span class="token key atrule">apiVersion</span><span class="token punctuation">:</span> autoscaling/v1
+<span class="token key atrule">kind</span><span class="token punctuation">:</span> HorizontalPodAutoscaler
+<span class="token key atrule">metadata</span><span class="token punctuation">:</span>
+  <span class="token key atrule">name</span><span class="token punctuation">:</span> frontend<span class="token punctuation">-</span>scaler
+<span class="token key atrule">spec</span><span class="token punctuation">:</span>
+  <span class="token key atrule">scaleTargetRef</span><span class="token punctuation">:</span>
+    <span class="token key atrule">kind</span><span class="token punctuation">:</span> ReplicaSet
+    <span class="token key atrule">name</span><span class="token punctuation">:</span> frontend
+  <span class="token key atrule">minReplicas</span><span class="token punctuation">:</span> <span class="token number">3</span>
+  <span class="token key atrule">maxReplicas</span><span class="token punctuation">:</span> <span class="token number">10</span>
+  <span class="token key atrule">targetCPUUtilizationPercentage</span><span class="token punctuation">:</span> <span class="token number">50</span>
+</code></pre>
+</div><div class="cl-preview-section"><h2 id="总结" style="font-size: 30px;">3. 总结</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">本文介绍了 Kubernetes 中两种基本的多副本控制器：Replication Controller 和 ReplicaSet。实际上这两种多副本控制器都不推荐使用了，而是使用 Deployment 来替代，但是 Deployment 实际上却是通过委托 ReplicaSet 来实现的，所以这一章相当于 Deployment 的背景知识，下面一章我们重点介绍 Deployment。</p>
+</div>}
+                        </div>
+                    </div>
+                                            <!-- 买过的阅读 -->
+                        <div class="art-next-prev clearfix">
+                                                                                                <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2410">
+                                                                    <div class="prev l clearfix">
+                                        <div class="icon l">
+                                            <i class="imv2-arrow3_l"></i>
+                                        </div>
+                                        <p>
+                                            35 容器化守护进程 DaemonSet
+                                        </p>
+                                    </div>
+                                </a>
+                                                                                                                            <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2415">
+                                                                    <div class="next r clearfix">
+                                        <p>
+                                            37 Kubernetes Deployment 使用
+                                        </p>
+                                        <div class="icon r">
+                                            <i class="imv2-arrow3_r"></i>
+                                        </div>
+
+                                    </div>
+                                </a>
+                                                    </div>
+                                    </div>
+                <div class="comments-con js-comments-con" id="coments_con">
+                </div>
+
+                
+            </div>
+            
+            
+            
+
+        </div>
+    </div>
+</div>
+
+<div class="modal modal-jiaQun-new hide" id="modal-jiaQun">
+    <div class="inner" style="">
+        <div class="modal-close js-close-jiaQun">
+            <i class="imv2-close"></i>
+        </div>
+        <div class="content">
+            <img src="https://img3.sycdn.imooc.com/5f18f4360001392b05330597.jpg">
+            <div class="right-info">
+                <div class="title">
+                    扫码加入慕课前沿技术核心用户群
+                </div>
+                <div class="desc">
+                                            <p class="mb6">验证信息：<span id="joincode">2011031946279713</span><span class="copy js-copy-joincode">复制</span></p>
+                                        <p class="mb6">QQ讨论群号：729941811</p>
+                                            <p>QQ群URL：<a href="https://jq.qq.com/?_wv=1027&amp;k=5WJLMxV" target="_blank">点击访问</a></p>
+                                    </div>
+            </div>
+            <p class="tip">若遇到搜索不到QQ群或加群失败，请联系客服邮箱:kf@imooc.com</p>
+        </div>
+    </div>
+</div>
+ 
+<!-- 专栏介绍页专栏评价 -->
+
+<!-- 专栏介绍页底部三条评价 -->
+
+<!-- 专栏阅读页弹层目录和介绍页页面目录 -->
+
+<!-- 专栏阅读页发布回复 -->
+
+<!-- 专栏阅读页发布评论 -->
+
+<!-- 专栏阅读页底部评论 -->
+
+<!-- 专栏阅读 单个 评论 -->
+
+<!-- 新增回复和展开三条以外回复 -->
+
+<!-- 立即订阅的弹窗 -->
+
+
+
+
+
+
+
+
+
+
+
+
+</div></body></html>

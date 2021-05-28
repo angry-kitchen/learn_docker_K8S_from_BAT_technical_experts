@@ -1,0 +1,184 @@
+<html><head><meta charset="utf-8"><title>32 Kubernetes 核心概念解析：Pod（一）-慕课专栏</title>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+			<meta name="renderer" content="webkit">
+			<meta property="qc:admins" content="77103107776157736375">
+			<meta property="wb:webmaster" content="c4f857219bfae3cb">
+			<meta http-equiv="Access-Control-Allow-Origin" content="*">
+			<meta http-equiv="Cache-Control" content="no-transform ">
+			<meta http-equiv="Cache-Control" content="no-siteapp">
+			<link rel="apple-touch-icon" sizes="76x76" href="https://www.imooc.com/static/img/common/touch-icon-ipad.png">
+			<link rel="apple-touch-icon" sizes="120x120" href="https://www.imooc.com/static/img/common/touch-icon-iphone-retina.png">
+			<link rel="apple-touch-icon" sizes="152x152" href="https://www.imooc.com/static/img/common/touch-icon-ipad-retina.png">
+			<link href="https://moco.imooc.com/captcha/style/captcha.min.css" rel="stylesheet">
+			<link rel="stylesheet" href="https://www.imooc.com/static/moco/v1.0/dist/css/moco.min.css?t=201907021539" type="text/css">
+			<link rel="stylesheet" href="https://www.imooc.com/static/lib/swiper/swiper-3.4.2.min.css?t=201907021539">
+			<link rel="stylesheet" href="https://static.mukewang.com/static/css/??base.css,common/common-less.css?t=2.5,column/zhuanlanChapter-less.css?t=2.5,course/inc/course_tipoff-less.css?t=2.5?v=201907051055" type="text/css">
+			<link charset="utf-8" rel="stylesheet" href="https://www.imooc.com/static/lib/ueditor/themes/imooc/css/ueditor.css?v=201907021539"><link rel="stylesheet" href="https://www.imooc.com/static/lib/baiduShare/api/css/share_style0_16.css?v=6aba13f0.css"></head>
+			<body><div id="main">
+
+
+<div class="main-con hide-menu">
+    <!-- 左侧菜单 & 索引 -->
+    
+    <div class="right-content" style="padding-left: 0px;">
+        <div class="container clearfix" id="top" style="width: 1134px; display: block;">
+            
+            
+            <div class="center_con js-center_con l" style="width: 1134px;">
+                <div class="article-con">
+                                            <!-- 买过的阅读 -->
+                        
+
+                    
+                    <div class="art-title" style="margin-top: 0px;">
+                        32 Kubernetes 核心概念解析：Pod（一）
+                    </div>
+                    <div class="art-info clearfix">
+                        
+                        <span class="l">
+                            更新时间：2020-10-19 09:54:02
+                        </span>
+                    </div>
+                    <div class="art-top">
+                                                <img src="https://img4.sycdn.imooc.com/5f71451f00014abb06400426.jpg" alt="">
+                                                                        <div class="famous-word-box">
+                            <img src="https://www.imooc.com/static/img/column/bg-l.png" alt="" class="bg1 bg">
+                            <img src="https://www.imooc.com/static/img/column/bg-r.png" alt="" class="bg2 bg">
+                            <div class="famous-word">每个人都是自己命运的主宰。——斯蒂尔斯<p></p></div>
+                        </div>
+                                            </div>
+                    <div class="art-content js-lookimg">
+                        <div id="article_content">
+                            <div class="cl-preview-section"><h2 id="背景" style="font-size: 30px;">1. 背景</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Pod 是 Kubernetes 中的原子调度单元，可以说是 Kubernetes 中最重要的概念也不为过。那么我们首先来看看为什么要设计 Pod 这个概念呢？直接使用容器有什么问题？</p>
+</div><div class="cl-preview-section"><h2 id="原子调度单元" style="font-size: 30px;">2. 原子调度单元</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">将 Pod 作为最小的调度单元，涉及到调度领域的一个 task co-scheduling 问题，简单来说就是如何协同调度几个 task。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">举个例子，现在有两个容器：A 和 B，这两个容器在业务上具有一定的耦合性，需要被调度到一个机器节点上。目前有两个 node 几点 A 和 B，列举一下资源情况：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">A 容器需要内存资源 1 G；</li>
+<li style="font-size: 20px; line-height: 38px;">B 容器需要内存资源 0.5 G；</li>
+<li style="font-size: 20px; line-height: 38px;">Node A 可用内存 1.25 G；</li>
+<li style="font-size: 20px; line-height: 38px;">Node B 可用内存 2 G。</li>
+</ul>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Co-scheduling 需要保证容器 A 和 B 同时被调度到 Node B 上，任意一个容器被调度到 Node A 上都会导致最后的部署拓扑不是预期的。对于这种问题，各种有名的调度器都是怎么解决的呢？</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">Mesos：资源囤积，英文为 resource hoarding，简单来说，就是等待所有设置了 Affinity 约束的任务都达到时，才开始统一进行调度。这种调度机制的问题是等待占用可能导致调度效率损失和死锁。</li>
+<li style="font-size: 20px; line-height: 38px;">Google Omega：乐观调度。和乐观锁的机制类似，先假设没有冲突直接进行调度，同时设置一个巧妙的回滚机制。当调度出现冲突时，通过回滚来解决。这种方式在调度效率上要高效地多，但是和乐观锁一样，实现机制非常复杂。</li>
+<li style="font-size: 20px; line-height: 38px;">Kubernetes：对于这个问题，Kubernetes 直接将容器 A 和容器 B 封装到同一个 Pod 里面，通过把 Pod 作为原子调度单元，非常巧妙的解决了。</li>
+</ul>
+</div><div class="cl-preview-section"><h2 id="pod-的好处" style="font-size: 30px;">3. Pod 的好处</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">前面说到了可以通过 Pod 解决 task co-scheduling 的问题，除此之前，Pod 本身的机制还带来了一些其他的好处。</p>
+</div><div class="cl-preview-section"><h4 id="管理" style="font-size: 26px;">管理</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Pod 是形成内聚服务单元的多个协作过程模式的模型。它们提供了一个比它们的应用组成集合更高级的抽象，从而简化了应用的部署和管理。Pod 可以用作部署、水平扩展和制作副本的最小单元。在 Pod 中，系统自动处理多个容器的在并置运行（协同调度）、生命期共享（例如，终止），协同复制、资源共享和依赖项管理。</p>
+</div><div class="cl-preview-section"><h4 id="资源共享和通信" style="font-size: 26px;">资源共享和通信</h4>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Pod 内的容器之间没有进行资源隔离，可以进行资源共享和通信。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Pod 中的容器使用同一个 Network Namespace ，也就是相同的网络协议栈，比如 IP、端口空间等。那么容器之间通信就可以直接使用 <code>localhost</code> 来进行通信，而不需要通过网卡来交换数据。需要注意的是，由于多个容器使用同一个端口空间，所以需要自己协调 Pod 内部的容器的端口情况，防止冲突。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">除了网络资源，Pod 内的容器还会共享存储，比如在 Pod 的 spec 中指定一组共享存储卷，那么 Pod 启动之后，内部的容器就可以通过这个数据存储卷来共享数据。</p>
+</div><div class="cl-preview-section"><h2 id="pod-如何管理多个容器" style="font-size: 30px;">4. Pod 如何管理多个容器</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Pod 中的容器被自动安排到及集群中的同一个物理或者虚拟机上，并可以一起进行调度。容器可以共享资源和依赖、彼此通信、协调何时以及何种方式终止它们。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">注意，在单个 Pod 中将多个并置和共同管理的容器分组是一个相对高级的使用方式。 只在容器紧密耦合的特定实例中使用此模式。 例如，您可能有一个充当共享卷中文件的 Web 服务器的容器，以及一个单独的 sidecar 容器，该容器从远端更新这些文件，如下图所示：</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f7144f30001e0c118961858.png" data-original="//img1.sycdn.imooc.com/5f7144f30001e0c118961858.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><h2 id="pod-的生命周期" style="font-size: 30px;">4. Pod 的生命周期</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Pod 的生命周期在多个状态之间轮转，支持的状态包括：</p>
+</div><div class="cl-preview-section"><ul>
+<li style="font-size: 20px; line-height: 38px;">挂起（Pending）：Pod 已被 Kubernetes 系统接受，但有一个或者多个容器镜像尚未创建。等待时间包括调度 Pod 的时间和通过网络下载镜像的时间，这可能需要花点时间；</li>
+<li style="font-size: 20px; line-height: 38px;">运行中（Running）：该 Pod 已经绑定到了一个节点上，Pod 中所有的容器都已被创建。至少有一个容器正在运行，或者正处于启动或重启状态；</li>
+<li style="font-size: 20px; line-height: 38px;">成功（Succeeded）：Pod 中的所有容器都被成功终止，并且不会再重启；</li>
+<li style="font-size: 20px; line-height: 38px;">失败（Failed）：Pod 中的所有容器都已终止了，并且至少有一个容器是因为失败终止。也就是说，容器以非0状态退出或者被系统终止；</li>
+<li style="font-size: 20px; line-height: 38px;">未知（Unknown）：因为某些原因无法取得 Pod 的状态，通常是因为与 Pod 所在主机通信失败。</li>
+</ul>
+</div>}
+                        </div>
+                    </div>
+                                            <!-- 买过的阅读 -->
+                        <div class="art-next-prev clearfix">
+                                                                                                <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2393">
+                                                                    <div class="prev l clearfix">
+                                        <div class="icon l">
+                                            <i class="imv2-arrow3_l"></i>
+                                        </div>
+                                        <p>
+                                            31 资源隔离：Namespace 剖析
+                                        </p>
+                                    </div>
+                                </a>
+                                                                                                                            <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2404">
+                                                                    <div class="next r clearfix">
+                                        <p>
+                                            33 Kubernetes 核心概念解析：Pod（二）
+                                        </p>
+                                        <div class="icon r">
+                                            <i class="imv2-arrow3_r"></i>
+                                        </div>
+
+                                    </div>
+                                </a>
+                                                    </div>
+                                    </div>
+                <div class="comments-con js-comments-con" id="coments_con">
+                </div>
+
+                
+            </div>
+            
+            
+            
+
+        </div>
+    </div>
+</div>
+
+<div class="modal modal-jiaQun-new hide" id="modal-jiaQun">
+    <div class="inner" style="">
+        <div class="modal-close js-close-jiaQun">
+            <i class="imv2-close"></i>
+        </div>
+        <div class="content">
+            <img src="https://img1.sycdn.imooc.com/5f18f4360001392b05330597.jpg">
+            <div class="right-info">
+                <div class="title">
+                    扫码加入慕课前沿技术核心用户群
+                </div>
+                <div class="desc">
+                                            <p class="mb6">验证信息：<span id="joincode">2011031946279713</span><span class="copy js-copy-joincode">复制</span></p>
+                                        <p class="mb6">QQ讨论群号：729941811</p>
+                                            <p>QQ群URL：<a href="https://jq.qq.com/?_wv=1027&amp;k=5WJLMxV" target="_blank">点击访问</a></p>
+                                    </div>
+            </div>
+            <p class="tip">若遇到搜索不到QQ群或加群失败，请联系客服邮箱:kf@imooc.com</p>
+        </div>
+    </div>
+</div>
+ 
+<!-- 专栏介绍页专栏评价 -->
+
+<!-- 专栏介绍页底部三条评价 -->
+
+<!-- 专栏阅读页弹层目录和介绍页页面目录 -->
+
+<!-- 专栏阅读页发布回复 -->
+
+<!-- 专栏阅读页发布评论 -->
+
+<!-- 专栏阅读页底部评论 -->
+
+<!-- 专栏阅读 单个 评论 -->
+
+<!-- 新增回复和展开三条以外回复 -->
+
+<!-- 立即订阅的弹窗 -->
+
+
+
+
+
+
+
+
+
+
+
+
+</div></body></html>

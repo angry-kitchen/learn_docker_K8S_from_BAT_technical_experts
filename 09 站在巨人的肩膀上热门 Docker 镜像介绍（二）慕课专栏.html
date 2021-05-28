@@ -1,0 +1,283 @@
+<html><head><meta charset="utf-8"><title>09 站在巨人的肩膀上：热门 Docker 镜像介绍（二）-慕课专栏</title>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+			<meta name="renderer" content="webkit">
+			<meta property="qc:admins" content="77103107776157736375">
+			<meta property="wb:webmaster" content="c4f857219bfae3cb">
+			<meta http-equiv="Access-Control-Allow-Origin" content="*">
+			<meta http-equiv="Cache-Control" content="no-transform ">
+			<meta http-equiv="Cache-Control" content="no-siteapp">
+			<link rel="apple-touch-icon" sizes="76x76" href="https://www.imooc.com/static/img/common/touch-icon-ipad.png">
+			<link rel="apple-touch-icon" sizes="120x120" href="https://www.imooc.com/static/img/common/touch-icon-iphone-retina.png">
+			<link rel="apple-touch-icon" sizes="152x152" href="https://www.imooc.com/static/img/common/touch-icon-ipad-retina.png">
+			<link href="https://moco.imooc.com/captcha/style/captcha.min.css" rel="stylesheet">
+			<link rel="stylesheet" href="https://www.imooc.com/static/moco/v1.0/dist/css/moco.min.css?t=201907021539" type="text/css">
+			<link rel="stylesheet" href="https://www.imooc.com/static/lib/swiper/swiper-3.4.2.min.css?t=201907021539">
+			<link rel="stylesheet" href="https://static.mukewang.com/static/css/??base.css,common/common-less.css?t=2.5,column/zhuanlanChapter-less.css?t=2.5,course/inc/course_tipoff-less.css?t=2.5?v=201907051055" type="text/css">
+			<link charset="utf-8" rel="stylesheet" href="https://www.imooc.com/static/lib/ueditor/themes/imooc/css/ueditor.css?v=201907021539"><link rel="stylesheet" href="https://www.imooc.com/static/lib/baiduShare/api/css/share_style0_16.css?v=6aba13f0.css"></head>
+			<body><div id="main">
+
+
+<div class="main-con hide-menu">
+    <!-- 左侧菜单 & 索引 -->
+    
+    <div class="right-content" style="padding-left: 0px;">
+        <div class="container clearfix" id="top" style="width: 1134px; display: block;">
+            
+            
+            <div class="center_con js-center_con l" style="width: 1134px;">
+                <div class="article-con">
+                                            <!-- 买过的阅读 -->
+                        
+
+                    
+                    <div class="art-title" style="margin-top: 0px;">
+                        09 站在巨人的肩膀上：热门 Docker 镜像介绍（二）
+                    </div>
+                    <div class="art-info clearfix">
+                        
+                        <span class="l">
+                            更新时间：2020-08-07 10:03:55
+                        </span>
+                    </div>
+                    <div class="art-top">
+                                                <img src="https://img2.sycdn.imooc.com/5f16cc510001af0106400426.jpg" alt="">
+                                                                        <div class="famous-word-box">
+                            <img src="https://www.imooc.com/static/img/column/bg-l.png" alt="" class="bg1 bg">
+                            <img src="https://www.imooc.com/static/img/column/bg-r.png" alt="" class="bg2 bg">
+                            <div class="famous-word">读书给人以快乐、给人以光彩、给人以才干。——培根<p></p></div>
+                        </div>
+                                            </div>
+                    <div class="art-content js-lookimg">
+                        <div id="article_content">
+                            <div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">上一篇文章介绍了基础的热门 Docker 操作系统镜像，这篇文章我们来介绍一些应用镜像，也是我们可以直接拿来使用的。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">很多时候我们要学习一门新的技术，比如 MySQL （这里举个例子，MySQL 当然不能算是新技术），如果不使用 Docker 的情况下，我们第一步是配置开发环境。但是很多软件的环境配置起来非常复杂，这一步就吓退了很多初学者。借助于 Docker 镜像，我们将不再受到这些困扰，因为镜像中包含了运行该软件需要的所有软件依赖，这样我们就可以将主要精力用来学习核心技术，而不是环境配置上。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">下面我们就来介绍几个热门的 Docker 镜像：Nginx、MySQL、Redis。其他镜像使用各位读者可以举一反三。</p>
+</div><div class="cl-preview-section"><h2 id="nginx" style="font-size: 30px;">1. Nginx</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Nginx 是一个高性能的 HTTP 和反向代理 web 服务器，支持 HTTP、HTTPS、SMTP、POP3、IMAP 等协议。我们可以通过 docker search 命令搜索官方镜像中心有哪些版本的 nginx，如下图。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f16cc7f0001ce3028581184.png" data-original="//img1.sycdn.imooc.com/5f16cc7f0001ce3028581184.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">其中第一个 OFFICIAL 标志显示 OK 的为官方镜像。同时我们也可以通过官方的 Docker Hub 网站搜索，结果如下图：</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f16cc8d0001b05125481064.png" data-original="//img1.sycdn.imooc.com/5f16cc8d0001b05125481064.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">其中第一个即为官方 Nginx 镜像，点进去我们可以看到镜像描述、评价、tag 等。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f16cc9b000128ed25361476.png" data-original="//img1.sycdn.imooc.com/5f16cc9b000128ed25361476.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">下面我们来简单演示一下镜像的使用，首先通过 docker pull 命令下载镜像。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@docker ~<span class="token punctuation">]</span><span class="token comment"># docker pull nginx</span>
+Using default tag: latest
+latest: Pulling from library/nginx
+bc51dd8edc1b: Pull complete
+66ba67045f57: Pull complete
+bf317aa10aa5: Pull complete
+Digest: sha256:ad5552c786f128e389a0263104ae39f3d3c7895579d45ae716f528185b36bc6f
+Status: Downloaded newer image <span class="token keyword">for</span> nginx:latest
+<span class="token punctuation">[</span>root@docker ~<span class="token punctuation">]</span><span class="token comment"># docker images | grep nginx</span>
+nginx               latest              2073e0bcb60e        4 days ago          127MB
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">要使用 nginx 我们需要准备一个 index.html 也就是网站初始页，使用 nginx 镜像的时候，我们可以在启动的时候通过 volume 的方式将 index.html 映射进去：</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@docker ~<span class="token punctuation">]</span><span class="token comment"># docker run -p 8080:80 -d -v /root/nginx:/usr/share/nginx/html nginx:latest</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">其中 -p 是将宿主机的 8080 端口映射到容器，-v 是数据卷的意思，我们后面会详述，将宿主机的 /root/nginx 目录映射到容器中的 /usr/share/nginx/html 目录。细心一点的同学会发现不管是端口映射还是数据卷映射，都是宿主机在前，容器在后。在宿主机的 /root/nginx 目录存放在 index.html，也就是网站的初始页，内容很简单，如下：</p>
+</div><div class="cl-preview-section"><pre class="  language-html"><code class="prism  language-html"><span class="token doctype">&lt;!DOCTYPE html&gt;</span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>html</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>head</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>meta</span> <span class="token attr-name">charset</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>utf-8<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>title</span><span class="token punctuation">&gt;</span></span>Docke技术原理与实践(imooc.com)<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>title</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>head</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>body</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h1</span><span class="token punctuation">&gt;</span></span>站在巨人的肩膀上：热门 Docker 镜像介绍（二）<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h1</span><span class="token punctuation">&gt;</span></span>
+    <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>p</span><span class="token punctuation">&gt;</span></span>Nginx 首页<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>p</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>body</span><span class="token punctuation">&gt;</span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>html</span><span class="token punctuation">&gt;</span></span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">然后我们使用宿主机的浏览器打开 0.0.0.0:8080 端口就能看到 index.html 的内容显示在浏览器上，如下图。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f16cca700017be118620590.png" data-original="//img1.sycdn.imooc.com/5f16cca700017be118620590.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><h2 id="mysql" style="font-size: 30px;">2. MySQL</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">MySQL 是一个关系型数据库管理系统，由瑞典 MySQL AB 公司开发，属于 Oracle 旗下产品。MySQL <strong>是最流行的关系型数据库管理系统之一</strong>，在 WEB 应用方面，MySQL 是最好的 RDBMS (Relational Database Management System，关系数据库管理系统) 应用软件之一。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><strong>关系数据库将数据保存在不同的表中</strong>，而不是将所有数据放在一个大仓库内，这样就增加了速度并提高了灵活性。MySQL所使用的 SQL 语言是用于访问数据库的最常用标准化语言。<strong>MySQL 软件采用了双授权政策，分为社区版和商业版</strong>，由于其体积小、速度快、总体拥有成本低，尤其是开放源码这一特点，一般中小型网站的开发都选择 MySQL 作为网站数据库。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">下面我们像介绍 Nginx 镜像一样，直接通过 docker search 搜索 mysql 相关的镜像，结果如下图。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f16ccb10001349e26461102.png" data-original="//img1.sycdn.imooc.com/5f16ccb10001349e26461102.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们可以看到最上面两个 MySQL 和 MariaDB 就是官方提供的镜像。MariaDB 源于 MySQL 的一个分支，主要由开源社区进行维护，采用 GPL 授权许可。MariaDB 完全兼容 MySQL，包括 API 和命令行，我们完全可以将 MariaDB 作为 MySQL 的替代品使用，实际上确实有很多公司是这么使用的。所以这里我们通过 docker search mysql 的时候，MariaDB 的结果也出来了。 我们下面演示一下 MySQL 的镜像使用。首先通过 docker pull 下载镜像。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@docker ~<span class="token punctuation">]</span><span class="token comment"># docker pull mysql</span>
+<span class="token punctuation">..</span>.
+<span class="token punctuation">[</span>root@docker1 ~<span class="token punctuation">]</span><span class="token comment"># docker images | grep mysql</span>
+mysql               latest              791b6e40940c        4 days ago          465MB
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">需要注意的是，我们这里没有加 tag，下载的是 latest 版本，也就是 8.x 版本。如果要使用 5.7 版本，可以指定 mysql:5.7。下面启动 MySQL 容器。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@emr-header-1 ~<span class="token punctuation">]</span><span class="token comment"># docker run -d -e MYSQL_ROOT_PASSWORD=123456 -p 3307:3306 mysql:latest</span>
+6cb8b944810bd318cab711b8cb15596f4b5514470dcfa06401131335043b66ae
+<span class="token punctuation">[</span>root@emr-header-1 ~<span class="token punctuation">]</span><span class="token comment"># docker ps</span>
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                               NAMES
+6cb8b944810b        mysql:latest        <span class="token string">"docker-entrypoint.s…"</span>   5 seconds ago       Up 4 seconds        33060/tcp, 0.0.0.0:3307-<span class="token operator">&gt;</span>3306/tcp   wonderful_neumann
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">其中通过环境变量 MYSQL_ROOT_PASSWORD 指定了 root 用户的密码。由于我们这里直接使用了 latest 版本的，如果我们直接通过 MySQL Client 连接的话会报如下的错。原因是mysql8 之前的版本中加密规则是mysql_native_password,而在mysql8之后,加密规则是caching_sha2_password。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@docker1 ~<span class="token punctuation">]</span><span class="token comment"># mysql -h 192.168.64.82 -P 3307 -uroot -p</span>
+Enter password:
+ERROR 2059 <span class="token punctuation">(</span>HY000<span class="token punctuation">)</span>: Authentication plugin <span class="token string">'caching_sha2_password'</span> cannot be loaded: /usr/lib64/mysql/plugin/caching_sha2_password.so: cannot <span class="token function">open</span> shared object file: No such <span class="token function">file</span> or directory
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">对于上面出现的问题我们可以通过迂回的方式进行解决，首先通过 docker exec 登录到 MySQL 容器中解决。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@docker1 ~<span class="token punctuation">]</span><span class="token comment"># docker exec -ti 945fb3c4fc2f /bin/bash</span>
+root@945fb3c4fc2f:/<span class="token comment"># mysql -uroot -p123456</span>
+mysql: <span class="token punctuation">[</span>Warning<span class="token punctuation">]</span> Using a password on the <span class="token function">command</span> line interface can be insecure.
+Welcome to the MySQL monitor.  Commands end with <span class="token punctuation">;</span> or \g.
+Your MySQL connection <span class="token function">id</span> is 11
+Server version: 8.0.19 MySQL Community Server - GPL
+
+Copyright <span class="token punctuation">(</span>c<span class="token punctuation">)</span> 2000, 2020, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type <span class="token string">'help;'</span> or <span class="token string">'\h'</span> <span class="token keyword">for</span> help. Type <span class="token string">'\c'</span> to <span class="token function">clear</span> the current input statement.
+
+mysql<span class="token operator">&gt;</span> ALTER USER <span class="token string">'root'</span>@<span class="token string">'%'</span> IDENTIFIED WITH mysql_native_password BY <span class="token string">'123456'</span><span class="token punctuation">;</span>
+Query OK, 0 rows affected <span class="token punctuation">(</span>0.01 sec<span class="token punctuation">)</span>
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这时候我们再通过 MySQL 客户端进行登录就可以了。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@docker1 ~<span class="token punctuation">]</span><span class="token comment"># mysql -h 192.168.64.82 -P 3307 -uroot -p</span>
+Enter password:
+Welcome to the MariaDB monitor.  Commands end with <span class="token punctuation">;</span> or \g.
+Your MySQL connection <span class="token function">id</span> is 16
+Server version: 8.0.19 MySQL Community Server - GPL
+
+Copyright <span class="token punctuation">(</span>c<span class="token punctuation">)</span> 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+Type <span class="token string">'help;'</span> or <span class="token string">'\h'</span> <span class="token keyword">for</span> help. Type <span class="token string">'\c'</span> to <span class="token function">clear</span> the current input statement.
+
+MySQL <span class="token punctuation">[</span><span class="token punctuation">(</span>none<span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token operator">&gt;</span> show databases<span class="token punctuation">;</span>
++--------------------+
+<span class="token operator">|</span> Database           <span class="token operator">|</span>
++--------------------+
+<span class="token operator">|</span> information_schema <span class="token operator">|</span>
+<span class="token operator">|</span> mysql              <span class="token operator">|</span>
+<span class="token operator">|</span> performance_schema <span class="token operator">|</span>
+<span class="token operator">|</span> sys                <span class="token operator">|</span>
++--------------------+
+4 rows <span class="token keyword">in</span> <span class="token keyword">set</span> <span class="token punctuation">(</span>0.01 sec<span class="token punctuation">)</span>
+</code></pre>
+</div><div class="cl-preview-section"><h2 id="redis" style="font-size: 30px;">3. Redis</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">Redis 是使用 C 语言编写的高性能 key-value 数据库系统，遵守开源 BSD 协议。在日常开发中，Redis 经常被用来当做缓存使用，后端在加一层持久化存储，比如 MySQL 等。我们也可以通过 docker search 来搜索一下 docker hub 中包含的 Redis 镜像，下图是搜索结果。</p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;"><img class="" src="https://img1.sycdn.imooc.com/5f16ccbe000161ab27821108.png" data-original="//img1.sycdn.imooc.com/5f16ccbe000161ab27821108.png" alt="图片描述"></p>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">我们先通过 docker pull 命令下载上图中第一个，也就是官方的 Redis 镜像。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@docker ~<span class="token punctuation">]</span><span class="token comment"># docker pull redis</span>
+Using default tag: latest
+latest: Pulling from library/redis
+bc51dd8edc1b: Already exists
+37d80eb324ee: Pull complete
+392b7748dfaf: Pull complete
+48df82c3534d: Pull complete
+2ec2bb0b4b0e: Pull complete
+1302bce0b2cb: Pull complete
+Digest: sha256:7b84b346c01e5a8d204a5bb30d4521bcc3a8535bbf90c660b8595fad248eae82
+Status: Downloaded newer image <span class="token keyword">for</span> redis:latest
+<span class="token punctuation">[</span>root@docker ~<span class="token punctuation">]</span><span class="token comment"># docker images | grep redis</span>
+redis               latest              44d36d2c2374        4 days ago          98.2MB
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">通过 docker run 启动容器，我们这里使用默认配置。如果需要指定配置，可以先将配置文件通过数据卷的方式映射到容器内部，然后将配置文件作为启动参数加进去。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash">docker run --name redis-test -p 6379:6379 -d redis:latest
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">这时候我们启动一个 redis client，也就是通过 redis-cli 连接上 redis-test 容器。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@docker nginx<span class="token punctuation">]</span><span class="token comment"># redis-cli -p 6379</span>
+127.0.0.1:6379<span class="token operator">&gt;</span> <span class="token keyword">set</span> abc 1234
+OK
+</code></pre>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">同时启动另一个 redis client 来查看这个 key。</p>
+</div><div class="cl-preview-section"><pre class="  language-bash"><code class="prism  language-bash"><span class="token punctuation">[</span>root@docker ~<span class="token punctuation">]</span><span class="token comment"># redis-cli</span>
+127.0.0.1:6379<span class="token operator">&gt;</span> get abc
+<span class="token string">"1234"</span>
+</code></pre>
+</div><div class="cl-preview-section"><h2 id="总结" style="font-size: 30px;">4. 总结</h2>
+</div><div class="cl-preview-section"><p style="font-size: 20px; line-height: 38px;">限于篇幅，本文只简单介绍了几个常用的热门镜像，同时也告诉大家这种通过 Docker 镜像来学习技术的方式。希望后面大家在学习的过程的中可以按本文介绍的思路来举一反三。</p>
+</div>}
+                        </div>
+                    </div>
+                                            <!-- 买过的阅读 -->
+                        <div class="art-next-prev clearfix">
+                                                                                                <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2240">
+                                                                    <div class="prev l clearfix">
+                                        <div class="icon l">
+                                            <i class="imv2-arrow3_l"></i>
+                                        </div>
+                                        <p>
+                                            08 站在巨人的肩膀上：热门 Docker 镜像介绍（一）
+                                        </p>
+                                    </div>
+                                </a>
+                                                                                                                            <!-- 已买且开放 或者可以试读 -->
+                                    <a href="/read/84/article/2242">
+                                                                    <div class="next r clearfix">
+                                        <p>
+                                            10 站在巨人的肩膀上：热门 Docker 镜像介绍（三）
+                                        </p>
+                                        <div class="icon r">
+                                            <i class="imv2-arrow3_r"></i>
+                                        </div>
+
+                                    </div>
+                                </a>
+                                                    </div>
+                                    </div>
+                <div class="comments-con js-comments-con" id="coments_con">
+                </div>
+
+                
+            </div>
+            
+            
+            
+
+        </div>
+    </div>
+</div>
+
+<div class="modal modal-jiaQun-new hide" id="modal-jiaQun">
+    <div class="inner" style="">
+        <div class="modal-close js-close-jiaQun">
+            <i class="imv2-close"></i>
+        </div>
+        <div class="content">
+            <img src="https://img3.sycdn.imooc.com/5f18f4360001392b05330597.jpg">
+            <div class="right-info">
+                <div class="title">
+                    扫码加入慕课前沿技术核心用户群
+                </div>
+                <div class="desc">
+                                            <p class="mb6">验证信息：<span id="joincode">2011031946279713</span><span class="copy js-copy-joincode">复制</span></p>
+                                        <p class="mb6">QQ讨论群号：729941811</p>
+                                            <p>QQ群URL：<a href="https://jq.qq.com/?_wv=1027&amp;k=5WJLMxV" target="_blank">点击访问</a></p>
+                                    </div>
+            </div>
+            <p class="tip">若遇到搜索不到QQ群或加群失败，请联系客服邮箱:kf@imooc.com</p>
+        </div>
+    </div>
+</div>
+ 
+<!-- 专栏介绍页专栏评价 -->
+
+<!-- 专栏介绍页底部三条评价 -->
+
+<!-- 专栏阅读页弹层目录和介绍页页面目录 -->
+
+<!-- 专栏阅读页发布回复 -->
+
+<!-- 专栏阅读页发布评论 -->
+
+<!-- 专栏阅读页底部评论 -->
+
+<!-- 专栏阅读 单个 评论 -->
+
+<!-- 新增回复和展开三条以外回复 -->
+
+<!-- 立即订阅的弹窗 -->
+
+
+
+
+
+
+
+
+
+
+
+
+</div></body></html>
